@@ -11,7 +11,7 @@ If you haven't already done so, you may wish to familiarize yourself with the ge
 AUTHORS
 =========================================
 
-Joachim Baran
+Joachim Baran, Raoul Bonnal, Toshiaki Katayama, Francesco Strozzi
 
 
 REQUIREMENTS
