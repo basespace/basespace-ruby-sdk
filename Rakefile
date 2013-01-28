@@ -25,7 +25,7 @@ Jeweler::Tasks.new do |gem|
   If you haven't already done so, you may wish to familiarize yourself with the general BaseSpace developers documentation (https://developer.basespace.illumina.com/) and create a new BaseSpace App to be used when working through the examples provided in 'examples' folder.}
   gem.email = "joachim.baran@gmail.com"
   gem.authors = ["Joachim Baran", "Raoul Bonnal", "Toshiaki Katayama", "Francesco Strozzi"]
-  gem.executable = 'basespace-ruby'
+#  gem.executable = 'basespace-ruby'
   # dependencies defined in Gemfile
 end
 Jeweler::RubygemsDotOrgTasks.new
