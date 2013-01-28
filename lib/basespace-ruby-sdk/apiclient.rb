@@ -33,7 +33,7 @@ module BaseSpaceRuby
 
 class APIClient
     def initialize(access_token = nil, api_server = nil, timeout = 10)
-        raise BaseSpaceRuby::UndefinedParameterError('AccessToken') unless access_token
+        raise BaseSpaceRuby::UndefinedParameterError.new('AccessToken') unless access_token
         @api_key = access_token
         @api_server = api_server
         @timeout = timeout

@@ -34,12 +34,16 @@ BUILDING A NEW VERSION OF THE GEM
     bundle exec gem build basespace-ruby-sdk.gemspec
     sudo gem1.9 install basespace-ruby-sdk
 
+### Unit Testing
 
+First, install the gem as described just above. Then use [RSpec](http://rspec.info) for unit testing:
+
+    rspec -c -f d
 
 CHANGELOG
 =========================================
 
-v 0.1
+v 0.1.0
 -----------------------------------------
  
 Initial release of BaseSpacePy
