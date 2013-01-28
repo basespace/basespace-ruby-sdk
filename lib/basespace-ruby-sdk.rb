@@ -11,6 +11,5 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require 'basespaceruby/basespaceerror'
-require 'basespaceruby/apiclient'
+require 'basespace-ruby-sdk/apiclient'
 

@@ -27,6 +27,15 @@ INSTALL
 
 TBD
 
+BUILDING A NEW VERSION OF THE GEM
+=========================================
+
+    bundle exec rake gemspec
+    bundle exec gem build basespace-ruby-sdk.gemspec
+    sudo gem1.9 install basespace-ruby-sdk
+
+
+
 CHANGELOG
 =========================================
 

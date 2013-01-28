@@ -14,7 +14,7 @@
 require 'rubygems'
 require 'rspec'
 
-load 'lib/basespaceruby/basespaceerror.rb'
+load 'lib/basespace-ruby-sdk/basespaceerror.rb'
 
 value = 'testvalue'
 legal = 'legalcases'
