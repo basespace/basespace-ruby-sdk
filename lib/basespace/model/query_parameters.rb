@@ -11,7 +11,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require 'api/basespace_error'
+require 'basespace/api/basespace_error'
 
 module Bio
 module BaseSpace

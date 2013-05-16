@@ -11,10 +11,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require 'api/api_client'
-require 'api/base_api'
-require 'api/basespace_error'
-require 'model/query_parameters'
+require 'basespace/api/api_client'
+require 'basespace/api/base_api'
+require 'basespace/api/basespace_error'
+require 'basespace/model/query_parameters'
 
 require 'net/http'
 require 'uri'

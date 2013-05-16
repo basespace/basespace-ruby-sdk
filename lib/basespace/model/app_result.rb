@@ -11,8 +11,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require 'api/basespace_error'
-require 'model/query_parameters'
+require 'basespace/api/basespace_error'
+require 'basespace/model/query_parameters'
 
 module Bio
 module BaseSpace

@@ -11,8 +11,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require 'api/api_client'
-require 'api/basespace_error'
+require 'basespace/api/api_client'
+require 'basespace/api/basespace_error'
 
 require 'net/http'
 require 'uri'
