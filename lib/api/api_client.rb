@@ -1,4 +1,4 @@
-# Copyright 2012-2013 Joachim Baran, Raoul Bonnal, Toshiaki Katayama, Francesco Strozzi
+# Copyright 2012-2013 Joachim Baran, Toshiaki Katayama
 #
 #     Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -11,204 +11,208 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-#import sys
-#import os
-#import re
-#import urllib
-#import urllib2
-#import pycurl
-#import io
-#import cStringIO
-#import json
-#from subprocess import *
-#import subprocess
-#from pprint import pprint
+require 'api/basespace_error'
 
-#sys.path.append(os.path.dirname(os.path.abspath(__file__)) + '/../')
-#from model import *
+require 'net/http'
+require 'uri'
+require 'json'
 
-require 'basespace-ruby-sdk/basespaceerror'
+Net::HTTP.version_1_2
 
-module BaseSpaceRuby
+
+module Bio
+module BaseSpace
 
 class APIClient
-    def initialize(access_token = nil, api_server = nil, timeout = 10)
-        raise BaseSpaceRuby::UndefinedParameterError.new('AccessToken') unless access_token
-        @api_key = access_token
-        @api_server = api_server
-        @timeout = timeout
+
+  def initialize(access_token = nil, api_server = nil, timeout = 10)
+    raise UndefinedParameterError.new('AccessToken') unless access_token
+    @api_key = access_token
+    @api_server = api_server
+    @timeout = timeout
+  end
+
+  def force_post_call(resource_path, post_data, headers, data = nil)
+    # [TODO] Confirm whether we can expect those two parameters are Hash objects:
+    # headers = { "key" => "value" }
+    # post_data = { "key" => "value" }
+    uri = URI.parse(resource_path)
+    # If headers are not needed, the following line should be enough:
+    # return Net::HTTP.post_form(uri, post_data).body
+    res = Net::HTTP.start(uri.host, uri.port) { |http|
+      encoded_data = hash2urlencode(post_data)
+      http.post(uri.path, encoded_data, headers)
+    }
+    return res.body
+  end
+
+  def hash2urlencode(hash)
+    return hash.map{|k,v| URI.encode(k.to_s) + "=" + URI.encode(v.to_s)}.join("&")
+  end
+
+  def put_call(resource_path, post_data, headers, trans_file)
+    return %x(curl -H "x-access-token:#{@api_key}" -H "Content-MD5:#{headers['Content-MD5'].strip}" -T "#{trans_file}" -X PUT #{resource_path})
+  end
+
+  def bool(value)
+    case value
+    when nil, false, 0, 'nil', 'false', '0', 'None'
+      result = false
+    else
+      result = true
+    end
+    return result
+  end
+
+  # [TODO] Need check. Logic in this method is too ugly to understand....
+  def call_api(resource_path, method, query_params, post_data, header_params = nil, force_post = false)
+    url = @api_server + resource_path
+
+    headers = header_params.dup
+    headers['Content-Type'] = 'application/json' if not headers.has_key?('Content-Type') and not method == 'PUT'
+    headers['Authorization'] = "Bearer #{@api_key}"
+
+    uri = request = response = data = cgi_params = nil
+
+    if query_params
+      # Need to remove None (in Python, nil in Ruby?) values, these should not be sent
+      sent_query_params = {}
+      query_params.each do |param, value|
+        sent_query_params[param] = value if bool(value)  # [TODO] confirm this works or not
+      end
+      cgi_params = hash2urlencode(sent_query_params)
     end
 
-    #  For forcing a post request using pycurl
-    # TODO
-    def self.force_post_call(resource_path, post_data, headers, data = nil)
-        post_data = post_data.map { |p| [ p, post_data[p] ] }
-        header_prep = headers.keys.map { |k| "#{k}:#{headers[k]}" }
-        post =  urllib.urlencode(post_data)
-        response = cStringIO.StringIO()
-        c = pycurl.Curl()
-        c.setopt(pycurl.URL,resource_path + '?' + post)
-        c.setopt(pycurl.HTTPHEADER, header_prep)
-        c.setopt(pycurl.POST, 1)
-        c.setopt(pycurl.POSTFIELDS, post)
-        c.setopt(c.WRITEFUNCTION, response.write)
-        c.perform()
-        c.close()
-        return response.getvalue()
+    case method
+    when 'GET'
+      if cgi_params
+        url += "?#{cgi_params}"
+      end
+      # [TODO] confirm this works or not
+      #request = urllib2.Request(url, headers)
+      uri = URI.parse(url)
+      request = Net::HTTP::Get.new(uri.path)
+    when 'POST', 'PUT', 'DELETE'
+      if cgi_params
+        force_post_url = url 
+        url += "?#{cgi_params}"
+      end
+      if post_data
+        # [TODO] Do we need to skip String, Integer, Float and bool in Ruby?
+        data = post_data.to_json # if not [str, int, float, bool].include?(type(post_data))
+      end
+      if force_post
+        response = force_post_call(force_post_url, sent_query_params, headers)
+      else
+        data = '\n' if data and data.empty? # temp fix, in case is no data in the file, to prevent post request from failing
+        # [TODO] confirm this works or not
+        #request = urllib2.Request(url, headers, data)#, @timeout)
+        uri = URI.parse(url)
+        request = Net::HTTP::Post.new(uri.path)
+      end
+      if ['PUT', 'DELETE'].include?(method) # urllib doesnt do put and delete, default to pycurl here
+        response = put_call(url, query_params, headers, data)
+        response = response.split.last
+      end
+    else
+      raise "Method #{method} is not recognized."
     end
 
-    # TODO
-    def self.putCall(resource_path, post_data, headers, trans_file)
-        header_prep = headers.keys.map { |k| "#{k}:#{headers[k]}" }
-        cmd = "curl -H \"x-access-token:#{@api_key}\" -H \"Content-MD5:#{headers['Content-MD5'].strip}\" -T \"#{trans_file}\" -X PUT #{resource_path}"
-        ##cmd = data +'|curl -H "x-access-token:' + self.apiKey + '" -H "Content-MD5:' + headers['Content-MD5'].strip() +'" -d @- -X PUT ' + resourcePath
-        p = Popen(cmd, shell = true, stdin = PIPE, stdout = PIPE, stderr = STDOUT, close_fds = true)
-        output = p.stdout.read()
-        return output
+    # Make the request, request may raise 403 forbidden, or 404 non-response
+    if not force_post and not ['PUT', 'DELETE'].include?(method)  # the normal case
+      # puts url
+      # puts request
+      # puts "request with timeout=#{@timeout}"
+      # [TODO] confirm this works or not
+      #response = urllib2.urlopen(request, @timeout).read()
+      response = Net::HTTP.start(uri.host, uri.port) { |http|
+        http.request(request)
+      }
     end
-
-    # TODO
-    def callAPI(resource_path, method, query_params, post_data, header_params = nil, force_post = 0)
-        url = @api_server + resource_path
-        headers = {}
-        if header_params then
-            for param, value in headerParams.iteritems() do
-                headers[param] = value
-            end
-        end
-
-        headers['Content-Type'] = 'application/json' if not headers.has_key?('Content-Type') and not method == 'PUT'
-        headers['Authorization'] = "Bearer #{@api_key}"
-        
-        data = None
-        if method == 'GET' then
-            if query_params then
-                # Need to remove None values, these should not be sent
-                sent_query_params = {}
-                for param, value in query_params.iteritems() do
-                    sent_query_params[param] = value if value
-                end
-                url = url + '?' + urllib.urlencode(sentQueryParams)
-            end
-            request = urllib2.Request(url=url, headers=headers)
-        elsif ['POST', 'PUT', 'DELETE'].include?(method) then
-            if query_params then
-                # Need to remove None values, these should not be sent
-                sent_query_params = {}
-                for param, value in query_params.iteritems() do
-                    sent_query_params[param] = value if value
-                end
-                force_post_url = url 
-                url = url + '?' + urllib.urlencode(sent_query_params)
-            end
-            data = postData
-            if data then
-                data = json.dumps(post_data) if not [str, int, float, bool].include?(type(postData))
-            end
-            if not forcePost then
-                data = '\n' if data and not len(data) # temp fix, in case is no data in the file, to prevent post request from failing
-                request = urllib2.Request(url=url, headers=headers, data=data)#,timeout=self.timeout)
-            else                                    # use pycurl to force a post call, even w/o data
-                response = self.__forcePostCall__(forcePostUrl,sentQueryParams,headers)
-            end
-            if ['PUT', 'DELETE'].include?(method) then #urllib doesnt do put and delete, default to pycurl here
-                response = put_call(url, query_params, headers, data)
-                response =  response.split()[-1]
-            end
-                
-        else
-            raise Exception('Method ' + method + ' is not recognized.')
-        end
-
-        # Make the request, request may raise 403 forbidden, or 404 non-response
-        if not forcePost and not ['PUT', 'DELETE'].include?(method) then                   # the normal case
-#            print url
-            #print request
-#            print "request with timeout=" + str(self.timeout)
-            response = urllib2.urlopen(request,timeout=self.timeout).read()
-        end
             
-        begin
-            data = json.loads(response)
-        rescue Error => err
-            err
-            data = nil
-        end
-        return data
+    begin
+      data = JSON.parse(response.body)
+    rescue Error => err
+      err
+      data = nil
     end
+    return data
+  end
 
-    # Serialize a list to a CSV string, if necessary.
-    #
-    # ++obj++: data object to be serialized
-    # TODO
-    def to_path_value(obj)
-        if type(obj) == list then
-            return obj.join(',')
+  # Serialize a list to a CSV string, if necessary.
+  #
+  # Args:
+  #   obj -- data object to be serialized
+  # Returns:
+  #   string -- json serialization of object
+  def to_path_value(obj)
+    if obj.kind_of?(Array)
+      return obj.join(',')
+    else
+      return obj
+    end
+  end
+
+  # Derialize a JSON string into an object.
+  #
+  # Args:
+  #     obj -- string or object to be deserialized
+  #     obj_class -- class literal for deserialzied object, or string of class name
+  # Returns:
+  #     object -- deserialized object
+  def deserialize(obj, obj_class)
+    case obj_class.downcase
+    when 'str'
+      return obj.to_s
+    when 'int'
+      return obj.to_i
+    when 'float'
+      return obj.to_f
+    when 'bool'
+      return bool(obj)
+    else # models in BaseSpace
+      klass = Object.const_get(obj_class)
+      instance = klass.new
+    end
+    
+    instance.swagger_types.each do |attr, attr_type|
+      if obj.has_key?(attr) or obj.has_key?(attr.to_s)
+        # puts '@@@@ ' + obj.inspect
+        # puts '@@@@ ' + attr.to_s
+        # puts '@@@@ ' + attr_type.to_s
+        value = obj[attr]
+        # puts value
+        case attr_type.downcase
+        when 'str'
+          instance.__sned__("#{attr}=", value.to_s)
+        when 'int'
+          instance.__sned__("#{attr}=", value.to_i)
+        when 'float'
+          instance.__sned__("#{attr}=", value.to_f)
+        when 'bool'
+          instance.__sned__("#{attr}=", bool(value))
+        when /list</
+          sub_class = attr_type[/list<(.*)>/, 1]
+          sub_values = []
+          value.each do |sub_value|
+            sub_values << deserialize(sub_value, sub_class)
+          end
+          instance.__sned__("#{attr}=", sub_values)
+        when 'dict'  # support for parsing dictionary
+          # puts value.inspect
+          # [TODO] May need to convert value -> Hash (check in what format the value is passed)
+          instance.__sned__("#{attr}=", value)
         else
-            return obj
+          # print "recursive call w/ " + attrType
+          instance.__sned__("#{attr}=", deserialize(value, attr_type))
         end
+      end
     end
-
-    # Derialize a JSON string into an object.
-    #
-    # ++obj++: string or object to be deserialized
-    # ++objClass++: class literal for deserialzied object, or string of class name
-    # TODO
-    def deserialize(obj, obj_class)
-### TODO Syntax snip. I got to here so far. -- Joachim
-        if type(obj_class) == str then
-            begin
-                if not str(obj_class) == 'File' then                # Hack to avoid native python-type 'file' (non-capital 'f')
-                    obj_class = eval(obj_class.lower())
-                else
-                    obj_class = eval(obj_class + '.' + obj_class)
-                end
-            rescue NameError  # not a native type, must be model class
-                obj_class = eval(obj_class + '.' + obj_class)
-            end
-        end
-
-        return objClass(obj) if [str, int, float, bool].include?(obj_class) 
-        instance = obj_class()
-        
-        for attr, attrType in instance.swaggerTypes.iteritems() do
-            if obj.has_key?(attr) then
-#                print '@@@@ ' + str(obj)
-#                print '@@@@ ' + str(attr)
-#                print '@@@@ ' + str(attrType)
-                value = obj[attr]
-#                print value
-                if ['str', 'int', 'float', 'bool'].include?(attr_type) then
-                    attrType = eval(attrType)
-                    begin
-                        value = attrType(value)
-                    rescue UnicodeEncodeError
-                        value = unicode(value)
-                    end
-                    setattr(instance, attr, value)
-                elsif attr_type.include?('list<')
-                    match = re.match('list<(.*)>', attrType)
-                    subClass = match.group(1)
-                    subValues = []
-
-                    for subValue in value do
-                        subValues.append(self.deserialize(subValue, subClass))
-                    end
-                    setattr(instance, attr, subValues)
-                elsif attrType == 'dict' then                                    # support for parsing dictionary
-#                    pprint(value)                   
-                    setattr(instance, attr,value)
-                else
-#                    print "recursive call w/ " + attrType
-                    setattr(instance, attr, self.deserialize(value,attrType))
-                end
-            end
-        end
-
-        return instance
-    end
+    return instance
+  end
 
 end
 
-end
+end # module BaseSpace
+end # module Bio
 

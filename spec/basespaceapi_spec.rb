@@ -1,4 +1,4 @@
-# Copyright 2012-2013 Joachim Baran, Raoul Bonnal, Toshiaki Katayama, Francesco Strozzi
+# Copyright 2012-2013 Joachim Baran, Toshiaki Katayama
 #
 #     Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,12 +14,12 @@
 require 'rubygems'
 require 'rspec'
 
-require 'basespace-ruby-sdk'
+require 'basespace'
 
-describe BaseSpaceRuby::APIClient do
+describe Bio::BaseSpace::APIClient do
     describe "initialization" do
         it "omitting access token" do
-            expect { BaseSpaceRuby::APIClient.new }.to raise_error(BaseSpaceRuby::UndefinedParameterError)
+            expect { Bio::BaseSpace::APIClient.new }.to raise_error(Bio::BaseSpace::UndefinedParameterError)
         end
     end
 end
