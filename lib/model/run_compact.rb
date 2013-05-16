@@ -20,13 +20,13 @@ class RunCompact
 
   def initialize
     @swagger_types = {
-      :date_created     => 'str',
+      :date_created     => 'datetime',
       :id               => 'str',
       :href             => 'str',
       :experiment_name  => 'str'
     }
 
-    @date_created       = nil # str
+    @date_created       = nil
     @id                 = nil # str
     @href               = nil # str
     @experiment_name    = nil # str

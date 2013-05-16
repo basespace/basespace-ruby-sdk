@@ -24,10 +24,10 @@ class User
     @swagger_types = {
       :name              => 'str',
       :email             => 'str',
-      :date_last_active  => 'str',
+      :date_last_active  => 'datetime',
       :gravatar_url      => 'str',
       :href_projects     => 'str',
-      :date_created      => 'str',
+      :date_created      => 'datetime',
       :id                => 'str',
       :href              => 'str',
       :href_runs         => 'str'
@@ -35,10 +35,10 @@ class User
 
     @name                = nil # str
     @email               = nil # str
-    @date_last_active    = nil # str
+    @date_last_active    = nil # datetime
     @gravatar_url        = nil # str
     @href_projects       = nil # str
-    @date_created        = nil # str
+    @date_created        = nil # datetime
     @id                  = nil # str
     @href                = nil # str
     @href_runs           = nil # str

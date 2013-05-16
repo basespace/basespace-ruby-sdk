@@ -26,7 +26,7 @@ class File
       :name           => 'str',
       :href_coverage  => 'str',
       :href_parts     => 'str',
-      :date_created   => 'str',
+      :date_created   => 'datetime',
       :upload_status  => 'str',
       :id             => 'str',
       :href           => 'str',

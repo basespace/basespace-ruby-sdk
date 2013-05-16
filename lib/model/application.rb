@@ -22,10 +22,10 @@ class Application
     @swagger_types = {
       :id                 => 'str',
       :href               => 'str',
-      :name               => "str",
-      :homepage_uri       => "str",
-      :short_description  => "str",
-      :date_created       => "str"
+      :name               => 'str',
+      :homepage_uri       => 'str',
+      :short_description  => 'str',
+      :date_created       => 'datetime'
     }
 
     @id                   = nil

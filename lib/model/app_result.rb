@@ -28,7 +28,7 @@ class AppResult
       :description     => 'str',
       :status_summary  => 'str',
       :href_files      => 'str',
-      :date_created    => 'str',
+      :date_created    => 'datetime',
       :id              => 'str',
       :href            => 'str',
       :user_owned_by   => 'UserCompact',

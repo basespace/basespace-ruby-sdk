@@ -26,7 +26,7 @@ class Sample
     @swagger_types = {
       :name             => 'str',
       :href_files       => 'str',
-      :date_created     => 'str',
+      :date_created     => 'datetime',
       :sample_number    => 'int',
       :id               => 'str',
       :href             => 'str',
@@ -44,7 +44,7 @@ class Sample
 
     @name               = nil # str
     @href_files         = nil # str
-    @date_created       = nil # str
+    @date_created       = nil # datetime
     @sample_number      = nil # int
     @id                 = nil # str
     @href               = nil # str

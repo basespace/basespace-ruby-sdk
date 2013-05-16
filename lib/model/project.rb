@@ -27,7 +27,7 @@ class Project
       :name              => 'str',
       :href_samples      => 'str',
       :href_app_results  => 'str',
-      :date_created      => 'str',
+      :date_created      => 'datetime',
       :id                => 'str',
       :href              => 'str',
       :user_owned_by     => 'UserCompact'

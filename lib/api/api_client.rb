@@ -16,6 +16,7 @@ require 'api/basespace_error'
 require 'net/http'
 require 'uri'
 require 'json'
+require 'date'
 
 Net::HTTP.version_1_2
 
@@ -189,6 +190,8 @@ class APIClient
           instance.__sned__("#{attr}=", value.to_i)
         when 'float'
           instance.__sned__("#{attr}=", value.to_f)
+        when 'datetime'
+          instance.__send__("#{attr}=", DateTime.parse(value))
         when 'bool'
           instance.__sned__("#{attr}=", bool(value))
         when /list</

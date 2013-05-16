@@ -25,7 +25,7 @@ class AppSession
       :href             => 'str',
       :type             => 'str',
       :user_created_by  => 'User',
-      :date_created     => 'str',
+      :date_created     => 'datetime',
       :status           => 'str',
       :status_summary   => 'str',
       :application      => 'Application',
