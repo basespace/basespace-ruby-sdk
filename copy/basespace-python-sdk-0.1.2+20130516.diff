@@ -1,0 +1,411 @@
+diff -uwbrp --exclude=.git basespace-python-sdk-0.1.2/README.md basespace-python-sdk/README.md
+--- basespace-python-sdk-0.1.2/README.md	2013-05-01 02:46:12.000000000 +0900
++++ basespace-python-sdk/README.md	2013-05-16 22:14:42.000000000 +0900
+@@ -12,6 +12,7 @@ AUTHORS
+ =========================================
+ 
+ Morten Kallberg
++Eric Smith
+ 
+ 
+ REQUIREMENTS
+Only in basespace-python-sdk/examples: 5_Purchasing.py
+diff -uwbrp --exclude=.git basespace-python-sdk-0.1.2/src/BaseSpacePy/api/APIClient.py basespace-python-sdk/src/BaseSpacePy/api/APIClient.py
+--- basespace-python-sdk-0.1.2/src/BaseSpacePy/api/APIClient.py	2013-05-01 02:46:12.000000000 +0900
++++ basespace-python-sdk/src/BaseSpacePy/api/APIClient.py	2013-05-16 22:14:42.000000000 +0900
+@@ -24,6 +24,7 @@ import cStringIO
+ import json
+ from subprocess import *
+ import subprocess
++import dateutil.parser
+ #from pprint import pprint
+ 
+ sys.path.append(os.path.dirname(os.path.abspath(__file__)) + '/../')
+@@ -99,6 +100,7 @@ class APIClient:
+                 headers[param] = value
+ 
+         if not headers.has_key('Content-Type') and not method=='PUT': headers['Content-Type'] = 'application/json'
++        # include access token in header 
+         headers['Authorization'] = 'Bearer ' + self.apiKey
+         
+         data = None
+@@ -143,8 +145,12 @@ class APIClient:
+ #            print url
+             #print request
+ #            print "request with timeout=" + str(self.timeout)
++            try:
+             response = urllib2.urlopen(request,timeout=self.timeout).read()
+-            
++            except urllib2.HTTPError as e:
++                # handle HTTP errors in caller
++                response = e.read()
++                pass
+         try:
+             data = json.loads(response)
+         except Exception, err:
+@@ -214,6 +220,9 @@ class APIClient:
+                 elif attrType=='dict':                                          # support for parsing dictionary
+ #                    pprint(value)                   
+                     setattr(instance, attr,value)
++                elif attrType=='datetime':
++                    dt = dateutil.parser.parse(value)
++                    setattr(instance, attr,dt)
+                 else:
+ #                    print "recursive call w/ " + attrType
+                     setattr(instance, attr, self.deserialize(value,attrType))
+Only in basespace-python-sdk/src/BaseSpacePy/api: BaseAPI.py
+diff -uwbrp --exclude=.git basespace-python-sdk-0.1.2/src/BaseSpacePy/api/BaseSpaceAPI.py basespace-python-sdk/src/BaseSpacePy/api/BaseSpaceAPI.py
+--- basespace-python-sdk-0.1.2/src/BaseSpacePy/api/BaseSpaceAPI.py	2013-05-01 02:46:12.000000000 +0900
++++ basespace-python-sdk/src/BaseSpacePy/api/BaseSpaceAPI.py	2013-05-16 22:14:42.000000000 +0900
+@@ -24,6 +24,7 @@ import json
+ import os
+ 
+ from BaseSpacePy.api.APIClient import APIClient
++from BaseSpacePy.api.BaseAPI import BaseAPI
+ from BaseSpacePy.api.BaseSpaceException import * #@UnusedWildImport
+ from BaseSpacePy.model.MultipartUpload import MultipartUpload as mpu #@UnresolvedImport
+ from BaseSpacePy.model.QueryParameters import QueryParameters as qp #@UnresolvedImport
+@@ -35,11 +36,10 @@ deviceURL                  = "/oauthv2/d
+ webAuthorize               = '/oauth/authorize'
+ 
+ 
+-class BaseSpaceAPI(object):
++class BaseSpaceAPI(BaseAPI):
+     '''
+-    The main API class used for all communication with with the REST server
++    The main API class used for all communication with the REST server
+     '''
+-
+     def __init__(self, clientKey, clientSecret, apiServer, version, appSessionId='', AccessToken=''):
+         if not apiServer[-1]=='/': apiServer = apiServer + '/'
+         #if not version[-1]=='/': version = version + '/'
+@@ -50,77 +50,8 @@ class BaseSpaceAPI(object):
+         self.apiServer      = apiServer + version
+         self.version        = version
+         self.weburl         = apiServer.replace('api.','')
+-        self.apiClient      = None
+-        self.setTimeout(10)
+-        self.setAccessToken(AccessToken)        # logic for setting the access-token 
+-
+-    def __updateAccessToken__(self,AccessToken):
+-        self.apiClient.apiKey = AccessToken
+-
+-    def __singleRequest__(self,myModel,resourcePath, method, queryParams, headerParams,postData=None,verbose=0,forcePost=0,noAPI=1):
+-        # test if access-token has been set
+-        if not self.apiClient and noAPI:
+-            raise Exception('Access-token not set, use the "setAccessToken"-method to supply a token value')
+-        if verbose: print "    # " + str(resourcePath)
+-        
+-        # Make the API Call
+-        response = self.apiClient.callAPI(resourcePath, method, queryParams,postData, headerParams,forcePost=forcePost)
+-        if verbose: 
+-            print "    # "
+-            print "    # forcePost: " + str(forcePost) 
+-            pprint(response)
+-        if not response: 
+-            raise Exception('BaseSpace error: None response returned')
+-        
+-        # throw exception here for various error messages
+-        if response['ResponseStatus'].has_key('ErrorCode'):
+-            raise Exception('BaseSpace error: ' + str(response['ResponseStatus']['ErrorCode']) + ": " + response['ResponseStatus']['Message'])
+-         
+-        # Create output objects if the response has more than one object
+-        responseObject = self.apiClient.deserialize(response,myModel)
+-        return responseObject.Response
+-
+-    def __listRequest__(self,myModel,resourcePath, method, queryParams, headerParams,verbose=0,noAPI=1):
+-        # test if access-token has been set
+-        if not self.apiClient and noAPI:
+-            raise Exception('Access-token not set, use the "setAccessToken"-method to supply a token value')
+-        
+-        # Make the API Call
+-        if verbose: 
+-            print '    # Path: ' + str(resourcePath)
+-            print '    # Pars: ' + str(queryParams)
+-        response = self.apiClient.callAPI(resourcePath, method, queryParams, None, headerParams)
+-        if not response: 
+-            raise Exception('BaseSpace Exception: No data returned')
+-        
+-        if verbose: 
+-            print '    # response: ' 
+-            pprint(response)
+-        if not isinstance(response, list): response = [response]
+-        responseObjects = []
+-        for responseObject in response:
+-            responseObjects.append(self.apiClient.deserialize(responseObject, ListResponse.ListResponse))
+-        
+-        # convert list response dict to object type
+-        convertet = [self.apiClient.deserialize(c,myModel) for c in responseObjects[0].convertToObjectList()]
+-#        print response 
+-        return convertet
+-    # test if 
++        super(BaseSpaceAPI, self).__init__(AccessToken)
+ 
+-    def __makeCurlRequest__(self, data, url):
+-        post = urllib.urlencode(data)
+-        response = cStringIO.StringIO()
+-        c = pycurl.Curl()
+-        c.setopt(pycurl.URL,url)
+-        c.setopt(pycurl.POST, 1)
+-        c.setopt(pycurl.POSTFIELDS, post)
+-        c.setopt(c.WRITEFUNCTION, response.write)
+-        c.perform()
+-        c.close()
+-        obj = json.loads(response.getvalue())
+-        if obj.has_key('error'):
+-            raise Exception("BaseSpace exception: " + obj['error'] + " - " + obj['error_description'])
+-        return obj
+       
+     def __getTriggerObject__(self,obj):
+         '''
+@@ -147,30 +78,8 @@ class BaseSpaceAPI(object):
+             return tempApi.deserialize(d, AppResult.AppResult)        
+         return d
+         
+-    def __str__(self):
+-        return "BaseSpaceAPI instance - using token=" + self.getAccessToken()
+-    
+-    def __repr__(self):
+-        return str(self)  
+ 
+     
+-    def setTimeout(self,time):
+-        '''
+-        Specify the timeout in seconds for each request made
+-        
+-        :param time: timeout in second
+-        '''
+-        self.timeout = time
+-        if self.apiClient:
+-            self.apiClient.timeout = self.timeout
+-        
+-    
+-    def setAccessToken(self,token):
+-        self.apiClient      = None
+-        if token: 
+-            apiClient = APIClient(AccessToken=token,apiServer=self.apiServer,timeout=self.timeout)
+-            self.apiClient = apiClient
+-
+     def getAppSessionById(self,id):
+         '''
+         Returns the appSession identified by id
+@@ -209,6 +118,7 @@ class BaseSpaceAPI(object):
+         c.perform()
+         c.close()
+         obj = json.loads(response.getvalue())
++        # TODO add exception if response isn't OK, e.g. incorrect server gives path not recognized
+         return self.__getTriggerObject__(obj) 
+ 
+     def getAccess(self,obj,accessType='write',web=0,redirectURL='',state=''):
+@@ -276,20 +186,6 @@ class BaseSpaceAPI(object):
+         token = self.obtainAccessToken(code)
+         self.setAccessToken(token)
+             
+-    def getAccessToken(self):
+-        '''
+-        Returns the access-token that was used to initialize the BaseSpaceAPI object.
+-        '''
+-        if self.apiClient:
+-            return self.apiClient.apiKey
+-        return ""
+-    
+-    def getServerUri(self):
+-        '''
+-        Returns the server uri used by this instance
+-        '''
+-        return self.apiClient.apiServer
+-
+     def createProject(self,Name):
+         '''
+         Creates a project with the specified name and returns a project object. 
+@@ -309,7 +205,6 @@ class BaseSpaceAPI(object):
+         return self.__singleRequest__(ProjectResponse.ProjectResponse,resourcePath, method, queryParams, headerParams,postData=postData,verbose=0)
+             
+     
+-    
+     def getUserById(self, Id, ):
+         '''
+         Returns the User object corresponding to Id
+Only in basespace-python-sdk/src/BaseSpacePy/api: BillingAPI.py
+diff -uwbrp --exclude=.git basespace-python-sdk-0.1.2/src/BaseSpacePy/api/__init__.py basespace-python-sdk/src/BaseSpacePy/api/__init__.py
+--- basespace-python-sdk-0.1.2/src/BaseSpacePy/api/__init__.py	2013-05-01 02:46:12.000000000 +0900
++++ basespace-python-sdk/src/BaseSpacePy/api/__init__.py	2013-05-16 22:14:42.000000000 +0900
+@@ -13,4 +13,4 @@ See the License for the specific languag
+ limitations under the License.
+ """
+ 
+-__all__ = ['APIClient','BaseSpaceAPI','BaseSpaceException']
+\ No newline at end of file
++__all__ = ['APIClient','BaseSpaceAPI','BillingAPI','BaseAPI','BaseSpaceException']
+diff -uwbrp --exclude=.git basespace-python-sdk-0.1.2/src/BaseSpacePy/model/AppResult.py basespace-python-sdk/src/BaseSpacePy/model/AppResult.py
+--- basespace-python-sdk-0.1.2/src/BaseSpacePy/model/AppResult.py	2013-05-01 02:46:12.000000000 +0900
++++ basespace-python-sdk/src/BaseSpacePy/model/AppResult.py	2013-05-16 22:14:42.000000000 +0900
+@@ -25,7 +25,7 @@ class AppResult:
+             'Description': 'str',
+             'StatusSummary': 'str',
+             'HrefFiles': 'str',
+-            'DateCreated': 'str',
++            'DateCreated': 'datetime',
+             'Id': 'str',
+             'Href': 'str',
+             'UserOwnedBy': 'UserCompact',
+diff -uwbrp --exclude=.git basespace-python-sdk-0.1.2/src/BaseSpacePy/model/AppSession.py basespace-python-sdk/src/BaseSpacePy/model/AppSession.py
+--- basespace-python-sdk-0.1.2/src/BaseSpacePy/model/AppSession.py	2013-05-01 02:46:12.000000000 +0900
++++ basespace-python-sdk/src/BaseSpacePy/model/AppSession.py	2013-05-16 22:14:42.000000000 +0900
+@@ -24,7 +24,7 @@ class AppSession:
+             'Href': 'str',
+             'Type': 'str',
+             'UserCreatedBy':'User',
+-            'DateCreated': 'str',
++            'DateCreated': 'datetime',
+             'Status':'str',
+             'StatusSummary': 'str',
+             'Application':'Application',
+Only in basespace-python-sdk/src/BaseSpacePy/model: AppSessionCompact.py
+diff -uwbrp --exclude=.git basespace-python-sdk-0.1.2/src/BaseSpacePy/model/Application.py basespace-python-sdk/src/BaseSpacePy/model/Application.py
+--- basespace-python-sdk-0.1.2/src/BaseSpacePy/model/Application.py	2013-05-01 02:46:12.000000000 +0900
++++ basespace-python-sdk/src/BaseSpacePy/model/Application.py	2013-05-16 22:14:42.000000000 +0900
+@@ -22,7 +22,7 @@ class Application:
+             "Name":"str",
+             "HomepageUri":"str",
+             "ShortDescription":"str",
+-            "DateCreated":"str"            
++            "DateCreated":"datetime"            
+         }
+ 
+         self.Id                   = None
+Only in basespace-python-sdk/src/BaseSpacePy/model: ApplicationCompact.py
+diff -uwbrp --exclude=.git basespace-python-sdk-0.1.2/src/BaseSpacePy/model/File.py basespace-python-sdk/src/BaseSpacePy/model/File.py
+--- basespace-python-sdk-0.1.2/src/BaseSpacePy/model/File.py	2013-05-01 02:46:12.000000000 +0900
++++ basespace-python-sdk/src/BaseSpacePy/model/File.py	2013-05-16 22:14:42.000000000 +0900
+@@ -25,7 +25,7 @@ class File:
+             'Name': 'str',
+             'HrefCoverage': 'str',
+             'HrefParts': 'str',
+-            'DateCreated': 'str',
++            'DateCreated': 'datetime',
+             'UploadStatus': 'str',
+             'Id': 'str',
+             'Href': 'str',
+Only in basespace-python-sdk/src/BaseSpacePy/model: Product.py
+diff -uwbrp --exclude=.git basespace-python-sdk-0.1.2/src/BaseSpacePy/model/Project.py basespace-python-sdk/src/BaseSpacePy/model/Project.py
+--- basespace-python-sdk-0.1.2/src/BaseSpacePy/model/Project.py	2013-05-01 02:46:12.000000000 +0900
++++ basespace-python-sdk/src/BaseSpacePy/model/Project.py	2013-05-16 22:14:42.000000000 +0900
+@@ -26,7 +26,7 @@ class Project:
+             'Name': 'str',
+             'HrefSamples': 'str',
+             'HrefAppResults': 'str',
+-            'DateCreated': 'str',
++            'DateCreated': 'datetime',
+             'Id': 'str',
+             'Href': 'str',
+             'UserOwnedBy': 'UserCompact'
+Only in basespace-python-sdk/src/BaseSpacePy/model: Purchase.py
+Only in basespace-python-sdk/src/BaseSpacePy/model: PurchaseResponse.py
+Only in basespace-python-sdk/src/BaseSpacePy/model: PurchasedProduct.py
+diff -uwbrp --exclude=.git basespace-python-sdk-0.1.2/src/BaseSpacePy/model/QueryParameters.py basespace-python-sdk/src/BaseSpacePy/model/QueryParameters.py
+--- basespace-python-sdk-0.1.2/src/BaseSpacePy/model/QueryParameters.py	2013-05-01 02:46:12.000000000 +0900
++++ basespace-python-sdk/src/BaseSpacePy/model/QueryParameters.py	2013-05-16 22:14:42.000000000 +0900
+@@ -16,7 +16,7 @@ limitations under the License.
+ from BaseSpacePy.api.BaseSpaceException import UndefinedParameterException,UnknownParameterException,IllegalParameterException
+ 
+ # not very strict parameters testing
+-legal    = {'Statuses':[],'SortBy':['Id', 'Name', 'DateCreated','Path','Position'],'Format':['txt'], 'Extensions':[],'Offset':[],'Limit':[],'SortDir':['Asc', 'Desc']}
++legal    = {'Statuses':[],'SortBy':['Id', 'Name', 'DateCreated','Path','Position'],'Format':['txt'], 'Extensions':[],'Offset':[],'Limit':[],'SortDir':['Asc', 'Desc'], 'Name':[]}
+ 
+ class QueryParameters:
+     '''
+Only in basespace-python-sdk/src/BaseSpacePy/model: QueryParametersPurchasedProduct.py
+Only in basespace-python-sdk/src/BaseSpacePy/model: RefundPurchaseResponse.py
+diff -uwbrp --exclude=.git basespace-python-sdk-0.1.2/src/BaseSpacePy/model/RunCompact.py basespace-python-sdk/src/BaseSpacePy/model/RunCompact.py
+--- basespace-python-sdk-0.1.2/src/BaseSpacePy/model/RunCompact.py	2013-05-01 02:46:12.000000000 +0900
++++ basespace-python-sdk/src/BaseSpacePy/model/RunCompact.py	2013-05-16 22:14:42.000000000 +0900
+@@ -17,7 +17,7 @@ class RunCompact:
+ 
+     def __init__(self):
+         self.swaggerTypes = {
+-            'DateCreated': 'str',
++            'DateCreated': 'datetime',
+             'Id': 'str',
+             'Href': 'str',
+             'ExperimentName': 'str'
+@@ -36,7 +36,7 @@ class RunCompact:
+         return scope + ' run ' + str(self.Id)
+ 
+         # 
+-        self.DateCreated = None # str
++        self.DateCreated = None
+ 
+         # 
+         self.Id = None # str
+diff -uwbrp --exclude=.git basespace-python-sdk-0.1.2/src/BaseSpacePy/model/Sample.py basespace-python-sdk/src/BaseSpacePy/model/Sample.py
+--- basespace-python-sdk-0.1.2/src/BaseSpacePy/model/Sample.py	2013-05-01 02:46:12.000000000 +0900
++++ basespace-python-sdk/src/BaseSpacePy/model/Sample.py	2013-05-16 22:14:42.000000000 +0900
+@@ -24,7 +24,7 @@ class Sample:
+         self.swaggerTypes = {
+             'Name': 'str',
+             'HrefFiles': 'str',
+-            'DateCreated': 'str',
++            'DateCreated': 'datetime',
+             'SampleNumber': 'int',
+             'Id': 'str',
+             'Href': 'str',
+@@ -91,7 +91,7 @@ class Sample:
+ 
+         self.Name           = None # str
+         self.HrefFiles      = None # str
+-        self.DateCreated    = None # str
++        self.DateCreated    = None # datetime
+         self.SampleNumber   = None # int
+         self.Id             = None # str
+         self.Href           = None # str
+diff -uwbrp --exclude=.git basespace-python-sdk-0.1.2/src/BaseSpacePy/model/User.py basespace-python-sdk/src/BaseSpacePy/model/User.py
+--- basespace-python-sdk-0.1.2/src/BaseSpacePy/model/User.py	2013-05-01 02:46:12.000000000 +0900
++++ basespace-python-sdk/src/BaseSpacePy/model/User.py	2013-05-16 22:14:42.000000000 +0900
+@@ -21,10 +21,10 @@ class User:
+         self.swaggerTypes = {
+             'Name': 'str',
+             'Email': 'str',
+-            'DateLastActive': 'str',
++            'DateLastActive': 'datetime',
+             'GravatarUrl': 'str',
+             'HrefProjects': 'str',
+-            'DateCreated': 'str',
++            'DateCreated': 'datetime',
+             'Id': 'str',
+             'Href': 'str',
+             'HrefRuns': 'str'
+@@ -59,13 +59,13 @@ class User:
+ 
+         self.Email = None # str
+ 
+-        self.DateLastActive = None # str
++        self.DateLastActive = None # datetime
+ 
+         self.GravatarUrl = None # str
+ 
+         self.HrefProjects = None # str
+ 
+-        self.DateCreated = None # str
++        self.DateCreated = None # datetime
+ 
+         self.Id = None # str
+ 
+diff -uwbrp --exclude=.git basespace-python-sdk-0.1.2/src/BaseSpacePy/model/__init__.py basespace-python-sdk/src/BaseSpacePy/model/__init__.py
+--- basespace-python-sdk-0.1.2/src/BaseSpacePy/model/__init__.py	2013-05-01 02:46:12.000000000 +0900
++++ basespace-python-sdk/src/BaseSpacePy/model/__init__.py	2013-05-16 22:14:42.000000000 +0900
+@@ -44,5 +44,12 @@ __all__= [
+  'AppSession',
+  'AppResult',
+  'AppSessionLaunchObject',
+- 'Application'
++ 'Application',
++ 'Purchase',
++ 'PurchaseResponse',
++ 'Product',
++ 'AppSessionCompact',
++ 'ApplicationCompact',
++ 'PurchasedProduct',
++ 'RefundPurchaseResponse'
+  ]
+\ No newline at end of file

@@ -1,4 +1,4 @@
-# Copyright 2012-2013 Joachim Baran, Raoul Bonnal, Toshiaki Katayama, Francesco Strozzi
+# Copyright 2013 Toshiaki Katayama
 #
 #     Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -11,5 +11,30 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require 'basespace-ruby-sdk/apiclient'
+module Bio
+module BaseSpace
+
+# Returned from GET purchases
+class AppSessionCompact
+  attr_reader :swagger_types
+  attr_accessor :id, :name
+
+  def initialize
+    @swagger_types = {
+      :id    => 'str',
+      :name  => 'str',
+    }
+  end
+
+  def to_s
+    return @name.to_s
+  end
+
+  def to_str
+    return self.inspect
+  end
+end
+
+end # module BaseSpace
+end # module Bio
 
