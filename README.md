@@ -43,10 +43,10 @@ First, install the gem as described just above. Then use [RSpec](http://rspec.in
 CHANGELOG
 =========================================
 
-v 0.1.0
+v 0.1.2
 -----------------------------------------
  
-Ported from the v 0.1.2 release of BaseSpacePy
+Initial Ruby version ported from the v 0.1.2 release of BaseSpacePy
 
 COPYING / LICENSE
 =========================================
