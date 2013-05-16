@@ -47,7 +47,7 @@ class AppSession
   end
 
   def to_str
-    self.to_s
+    return self.inspect
   end
 
   def serialize_references(api)

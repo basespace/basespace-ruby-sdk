@@ -37,7 +37,7 @@ class RunCompact
   end
 
   def to_str
-    return self.to_s
+    return self.inspect
   end
 
   # Returns the scope-string to used for requesting BaseSpace access to the object

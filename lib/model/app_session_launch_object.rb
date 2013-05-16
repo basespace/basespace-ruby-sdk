@@ -39,7 +39,7 @@ class AppSessionLaunchObject
   end
 
   def to_str
-    return self.to_s
+    return self.inspect
   end
     
   def serialize_object(api)

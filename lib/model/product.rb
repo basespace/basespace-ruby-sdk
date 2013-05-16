@@ -34,7 +34,7 @@ class Product
   end
 
   def to_str
-    return self.to_s
+    return self.inspect
   end
 end
 

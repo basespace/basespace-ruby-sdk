@@ -57,7 +57,7 @@ class AppResult
   end
 
   def to_str
-    return self.to_s
+    return self.inspect
   end
     
   # Returns the scope-string to be used for requesting BaseSpace access to the object

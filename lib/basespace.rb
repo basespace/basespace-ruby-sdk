@@ -15,7 +15,7 @@
 
 require 'api/api_client'
 require 'api/base_api'
-#require 'api/billing_api'
+require 'api/billing_api'
 require 'api/basespace_api'
 require 'api/basespace_error'
 
@@ -68,8 +68,8 @@ require 'model/variants_header_response'
 # self.swaggerTypes = { "Key":"value" } -> @swagger_types = { :symbol => "value" }
 # None = nil
 # module Bio::BaseSpace ... end
-# __str__(self) -> to_s  (self.to_s?)
-# __repr__(self) -> to_str (self.to_str?) [TODO] should return self.inspect
+# __str__(self) -> to_s (return @val.to_s)
+# __repr__(self) -> to_str (return self.inspect)
 # __fooBar__ -> self.foo_bar (or private?)
 # FooBarException -> FooBarError
 

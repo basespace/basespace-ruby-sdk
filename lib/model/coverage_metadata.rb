@@ -35,7 +35,7 @@ class CoverageMetadata
   end
 
   def to_str
-    self.to_s
+    return self.inspect
   end
 end
 

@@ -49,7 +49,7 @@ class User
   end
 
   def to_str
-    return self.to_s
+    return self.inspect
   end
 
   # Is called to test if the Project instance has been initialized
