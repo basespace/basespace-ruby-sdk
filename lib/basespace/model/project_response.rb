@@ -1,4 +1,4 @@
-# Copyright 2012-2013 Joachim Baran, Toshiaki Katayama
+# Copyright 2013 Toshiaki Katayama
 #
 #     Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -11,16 +11,26 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require 'rubygems'
-require 'rspec'
+module Bio
+module BaseSpace
 
-require 'basespace'
+class ProjectResponse
+  attr_reader :swagger_types
+  attr_accessor :response_status, :response, :notifications
 
-describe Bio::BaseSpace::APIClient do
-    describe "initialization" do
-        it "omitting access token" do
-            expect { Bio::BaseSpace::APIClient.new }.to raise_error(Bio::BaseSpace::UndefinedParameterError)
-        end
-    end
+  def initialize
+    @swagger_types = {
+      :response_status  => 'ResponseStatus',
+      :response         => 'ResourceList',
+      :notifications    => 'list<Str>'
+    }
+
+    @response_status    = nil # ResponseStatus
+    @response           = nil # Project
+    @notifications      = nil # list<Str>
+  end
 end
+
+end # module BaseSpace
+end # module Bio
 

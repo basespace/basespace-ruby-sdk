@@ -14,11 +14,11 @@ require 'rake'
 require 'jeweler'
 Jeweler::Tasks.new do |gem|
   # gem is a Gem::Specification... see http://docs.rubygems.org/read/chapter/20 for more options
-  gem.name = "basespace-ruby-sdk"
+  gem.name = "bio-basespace"
   gem.homepage = "https://github.com/joejimbo/basespace-ruby-sdk"
   gem.license = "Apache, Version 2.0"
-  gem.summary = %Q{BaseSpaceRuby is a Ruby based SDK to be used in the development of Apps and scripts for working with Illumina's BaseSpace cloud-computing solution for next-gen sequencing data analysis.}
-  gem.description = %Q{BaseSpaceRuby is a Ruby based SDK to be used in the development of Apps and scripts for working with Illumina's BaseSpace cloud-computing solution for next-gen sequencing data analysis.
+  gem.summary = %Q{Bio::BaseSpace is a Ruby based SDK to be used in the development of Apps and scripts for working with Illumina's BaseSpace cloud-computing solution for next-gen sequencing data analysis.}
+  gem.description = %Q{Bio::BaseSpace is a Ruby based SDK ported from the Python based BaseSpacePy SDK to be used in the development of Apps and scripts for working with Illumina's BaseSpace cloud-computing solution for next-gen sequencing data analysis.
 
   The primary purpose of the SDK is to provide an easy-to-use Ruby environment enabling developers to authenticate a user, retrieve data, and upload data/results from their own analysis to BaseSpace.
 
@@ -48,7 +48,7 @@ Rake::RDocTask.new do |rdoc|
   version = File.exist?('VERSION') ? File.read('VERSION') : ""
 
   rdoc.rdoc_dir = 'rdoc'
-  rdoc.title = "BaseSpaceRuby SDK #{version}"
+  rdoc.title = "BaseSpace SDK #{version}"
   # rdoc.rdoc_files.include('README*')
   rdoc.rdoc_files.include('lib/**/*.rb')
 end

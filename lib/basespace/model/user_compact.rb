@@ -1,4 +1,4 @@
-# Copyright 2012-2013 Joachim Baran, Toshiaki Katayama
+# Copyright 2013 Toshiaki Katayama
 #
 #     Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -11,16 +11,34 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require 'rubygems'
-require 'rspec'
+module Bio
+module BaseSpace
 
-require 'basespace'
+class UserCompact
+  attr_reader :swagger_types
+  attr_accessor :name, :id, :href
 
-describe Bio::BaseSpace::APIClient do
-    describe "initialization" do
-        it "omitting access token" do
-            expect { Bio::BaseSpace::APIClient.new }.to raise_error(Bio::BaseSpace::UndefinedParameterError)
-        end
-    end
+  def initialize
+    @swagger_types = {
+      :name  => 'str',
+      :id    => 'str',
+      :href  => 'str'
+    }
+
+    @name    = nil # str
+    @id      = nil # str
+    @href    = nil # str
+  end
+
+  def to_s
+    return "#{@id}: #{@name}"
+  end
+
+  def to_str
+    return self.inspect
+  end
 end
+
+end # module BaseSpace
+end # module Bio
 
