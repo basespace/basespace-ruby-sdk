@@ -29,7 +29,8 @@ class QueryParameters
     :extensions  => [],
     :offset      => [],
     :limit       => [],
-    :sort_dir    => ['Asc', 'Desc']
+    :sort_dir    => ['Asc', 'Desc'],
+    :name        => []
   }
 
   def initialize(pars = {}, required = [:sort_by, :offset, :limit, :sort_dir])

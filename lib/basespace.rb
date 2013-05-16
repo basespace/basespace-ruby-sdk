@@ -14,19 +14,23 @@
 # Still need to check [TODO] sections
 
 require 'api/api_client'
+require 'api/base_api'
+#require 'api/billing_api'
 require 'api/basespace_api'
 require 'api/basespace_error'
 
-require 'model/application'
 require 'model/app_result'
 require 'model/app_result_response'
 require 'model/app_session'
+require 'model/app_session_compact'
 require 'model/app_session_launch_object'
 require 'model/app_session_response'
+require 'model/application'
+require 'model/application_compact'
 require 'model/basespace_model'
 require 'model/coverage'
-require 'model/coverage_metadata'
 require 'model/coverage_meta_response'
+require 'model/coverage_metadata'
 require 'model/coverage_response'
 require 'model/file'
 require 'model/file_response'
@@ -34,9 +38,15 @@ require 'model/genome_response'
 require 'model/genome_v1'
 require 'model/list_response'
 #require 'model/multipart_upload'
+require 'model/product'
 require 'model/project'
 require 'model/project_response'
+require 'model/purchase'
+require 'model/purchase_response'
+require 'model/purchased_product'
 require 'model/query_parameters'
+require 'model/query_parameters_purchased_product'
+require 'model/refund_purchase_response'
 require 'model/resource_list'
 require 'model/response_status'
 require 'model/run_compact'
@@ -59,7 +69,7 @@ require 'model/variants_header_response'
 # None = nil
 # module Bio::BaseSpace ... end
 # __str__(self) -> to_s  (self.to_s?)
-# __repr__(self) -> to_str (self.to_str?)
+# __repr__(self) -> to_str (self.to_str?) [TODO] should return self.inspect
 # __fooBar__ -> self.foo_bar (or private?)
 # FooBarException -> FooBarError
 

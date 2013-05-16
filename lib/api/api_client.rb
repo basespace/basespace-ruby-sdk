@@ -71,6 +71,7 @@ class APIClient
 
     headers = header_params.dup
     headers['Content-Type'] = 'application/json' if not headers.has_key?('Content-Type') and not method == 'PUT'
+    # include access token in header
     headers['Authorization'] = "Bearer #{@api_key}"
 
     uri = request = response = data = cgi_params = nil
