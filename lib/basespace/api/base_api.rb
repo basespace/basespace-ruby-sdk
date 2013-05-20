@@ -14,7 +14,7 @@
 require 'basespace/api/api_client'
 require 'basespace/api/basespace_error'
 
-require 'net/http'
+require 'net/https'
 require 'uri'
 
 Net::HTTP.version_1_2
@@ -111,8 +111,15 @@ class BaseAPI
   def make_curl_request(data, url)
     post = hash2urlencode(data)
     uri = URI.parse(url)
-    res = Net::HTTP.post_form(uri, post).body
-    obj = JSON.parse(res)
+    #res = Net::HTTP.post_form(uri, post).body
+    http_opts = {}
+    if uri.scheme == "https"
+      http_opts[:use_ssl] = true
+    end
+    res = Net::HTTP.start(uri.host, uri.port, http_opts) { |http|
+      http.post(uri.path, post)
+    }
+    obj = JSON.parse(res.body)
     if obj.has_key?('error')
       raise "BaseSpace exception: " + obj['error'] + " - " + obj['error_description']
     end

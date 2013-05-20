@@ -16,7 +16,7 @@ require 'basespace/api/base_api'
 require 'basespace/api/basespace_error'
 require 'basespace/model/query_parameters'
 
-require 'net/http'
+require 'net/https'
 require 'uri'
 require 'json'
 
@@ -61,7 +61,8 @@ class BaseSpaceAPI < BaseAPI
     if obj['ResponseStatus'].has_key?('ErrorCode')
       raise 'BaseSpace error: ' + obj['ResponseStatus']['ErrorCode'].to_s + ": " + obj['ResponseStatus']['Message']
     end
-    access_token = nil  # '' is false in Python
+    #access_token = nil  # '' is false in Python but APIClient.new only raises when the value is None (not '')
+    access_token = ''
     temp_api = APIClient.new(access_token, @api_server)
     response = temp_api.deserialize(obj, 'AppSessionResponse')
     # AppSessionResponse object has a response method which returns a AppSession object
@@ -75,7 +76,9 @@ class BaseSpaceAPI < BaseAPI
   end
   
   def serialize_object(d, type)
-    access_token = nil
+    # [TODO] None (nil) or '' ?
+    #access_token = nil
+    access_token = ''
     temp_api = APIClient.new(access_token, @api_server)
     if type.downcase == 'project'
       return temp_api.deserialize(d, 'Project')
@@ -120,8 +123,17 @@ class BaseSpaceAPI < BaseAPI
     uri = URI.parse(resource_path)
     uri.user = @key
     uri.password = @secret
-    response = Net::HTTP.get(uri)
-    obj = JSON.parse(response)
+    #response = Net::HTTP.get(uri)
+    http_opts = {}
+    if uri.scheme == "https"
+      http_opts[:use_ssl] = true
+    end
+    response = Net::HTTP.start(uri.host, uri.port, http_opts) { |http|
+      request = Net::HTTP::Get.new(uri.path)
+      request.basic_auth uri.user, uri.password
+      http.request(request)
+    }
+    obj = JSON.parse(response.body)
     # TODO add exception if response isn't OK, e.g. incorrect server gives path not recognized
     return get_trigger_object(obj)
   end
@@ -180,6 +192,7 @@ class BaseSpaceAPI < BaseAPI
       raise "This BaseSpaceAPI instance has either no client_secret or no client_id set and no alternative id was supplied for method get_verification_code"
     end
     data = {'client_id' => @key, 'client_secret' => @secret, 'code' => device_code, 'grant_type' => 'device', 'redirect_uri' => 'google.com'}
+    # [TODO] confirm dict is a Hash in Ruby
     dict = make_curl_request(data, @api_server + TOKEN_URL)
     return dict['access_token']
   end
@@ -633,9 +646,13 @@ class BaseSpaceAPI < BaseAPI
     
     # Do the download
     File.open(File.join(local_dir, name), "wb") do |fp|
-      # [TODO] Do we need user and pass here also?
+      http_opts = {}
+      if uri.scheme == "https"
+        http_opts[:use_ssl] = true
+      end
       uri = URI.parse(file_url)
-      res = Net::HTTP.start(uri.host, uri.port) { |http|
+      res = Net::HTTP.start(uri.host, uri.port, http_opts) { |http|
+        # [TODO] Do we need user and pass here also?
         http.get(uri.path, header)
       }
       fp.print res.body

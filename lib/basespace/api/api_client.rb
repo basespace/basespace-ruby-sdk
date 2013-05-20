@@ -13,7 +13,7 @@
 
 require 'basespace/api/basespace_error'
 
-require 'net/http'
+require 'net/https'
 require 'uri'
 require 'json'
 require 'date'
@@ -25,6 +25,7 @@ module Bio
 module BaseSpace
 
 class APIClient
+  attr_accessor :api_key, :api_server, :timeout
 
   def initialize(access_token = nil, api_server = nil, timeout = 10)
     raise UndefinedParameterError.new('AccessToken') unless access_token
@@ -40,7 +41,11 @@ class APIClient
     uri = URI.parse(resource_path)
     # If headers are not needed, the following line should be enough:
     # return Net::HTTP.post_form(uri, post_data).body
-    res = Net::HTTP.start(uri.host, uri.port) { |http|
+    http_opts = {}
+    if uri.scheme == "https"
+      http_opts[:use_ssl] = true
+    end
+    res = Net::HTTP.start(uri.host, uri.port, http_opts) { |http|
       encoded_data = hash2urlencode(post_data)
       http.post(uri.path, encoded_data, headers)
     }
@@ -127,7 +132,11 @@ class APIClient
       # puts "request with timeout=#{@timeout}"
       # [TODO] confirm this works or not
       #response = urllib2.urlopen(request, @timeout).read()
-      response = Net::HTTP.start(uri.host, uri.port) { |http|
+      http_opts = {}
+      if uri.scheme == "https"
+        http_opts[:use_ssl] = true
+      end
+      response = Net::HTTP.start(uri.host, uri.port, http_opts) { |http|
         http.request(request)
       }
     end
@@ -176,7 +185,7 @@ class APIClient
       klass = Object.const_get(obj_class)
       instance = klass.new
     end
-    
+
     instance.swagger_types.each do |attr, attr_type|
       if obj.has_key?(attr) or obj.has_key?(attr.to_s)
         # puts '@@@@ ' + obj.inspect
