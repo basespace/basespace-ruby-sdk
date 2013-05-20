@@ -195,29 +195,29 @@ class APIClient
         # puts value
         case attr_type.downcase
         when 'str'
-          instance.__sned__("#{attr}=", value.to_s)
+          instance.__send__("#{attr}=", value.to_s)
         when 'int'
-          instance.__sned__("#{attr}=", value.to_i)
+          instance.__send__("#{attr}=", value.to_i)
         when 'float'
-          instance.__sned__("#{attr}=", value.to_f)
+          instance.__send__("#{attr}=", value.to_f)
         when 'datetime'
           instance.__send__("#{attr}=", DateTime.parse(value))
         when 'bool'
-          instance.__sned__("#{attr}=", bool(value))
+          instance.__send__("#{attr}=", bool(value))
         when /list</
           sub_class = attr_type[/list<(.*)>/, 1]
           sub_values = []
           value.each do |sub_value|
             sub_values << deserialize(sub_value, sub_class)
           end
-          instance.__sned__("#{attr}=", sub_values)
+          instance.__send__("#{attr}=", sub_values)
         when 'dict'  # support for parsing dictionary
           # puts value.inspect
           # [TODO] May need to convert value -> Hash (check in what format the value is passed)
-          instance.__sned__("#{attr}=", value)
+          instance.__send__("#{attr}=", value)
         else
           # print "recursive call w/ " + attrType
-          instance.__sned__("#{attr}=", deserialize(value, attr_type))
+          instance.__send__("#{attr}=", deserialize(value, attr_type))
         end
       end
     end
