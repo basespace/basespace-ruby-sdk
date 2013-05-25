@@ -22,6 +22,17 @@ class Model
     @attributes = {}
   end
 
+  def method_missing(method)
+    attr_name = method.to_s.downcase.sub('_', '')
+    attr_value = nil
+    self.attributes.each do |key, value|
+      if key.downcase == attr_name
+        attr_value = value
+      end
+    end
+    return attr_value
+  end
+
   def set_attr(key, value)
     @attributes[key] = value
     return @attributes
