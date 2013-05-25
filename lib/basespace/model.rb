@@ -22,15 +22,19 @@ class Model
     @attributes = {}
   end
 
-  def method_missing(method)
+  def method_missing(method, *args, &block)
     attr_name = method.to_s.downcase.gsub('_', '')
-    attr_value = nil
+    attr_value = false
     self.attributes.each do |key, value|
       if key.downcase == attr_name
-        attr_value = value
+        attr_value = value  # can be an object or nil
       end
     end
-    return attr_value
+    if attr_value == false
+      super
+    else
+      return attr_value
+    end
   end
 
   def set_attr(key, value)
