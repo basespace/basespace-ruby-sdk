@@ -23,7 +23,7 @@ class Model
   end
 
   def method_missing(method)
-    attr_name = method.to_s.downcase.sub('_', '')
+    attr_name = method.to_s.downcase.gsub('_', '')
     attr_value = nil
     self.attributes.each do |key, value|
       if key.downcase == attr_name
