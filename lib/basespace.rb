@@ -63,15 +63,15 @@ require 'basespace/model/variants_header_response'
 
 
 # indent 4 -> 2
-# self -> @
 # CamelCase -> camel_case
 # def __init__(self): -> def initialize
-# self.swaggerTypes = { "Key":"value" } -> @swagger_types = { :symbol => "value" }
+# self.swaggerTypes = { "Key":"value" } -> @swagger_types = { "Key" => "value" }
+# self.Value -> @attributes = {'Value' => value}, get_attr('Value'), set_attr('Value', value)
 # None = nil
 # module Bio::BaseSpace ... end
 # __str__(self) -> to_s (return @val.to_s)
-# __repr__(self) -> to_str (return self.inspect)
-# __fooBar__ -> self.foo_bar (or private?)
+# __repr__(self) -> to_str (return self.inspect) or self.attributes.inspect for attribute values
+# __fooBar__ -> self.foo_bar (or private method?)
 # FooBarException -> FooBarError
 
 # 'str' -> String
