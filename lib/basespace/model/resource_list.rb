@@ -11,31 +11,31 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+require 'basespace/model'
+
 module Bio
 module BaseSpace
 
-class ResourceList
-  attr_reader :swagger_types
-  attr_accessor :items, :displayed_count, :sort_dir, :total_count, :offset, :sort_by, :limit
-
+class ResourceList < Model
   def initialize
     @swagger_types = {
-      :items            => 'list<Str>',
-      :displayed_count  => 'int',
-      :sort_dir         => 'str',
-      :total_count      => 'int',
-      :offset           => 'int',
-      :sort_by          => 'str',
-      :limit            => 'int'
+      'Items'           => 'list<Str>',
+      'DisplayedCount'  => 'int',
+      'SortDir'         => 'str',
+      'TotalCount'      => 'int',
+      'Offset'          => 'int',
+      'SortBy'          => 'str',
+      'Limit'           => 'int',
     }
-
-    @items              = nil # list<Str>
-    @displayed_count    = nil # int
-    @sort_dir           = nil # str
-    @total_count        = nil # int
-    @offset             = nil # int
-    @sort_by            = nil # str
-    @limit              = nil # int
+    @attributes = {
+      'Items'           => nil, # list<Str>
+      'DisplayedCount'  => nil, # int
+      'SortDir'         => nil, # str
+      'TotalCount'      => nil, # int
+      'Offset'          => nil, # int
+      'SortBy'          => nil, # str
+      'Limit'           => nil, # int
+    }
   end
 end
 

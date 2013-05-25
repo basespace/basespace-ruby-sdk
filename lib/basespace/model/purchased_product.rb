@@ -11,33 +11,39 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+require 'basespace/model'
+
 module Bio
 module BaseSpace
 
-class PurchasedProduct
-  attr_reader :swagger_types
-  attr_accessor :purchase_id, :date_purchased, :id, :name, :price, :quantity, :persistence_status, :tags, :product_ids
-
+class PurchasedProduct < Model
   def initialize
     @swagger_types = {
-      :purchase_id         => 'str',
-      :date_purchased      => 'datetime',
-      :id                  => 'str',
-      :name                => 'str',
-      :price               => 'str',
-      :quantity            => 'str',
-      :persistence_status  => 'str',
-      :tags                => 'list<str>',  # only if provided as a query parameter
-      :product_ids         => 'list<str>',  # only if provided as a query parameter
+      'PurchaseId'         => 'str',
+      'DatePurchased'      => 'datetime',
+      'Id'                 => 'str',
+      'Name'               => 'str',
+      'Price'              => 'str',
+      'Quantity'           => 'str',
+      'PersistenceStatus'  => 'str',
+      'Tags'               => 'list<str>',  # only if provided as a query parameter
+      'ProductIds'         => 'list<str>',  # only if provided as a query parameter
+    }
+    @attributes = {
+      'PurchaseId'         => nil,
+      'DatePurchased'      => nil,
+      'Id'                 => nil,
+      'Name'               => nil,
+      'Price'              => nil,
+      'Quantity'           => nil,
+      'PersistenceStatus'  => nil,
+      'Tags'               => nil,
+      'ProductIds'         => nil,
     }
   end
 
   def to_s
-    return @name.to_s
-  end
-
-  def to_str
-    return self.inspect
+    return get_attr('Name').to_s
   end
 end
 

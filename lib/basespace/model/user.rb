@@ -12,55 +12,50 @@
 # limitations under the License.
 
 require 'basespace/api/basespace_error'
+require 'basespace/model'
 
 module Bio
 module BaseSpace
 
-class User
-  attr_reader :swagger_types
-  attr_accessor :name, :email, :date_last_active, :gravatar_url, :href_projects, :date_created, :id, :href, :href_runs
-
+class User < Model
   def initialize
     @swagger_types = {
-      :name              => 'str',
-      :email             => 'str',
-      :date_last_active  => 'datetime',
-      :gravatar_url      => 'str',
-      :href_projects     => 'str',
-      :date_created      => 'datetime',
-      :id                => 'str',
-      :href              => 'str',
-      :href_runs         => 'str'
+      'Name'            => 'str',
+      'Email'           => 'str',
+      'DateLastActive'  => 'datetime',
+      'GravatarUrl'     => 'str',
+      'HrefProjects'    => 'str',
+      'DateCreated'     => 'datetime',
+      'Id'              => 'str',
+      'Href'            => 'str',
+      'HrefRuns'        => 'str',
     }
-
-    @name                = nil # str
-    @email               = nil # str
-    @date_last_active    = nil # datetime
-    @gravatar_url        = nil # str
-    @href_projects       = nil # str
-    @date_created        = nil # datetime
-    @id                  = nil # str
-    @href                = nil # str
-    @href_runs           = nil # str
+    @attributes = {
+      'Name'            => nil, # str
+      'Email'           => nil, # str
+      'DateLastActive'  => nil, # datetime
+      'GravatarUrl'     => nil, # str
+      'HrefProjects'    => nil, # str
+      'DateCreated'     => nil, # datetime
+      'Id'              => nil, # str
+      'Href'            => nil, # str
+      'HrefRuns'        => nil, # str
+    }
   end
     
   def to_s
-    return "#{@id}: #{@name}"
-  end
-
-  def to_str
-    return self.inspect
+    return "#{get_attr('Id')}: #{get_attr('Name')}"
   end
 
   # Is called to test if the Project instance has been initialized
   # :raise Throws ModelNotInitializedError if the Id variable is not set
   def is_init
-    raise ModelNotInitializedError.new('The user model has not been initialized yet') unless @id
+    raise ModelNotInitializedError.new('The user model has not been initialized yet') unless get_attr('Id')
   end
   
   def get_projects(api)
     is_init
-    return api.get_project_by_user(@id)
+    return api.get_project_by_user(get_attr('Id'))
   end
 
   # Returns a list of the accessible run for the user 

@@ -12,60 +12,55 @@
 # limitations under the License.
 
 require 'basespace/api/basespace_error'
+require 'basespace/model'
 require 'basespace/model/query_parameters'
 
 module Bio
 module BaseSpace
 
-class AppResult
-  attr_reader :swagger_types
-  attr_accessor :name, :description, :status_summary, :href_files, :date_created, :id, :href, :user_owned_by, :status_detail, :href_genome, :app_session, :references
-
+class AppResult < Model
   def initialize
     @swagger_types = {
-      :name            => 'str',
-      #:status         => 'str',        # will be deprecated
-      :description     => 'str',
-      :status_summary  => 'str',
-      :href_files      => 'str',
-      :date_created    => 'datetime',
-      :id              => 'str',
-      :href            => 'str',
-      :user_owned_by   => 'UserCompact',
-      :status_detail   => 'str',
-      :href_genome     => 'str',
-      :app_session     => 'AppSession',
-      :references      => 'dict'
+      'Name'           => 'str',
+      #'Status'        => 'str',        # will be deprecated
+      'Description'    => 'str',
+      'StatusSummary'  => 'str',
+      'HrefFiles'      => 'str',
+      'DateCreated'    => 'datetime',
+      'Id'             => 'str',
+      'Href'           => 'str',
+      'UserOwnedBy'    => 'UserCompact',
+      'StatusDetail'   => 'str',
+      'HrefGenome'     => 'str',
+      'AppSession'     => 'AppSession',
+      'References'     => 'dict',
     }
-
-    @name              = nil
-    @description       = nil
-    @status_summary    = nil
-    @href_files        = nil
-    @date_created      = nil
-    @id                = nil
-    @href              = nil
-    @user_owned_by     = nil # UserCompact
-    @status_detail     = nil
-    @href_genome       = nil
-    @app_session       = nil # AppSession
-    @references        = nil
+    @attributes = {
+      'Name'           => nil,
+      'Description'    => nil,
+      'StatusSummary'  => nil,
+      'HrefFiles'      => nil,
+      'DateCreated'    => nil,
+      'Id'             => nil,
+      'Href'           => nil,
+      'UserOwnedBy'    => nil, # UserCompact
+      'StatusDetail'   => nil,
+      'HrefGenome'     => nil,
+      'AppSession'     => nil, # AppSession
+      'References'     => nil,
+    }
   end
 
   def to_s
-    return "AppResult: #{@name}" #+ " - " + @status.to_s
+    return "AppResult: #{get_attr('Name')}" #+ " - #{get_attr('Status')"
   end
 
-  def to_str
-    return self.inspect
-  end
-    
   # Returns the scope-string to be used for requesting BaseSpace access to the object
   #
   # :param scope: The scope-type that is request (write|read)
   def get_access_str(scope = 'write')
     is_init
-    return "#{scope} appresult #{@id}"
+    return "#{scope} appresult #{get_attr('Id')}"
   end
 
   # Is called to test if the Project instance has been initialized
@@ -73,13 +68,14 @@ class AppResult
   # Throws:
   #   ModelNotInitializedError - if the instance has not been populated.
   def is_init
-    raise ModelNotInitializedError.new('The AppResult model has not been initialized yet') unless @id
+    raise ModelNotInitializedError.new('The AppResult model has not been initialized yet') unless get_attr('Id')
   end
 
   # Return a list of sample ids for the samples referenced.
   def get_referenced_samples_ids
     res= []
-    @references.each do |s|
+    get_attr('References').each do |s|
+      # [TODO] check this Hash contains the key :type (or should we use 'Type'?)
       if s[:type] == 'Sample'
         id = s[:href_content].split('/').last
         res << id
@@ -110,7 +106,7 @@ class AppResult
   def get_files(api, my_qp = {})
     is_init
     query_pars = QueryParameters.new(my_qp)
-    return api.get_app_result_files(@id, query_pars)
+    return api.get_app_result_files(get_attr('Id'), query_pars)
   end
 
   # Uploads a local file to the BaseSpace AppResult
@@ -122,7 +118,7 @@ class AppResult
   # :param content_type: The content-type of the file
   def upload_file(api, local_path, file_name, directory, content_type)
     is_init
-    return api.app_result_file_upload(@id, local_path, file_name, directory, content_type)
+    return api.app_result_file_upload(get_attr('Id'), local_path, file_name, directory, content_type)
   end
 
   # Upload a file in multi-part mode. Returns an object of type MultipartUpload used for managing the upload.
@@ -136,7 +132,7 @@ class AppResult
   # :param part_size:
   # def upload_multipart_file(api, local_path, file_name, directory, content_type,temp_dir = '', cpu_count = 1, part_size = 10, verbose = 0)
   #   is_init
-  #   return api.multipart_file_upload(@id, local_path, file_name, directory, content_type, temp_dir, cpu_count, part_size, verbose)
+  #   return api.multipart_file_upload(get_attr('Id'), local_path, file_name, directory, content_type, temp_dir, cpu_count, part_size, verbose)
   # end
 
 end

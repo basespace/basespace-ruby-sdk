@@ -13,7 +13,7 @@
 
 require 'basespace/api/basespace_error'
 
-require 'net/http'
+require 'net/https'
 require 'uri'
 require 'json'
 require 'date'
@@ -25,6 +25,7 @@ module Bio
 module BaseSpace
 
 class APIClient
+  attr_accessor :api_key, :api_server, :timeout
 
   def initialize(access_token = nil, api_server = nil, timeout = 10)
     raise UndefinedParameterError.new('AccessToken') unless access_token
@@ -40,7 +41,11 @@ class APIClient
     uri = URI.parse(resource_path)
     # If headers are not needed, the following line should be enough:
     # return Net::HTTP.post_form(uri, post_data).body
-    res = Net::HTTP.start(uri.host, uri.port) { |http|
+    http_opts = {}
+    if uri.scheme == "https"
+      http_opts[:use_ssl] = true
+    end
+    res = Net::HTTP.start(uri.host, uri.port, http_opts) { |http|
       encoded_data = hash2urlencode(post_data)
       http.post(uri.path, encoded_data, headers)
     }
@@ -127,7 +132,11 @@ class APIClient
       # puts "request with timeout=#{@timeout}"
       # [TODO] confirm this works or not
       #response = urllib2.urlopen(request, @timeout).read()
-      response = Net::HTTP.start(uri.host, uri.port) { |http|
+      http_opts = {}
+      if uri.scheme == "https"
+        http_opts[:use_ssl] = true
+      end
+      response = Net::HTTP.start(uri.host, uri.port, http_opts) { |http|
         http.request(request)
       }
     end
@@ -176,41 +185,54 @@ class APIClient
       klass = Object.const_get(obj_class)
       instance = klass.new
     end
-    
+
+    if $DEBUG
+      puts ">>> Deserialize a '#{obj_class}' object from JSON data ..."
+      puts JSON.pretty_generate(obj)
+    end
+
     instance.swagger_types.each do |attr, attr_type|
       if obj.has_key?(attr) or obj.has_key?(attr.to_s)
-        # puts '@@@@ ' + obj.inspect
-        # puts '@@@@ ' + attr.to_s
-        # puts '@@@@ ' + attr_type.to_s
+        if $DEBUG
+          # puts '@@@@ ' + obj.inspect
+          # puts '@@@@ ' + attr.to_s
+          # puts '@@@@ ' + attr_type.to_s
+          puts ">> for the '#{attr}' value ..."
+          puts ({"attr" => attr, "attr_type" => attr_type, "value" => obj[attr]}.inspect)
+        end
         value = obj[attr]
         # puts value
         case attr_type.downcase
         when 'str'
-          instance.__sned__("#{attr}=", value.to_s)
+          instance.set_attr(attr, value.to_s)
         when 'int'
-          instance.__sned__("#{attr}=", value.to_i)
+          instance.set_attr(attr, value.to_i)
         when 'float'
-          instance.__sned__("#{attr}=", value.to_f)
+          instance.set_attr(attr, value.to_f)
         when 'datetime'
-          instance.__send__("#{attr}=", DateTime.parse(value))
+          instance.set_attr(attr, DateTime.parse(value))
         when 'bool'
-          instance.__sned__("#{attr}=", bool(value))
+          instance.set_attr(attr, bool(value))
         when /list</
           sub_class = attr_type[/list<(.*)>/, 1]
           sub_values = []
           value.each do |sub_value|
             sub_values << deserialize(sub_value, sub_class)
           end
-          instance.__sned__("#{attr}=", sub_values)
+          instance.set_attr(attr, sub_values)
         when 'dict'  # support for parsing dictionary
           # puts value.inspect
           # [TODO] May need to convert value -> Hash (check in what format the value is passed)
-          instance.__sned__("#{attr}=", value)
+          instance.set_attr(attr, value)
         else
           # print "recursive call w/ " + attrType
-          instance.__sned__("#{attr}=", deserialize(value, attr_type))
+          instance.set_attr(attr, deserialize(value, attr_type))
         end
       end
+    end
+    if $DEBUG
+      puts ">> and the resulted '#{obj_class}' instance ..."
+      puts instance.attributes.inspect
     end
     return instance
   end

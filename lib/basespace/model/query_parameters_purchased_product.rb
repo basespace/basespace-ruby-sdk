@@ -20,7 +20,10 @@ module BaseSpace
 class QueryParametersPurchasedProduct
   attr_accessor :passed
 
-  LEGAL = { :tags => [], :product_ids => [] }
+  LEGAL = {
+    'Tags'        => [],
+    'ProductIds'  => [],
+  }
 
   def initialize(pars = {})
     @passed = {}

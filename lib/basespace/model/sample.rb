@@ -12,60 +12,55 @@
 # limitations under the License.
 
 require 'basespace/api/basespace_error'
+require 'basespace/model'
 require 'basespace/model/query_parameters'
 
 module Bio
 module BaseSpace
 
 # Representation of a BaseSpace Sample object.
-class Sample
-  attr_reader :swagger_types
-  attr_accessor :name, :href_files, :date_created, :sample_number, :id, :href, :user_owned_by, :experiment_name, :run, :href_genome, :is_paired_end, :read1, :read2, :num_reads_raw, :num_reads_pf, :references
-
+class Sample < Model
   def initialize
     @swagger_types = {
-      :name             => 'str',
-      :href_files       => 'str',
-      :date_created     => 'datetime',
-      :sample_number    => 'int',
-      :id               => 'str',
-      :href             => 'str',
-      :user_owned_by    => 'UserCompact',
-      :experiment_name  => 'str',
-      :run              => 'RunCompact',
-      :href_genome      => 'str',
-      :is_paired_end    => 'int',
-      :read1            => 'int',
-      :read2            => 'int',
-      :num_reads_raw    => 'int',
-      :num_reads_pf     => 'int',
-      :references       => 'dict'
+      'Name'            => 'str',
+      'HrefFiles'       => 'str',
+      'DateCreated'     => 'datetime',
+      'SampleNumber'    => 'int',
+      'Id'              => 'str',
+      'Href'            => 'str',
+      'UserOwnedBy'     => 'UserCompact',
+      'ExperimentName'  => 'str',
+      'Run'             => 'RunCompact',
+      'HrefGenome'      => 'str',
+      'IsPairedEnd'     => 'int',
+      'Read1'           => 'int',
+      'Read2'           => 'int',
+      'NumReadsRaw'     => 'int',
+      'NumReadsPF'      => 'int',
+      'References'      => 'dict',
     }
-
-    @name               = nil # str
-    @href_files         = nil # str
-    @date_created       = nil # datetime
-    @sample_number      = nil # int
-    @id                 = nil # str
-    @href               = nil # str
-    @user_owned_by      = nil # UserCompact
-    @experiment_name    = nil # str
-    @run                = nil # RunCompact
-    @href_genome        = nil # str
-    @is_paired_end      = nil # int
-    @read1              = nil # int
-    @read2              = nil # int
-    @num_reads_raw      = nil # int
-    @num_reads_pf       = nil # int
-    @references         = nil # dict
+    @attributes = {
+      'Name'            => nil, # str
+      'HrefFiles'       => nil, # str
+      'DateCreated'     => nil, # datetime
+      'SampleNumber'    => nil, # int
+      'Id'              => nil, # str
+      'Href'            => nil, # str
+      'UserOwnedBy'     => nil, # UserCompact
+      'ExperimentName'  => nil, # str
+      'Run'             => nil, # RunCompact
+      'HrefGenome'      => nil, # str
+      'IsPairedEnd'     => nil, # int
+      'Read1'           => nil, # int
+      'Read2'           => nil, # int
+      'NumReadsRaw'     => nil, # int
+      'NumReadsPF'      => nil, # int
+      'References'      => nil, # dict
+    }
   end
 
   def to_s
-    return @name
-  end
-
-  def to_str
-    return self.inspect
+    return get_attr('Name')
   end
 
   # Is called to test if the sample instance has been initialized.
@@ -73,7 +68,7 @@ class Sample
   # Throws:
   #     ModelNotInitializedError - Indicated the Id variable is not set.
   def is_init
-    raise ModelNotInitializedError.new('The sample model has not been initialized yet') unless @id
+    raise ModelNotInitializedError.new('The sample model has not been initialized yet') unless get_attr('Id')
   end
 
   #def get_genome
@@ -85,7 +80,7 @@ class Sample
   # :param scope: The scope type that is request (write|read).
   def get_access_str(scope = 'write')
     is_init
-    return scope + ' sample ' + @id.to_s
+    return scope + ' sample ' + get_attr('Id').to_s
   end
 
   # Return the AppResults referenced by this sample. Note the returned AppResult objects
@@ -93,7 +88,7 @@ class Sample
   # you must use getAppResultById in BaseSpaceAPI.
   def get_referenced_app_results(api)
     res = []
-    @references.each do |s|
+    get_attr('References').each do |s|
       if s[:type] == 'AppResult'
         json_app_result = s[:content]
         my_ar = api.serialize_object(json_app_result, 'AppResult')
@@ -110,7 +105,7 @@ class Sample
   def get_files(api, my_qp = {})
     is_init
     query_pars = QueryParameters.new(my_qp)
-    return api.get_files_by_sample(@id, query_pars)
+    return api.get_files_by_sample(get_attr('Id'), query_pars)
   end
 end
 

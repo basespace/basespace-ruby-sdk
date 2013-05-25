@@ -18,23 +18,27 @@ module BaseSpace
 
 # The QueryParameters class can be passed as an optional arguments for a specific sorting of list-responses (such as lists of sample, AppResult, or variants)
 class QueryParameters
-  attr_reader :swagger_types
   attr_accessor :passed, :required
 
   # not very strict parameters testing
   LEGAL = {
-    :statuses    => [],
-    :sort_by     => ['Id', 'Name', 'DateCreated', 'Path', 'Position'],
-    :format      => ['txt'],
-    :extensions  => [],
-    :offset      => [],
-    :limit       => [],
-    :sort_dir    => ['Asc', 'Desc'],
-    :name        => []
+    'Statuses'    => [],
+    'SortBy'      => ['Id', 'Name', 'DateCreated', 'Path', 'Position'],
+    'Format'      => ['txt'],
+    'Extensions'  => [],
+    'Offset'      => [],
+    'Limit'       => [],
+    'SortDir'     => ['Asc', 'Desc'],
+    'Name'        => [],
   }
 
-  def initialize(pars = {}, required = [:sort_by, :offset, :limit, :sort_dir])
-    @passed = { :sort_by => 'Id', :offset => '0', :limit => '100', :sort_dir => 'Asc' }
+  def initialize(pars = {}, required = ['SortBy', 'Offset', 'Limit', 'SortDir'])
+    @passed = {
+      'SortBy'  => 'Id',
+      'Offset'  => '0',    # [TODO] .to_i?
+      'Limit'   => '100',  # [TODO] .to_i?
+      'SortDir' => 'Asc',
+    }
     pars.each do |k, v|
       @passed[k] = v
     end

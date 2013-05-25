@@ -11,40 +11,36 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+require 'basespace/model'
+
 module Bio
 module BaseSpace
 
-class RunCompact
-  attr_reader :swagger_types
-  attr_accessor :date_created, :id, :href, :experiment_name
-
+class RunCompact < Model
   def initialize
     @swagger_types = {
-      :date_created     => 'datetime',
-      :id               => 'str',
-      :href             => 'str',
-      :experiment_name  => 'str'
+      'DateCreated'     => 'datetime',
+      'Id'              => 'str',
+      'Href'            => 'str',
+      'ExperimentName'  => 'str',
     }
-
-    @date_created       = nil
-    @id                 = nil # str
-    @href               = nil # str
-    @experiment_name    = nil # str
+    @attributes = {
+      'DateCreated'     => nil, # datetime
+      'Id'              => nil, # str
+      'Href'            => nil, # str
+      'ExperimentName'  => nil, # str
+    }
   end
 
   def to_s
-    return @experiment_name
-  end
-
-  def to_str
-    return self.inspect
+    return get_attr('ExperimentName')
   end
 
   # Returns the scope-string to used for requesting BaseSpace access to the object
   # :param scope: The type that is request (write|read)
   def get_access_str(scope = 'write')
     is_init
-    return scope + ' run ' + @id.to_s
+    return scope + ' run ' + get_attr('Id').to_s
   end
 end
 
