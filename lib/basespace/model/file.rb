@@ -12,52 +12,51 @@
 # limitations under the License.
 
 require 'basespace/api/basespace_error'
+require 'basespace/model'
 
 module Bio
 module BaseSpace
 
 # Represents a BaseSpace file object.
-class File
-  attr_reader :swagger_types
-  attr_accessor :name, :href_coverage, :href_parts, :date_created, :upload_status, :id, :href, :href_content, :href_variants, :content_type, :path, :size
-
+class File < Model
   def initialize
     @swagger_types = {
-      :name           => 'str',
-      :href_coverage  => 'str',
-      :href_parts     => 'str',
-      :date_created   => 'datetime',
-      :upload_status  => 'str',
-      :id             => 'str',
-      :href           => 'str',
-      :href_content   => 'str',
-      :href_variants  => 'str',
-      :content_type   => 'str',
-      :path           => 'str',
-      :size           => 'int'
+      'Name'          => 'str',
+      'HrefCoverage'  => 'str',
+      'HrefParts'     => 'str',
+      'DateCreated'   => 'datetime',
+      'UploadStatus'  => 'str',
+      'Id'            => 'str',
+      'Href'          => 'str',
+      'HrefContent'   => 'str',
+      'HrefVariants'  => 'str',
+      'ContentType'   => 'str',
+      'Path'          => 'str',
+      'Size'          => 'int',
     }
-
-    @name             = nil # str
-    # If set, provides the relative Uri to fetch the mean coverage statistics for data stored in the file
-    @href_coverage    = nil # str
-    # If set, provides the relative Uri to fetch a list of completed file parts for multi-part file uploads in progress
-    @href_parts       = nil # str
-    @date_created     = nil # str
-    @upload_status    = nil # str
-    @id               = nil # str
-    @href             = nil # str
-    @href_content     = nil # str
-    # If set, provides the relative Uri to fetch the variants stored in the file
-    @href_variants    = nil # str
-    @content_type     = nil # str
-    @path             = nil # str
-    @size             = nil # int
+    @attributes = {
+      'Name'          => nil, # str
+      # If set, provides the relative Uri to fetch the mean coverage statistics for data stored in the file
+      'HrefCoverage'  => nil, # str
+      # If set, provides the relative Uri to fetch a list of completed file parts for multi-part file uploads in progress
+      'HrefParts'     => nil, # str
+      'DateCreated'   => nil, # datetime
+      'UploadStatus'  => nil, # str
+      'Id'            => nil, # str
+      'Href'          => nil, # str
+      'HrefContent'   => nil, # str
+      # If set, provides the relative Uri to fetch the variants stored in the file
+      'HrefVariants'  => nil, # str
+      'ContentType'   => nil, # str
+      'Path'          => nil, # str
+      'Size'          => nil, # int
+    }
   end
 
   def to_s
     s = @name
     begin
-      s += "- status: #{@upload_status}"
+      s += "- status: #{get_attr('UploadStatus')}"
     rescue
       # [TODO] What to do with this?
       e = 1
@@ -65,16 +64,12 @@ class File
     return s 
   end
 
-  def to_str
-    return self.inspect
-  end
-    
   # Is called to test if the File instance has been initialized.
   # 
   # Throws:
   #     ModelNotInitializedError if the instance has not been populated yet.
   def is_init
-    raise ModelNotInitializedError.new('The File model has not been initialized yet') unless @id
+    raise ModelNotInitializedError.new('The File model has not been initialized yet') unless get_attr('Id')
   end
         
   # Is called to test if the File instance is matches the filtype parameter 
@@ -82,10 +77,10 @@ class File
   # :param filetype: The filetype for coverage or variant requests
   def is_valid_file_option(filetype)
     if filetype == 'bam'
-      raise WrongFiletypeError.new(@name) unless @href_coverage
+      raise WrongFiletypeError.new(get_attr('Name')) unless get_attr('HrefCoverage')
     end
     if filetype == 'vcf'
-      raise WrongFiletypeError.new(@name) unless @href_variants
+      raise WrongFiletypeError.new(get_attr('Name')) unless get_attr('HrefVariants')
     end
   end                
 
@@ -97,9 +92,9 @@ class File
   # :param range: Specify the start and stop byte of the file chunk that needs retrieved.
   def download_file(api, local_dir, range = [])
     unless range.empty?
-      return api.file_download(@id,local_dir, @name, range)
+      return api.file_download(get_attr('Id'),local_dir, get_attr('Name'), range)
     else
-      return api.file_download(@id,local_dir, @name)
+      return api.file_download(get_attr('Id'),local_dir, get_attr('Name'))
     end
   end
 
@@ -116,8 +111,8 @@ class File
   def get_interval_coverage(api, chrom, start_pos, end_pos)
     is_init
     is_valid_file_option('bam')
-    @id = @href_coverage.split('/').last
-    return api.get_interval_coverage(@id, chrom, start_pos, end_pos)
+    set_attr('Id', get_attr('HrefCoverage').split('/').last)
+    return api.get_interval_coverage(get_attr('Id'), chrom, start_pos, end_pos)
   end
     
   # Returns a list of Variant objects available in the specified region
@@ -132,8 +127,8 @@ class File
   def filter_variant(api, chrom, start_pos, end_pos, q = nil)
     is_init
     is_valid_file_option('vcf')
-    @id = @href_variants.split('/').last
-    return api.filter_variant_set(@id, chrom, start_pos, end_pos, 'txt')
+    set_attr('Id', get_attr('HrefVariants').split('/').last)
+    return api.filter_variant_set(get_attr('Id'), chrom, start_pos, end_pos, 'txt')
   end
 
   # Return an object of CoverageMetadata for the selected region
@@ -143,8 +138,8 @@ class File
   def get_coverage_meta(api, chrom)
     is_init
     is_valid_file_option('bam')
-    @id = @href_coverage.split('/').last
-    return api.get_coverage_meta_info(@id, chrom)
+    set_attr('Id', get_attr('HrefCoverage').split('/').last)
+    return api.get_coverage_meta_info(get_attr('Id'), chrom)
   end
 
   # Return the the meta info for a VCF file as a VariantInfo object
@@ -153,8 +148,8 @@ class File
   def get_variant_meta(api)
     is_init
     is_valid_file_option('vcf')
-    @id = @href_variants.split('/').last
-    return api.get_variant_metadata(@id, 'txt')
+    set_attr('Id', get_attr('HrefVariants').split('/').last)
+    return api.get_variant_metadata(get_attr('Id'), 'txt')
   end
 
 end

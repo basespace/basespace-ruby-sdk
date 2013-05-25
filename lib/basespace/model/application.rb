@@ -11,29 +11,29 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+require 'basespace/model'
+
 module Bio
 module BaseSpace
 
-class Application
-  attr_reader :swagger_types
-  attr_accessor :id, :href, :name, :homepage_uri, :short_description, :date_created
-  
+class Application < Model
   def initialize
     @swagger_types = {
-      :id                 => 'str',
-      :href               => 'str',
-      :name               => 'str',
-      :homepage_uri       => 'str',
-      :short_description  => 'str',
-      :date_created       => 'datetime'
+      'Id'                => 'str',
+      'Href'              => 'str',
+      'Name'              => 'str',
+      'HomepageUri'       => 'str',
+      'ShortDescription'  => 'str',
+      'DateCreated'       => 'datetime',
     }
-
-    @id                   = nil
-    @href                 = nil
-    @name                 = nil
-    @homepage_uri         = nil
-    @short_description    = nil
-    @date_created         = nil
+    @attributes = {
+      'Id'                => nil,
+      'Href'              => nil,
+      'Name'              => nil,
+      'HomepageUri'       => nil,
+      'ShortDescription'  => nil,
+      'DateCreated'       => nil,
+    }
   end
 end
 

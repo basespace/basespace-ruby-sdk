@@ -11,40 +11,36 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+require 'basespace/model'
+
 module Bio
 module BaseSpace
 
-class AppSessionLaunchObject
-  attr_reader :swagger_types
-  attr_accessor :content, :href, :href_content, :rel, :type
-  
+class AppSessionLaunchObject < Model
   def initialize
     @swagger_types = {
-      :content       => 'dict',
-      :href          => 'str',
-      :href_content  => 'str',
-      :rel           => 'str',
-      :type          => 'str'
+      'Content'      => 'dict',
+      'Href'         => 'str',
+      'HrefContent'  => 'str',
+      'Rel'          => 'str',
+      'Type'         => 'str',
     }
-
-    @content         = nil
-    @href            = nil
-    @href_content    = nil
-    @rel             = nil
-    @type            = nil 
+    @attributes = {
+      'Content'      => nil,
+      'Href'         => nil,
+      'HrefContent'  => nil,
+      'Rel'          => nil,
+      'Type'         => nil,
+    }
   end
 
   def to_s
-    return @type.to_s
+    return get_attr('Type').to_s
   end
 
-  def to_str
-    return self.inspect
-  end
-    
   def serialize_object(api)
-    res = api.serialize_object(@content, @type)
-    @content = res
+    res = api.serialize_object(get_attr('Content'), get_attr('Type'))
+    set_attr('Content', res)
     return self
   end
 end

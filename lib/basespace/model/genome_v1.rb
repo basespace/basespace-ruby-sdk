@@ -11,43 +11,39 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+require 'basespace/model'
+
 module Bio
 module BaseSpace
 
-class GenomeV1
-  attr_reader :swagger_types
-  attr_accessor :source, :species_name, :build, :id, :href, :display_name
-
+class GenomeV1 < Model
   def initialize
     @swagger_types = {
-      :source        => 'str',
-      :species_name  => 'str',
-      :build         => 'str',
-      :id            => 'str',
-      :href          => 'str',
-      :display_name  => 'str'
+      'Source'       => 'str',
+      'SpeciesName'  => 'str',
+      'Build'        => 'str',
+      'Id'           => 'str',
+      'Href'         => 'str',
+      'DisplayName'  => 'str',
     }
-
-    @source          = nil # str
-    @species_name    = nil # str
-    @build           = nil # str
-    @id              = nil # str
-    @href            = nil # str
-    @display_name    = nil # str
+    @attributes = {
+      'Source'       => nil, # str
+      'SpeciesName'  => nil, # str
+      'Build'        => nil, # str
+      'Id'           => nil, # str
+      'Href'         => nil, # str
+      'DisplayName'  => nil, # str
+    }
   end
 
   def to_s
-    if @species_name
-      return @species_name
-    elsif @display_name
-      return @display_name
+    if get_attr('SpeciesName')
+      return get_attr('SpeciesName')
+    elsif get_attr('DisplayName')
+      return get_attr('DisplayName')
     else
-      return "Genome @ #{@href}"
+      return "Genome @ #{get_attr('Href')}"
     end
-  end
-
-  def to_str
-    return self.inspect
   end
 end
 

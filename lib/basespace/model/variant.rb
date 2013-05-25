@@ -11,43 +11,39 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+require 'basespace/model'
+
 module Bio
 module BaseSpace
 
-class Variant
-  attr_reader :swagger_types
-  attr_accessor :chrom, :alt, :id, :sample_format, :filter, :info, :pos, :qual, :ref
-
+class Variant < Model
   def initialize
     @swagger_types = {
-      :chrom          => 'str',                 
-      :alt            => 'str',
-      :id             => 'list<Str>',
-      :sample_format  => 'dict',
-      :filter         => 'str',
-      :info           => 'dict',
-      :pos            => 'int',
-      :qual           => 'int',
-      :ref            => 'str'
+      'CHROM'         => 'str',                 
+      'ALT'           => 'str',
+      'ID'            => 'list<Str>',
+      'SampleFormat'  => 'dict',
+      'FILTER'        => 'str',
+      'INFO'          => 'dict',
+      'POS'           => 'int',
+      'QUAL'          => 'int',
+      'REF'           => 'str',
     }
-
-    @chrom            = nil
-    @alt              = nil
-    @id               = nil
-    @sample_format    = nil 
-    @filter           = nil
-    @info             = nil
-    @pos              = nil
-    @qual             = nil
-    @ref              = nil
+    @attributes = {
+      'CHROM'         => nil,
+      'ALT'           => nil,
+      'ID'            => nil,
+      'SampleFormat'  => nil,
+      'FILTER'        => nil,
+      'INFO'          => nil,
+      'POS'           => nil,
+      'QUAL'          => nil,
+      'REF'           => nil,
+    }
   end
 
   def to_s
-    return "Variant - #{@chrom}: #{@pos} id=#{@id}"
-  end
-
-  def to_str
-    return self.inspect
+    return "Variant - #{get_attr('CHROM')}: #{get_attr('POS')} id=#{get_attr('Id')}"
   end
 end
 

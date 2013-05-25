@@ -11,31 +11,25 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+require 'basespace/model'
+
 module Bio
 module BaseSpace
 
-class CoverageMetadata
-  attr_reader :swagger_types
-  attr_accessor :max_coverage, :coverage_granularity
-
+class CoverageMetadata < Model
   def initialize
     @swagger_types = {
-      :max_coverage          => 'int',
-      :coverage_granularity  => 'int'
+      'MaxCoverage'          => 'int',
+      'CoverageGranularity'  => 'int',
     }
-
-    # Maximum coverage value of any base, on a per-base level, for the entire chromosome. Useful for scaling
-    @max_coverage            = nil # int
-    # Supported granularity of queries
-    @coverage_granularity    = nil # int
+    @attributes = {
+      'MaxCoverage'          => nil, # int Maximum coverage value of any base, on a per-base level, for the entire chromosome. Useful for scaling
+      'CoverageGranularity'  => nil, # int Supported granularity of queries
+    }
   end
 
   def to_s
-    return "CoverageMeta: max=#{@max_coverage} gran=#{@coverage_granularity}"
-  end
-
-  def to_str
-    return self.inspect
+    return "CoverageMeta: max=#{get_attr('MaxCoverage')} gran=#{get_attr('CoverageGranularity')}"
   end
 end
 

@@ -12,29 +12,28 @@
 # limitations under the License.
 
 require 'json'
+require 'basespace/model'
 
 module Bio
 module BaseSpace
 
-class ListResponse
-  attr_reader :swagger_types
-  attr_accessor :response_status, :response, :notifications
-
+class ListResponse < Model
   def initialize
     @swagger_types = {
-      :response_status  => 'ResponseStatus',
-      :response         => 'ResourceList',
-      :notifications    => 'list<Str>'
+      'ResponseStatus'  => 'ResponseStatus',
+      'Response'        => 'ResourceList',
+      'Notifications'   => 'list<Str>',
     }
-
-    @response_status    = nil # ResponseStatus
-    @response           = nil # ResourceList
-    @notifications      = nil # list<Str>
+    @attributes = {
+      'ResponseStatus'  => nil, # ResponseStatus
+      'Response'        => nil, # ResourceList
+      'Notifications'   => nil, # list<Str>
+    }
   end
 
   def convert_to_object_list
     l = []
-    @response.items.each do |m|
+    get_attr('Response').items.each do |m|
       io = eval(m)
       s = io.to_json
       mj = JSON.parse(s)

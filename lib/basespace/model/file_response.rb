@@ -11,23 +11,23 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+require 'basespace/model'
+
 module Bio
 module BaseSpace
 
-class FileResponse
-  attr_reader :swagger_types
-  attr_accessor :response_status, :response, :notifications
-
+class FileResponse < Model
   def initialize
     @swagger_types = {
-      :response_status  => 'ResponseStatus',
-      :response         => 'File',
-      :notifications    => 'list<Str>'
+      'ResponseStatus'  => 'ResponseStatus',
+      'Response'        => 'File',
+      'Notifications'   => 'list<Str>'
     }
-
-    @response_status    = nil # ResponseStatus
-    @response           = nil # File
-    @notifications      = nil # list<Str>
+    @attributes = {
+      'ResponseStatus'  => nil, # ResponseStatus
+      'Response'        => nil, # File
+      'Notifications'   => nil, # list<Str>
+    }
   end
 end
 

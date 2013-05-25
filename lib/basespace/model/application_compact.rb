@@ -11,28 +11,28 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+require 'basespace/model'
+
 module Bio
 module BaseSpace
 
 # Application data returned by GET purchase
-class ApplicationCompact
-  attr_reader :swagger_types
-  attr_accessor :id, :name, :company_name
-
+class ApplicationCompact < Model
   def initialize
     @swagger_types = {
-      :id            => 'str',
-      :name          => 'str',
-      :company_name  => 'str'
+      'Id'           => 'str',
+      'Name'         => 'str',
+      'CompanyName'  => 'str',
+    }
+    @attributes = {
+      'Id'           => nil,
+      'Name'         => nil,
+      'CompanyName'  => nil,
     }
   end
 
   def to_s
-    return @name.to_s
-  end
-
-  def to_str
-    return self.inspect
+    return get_attr('Name').to_s
   end
 end
 

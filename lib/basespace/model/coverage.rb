@@ -11,38 +11,31 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+require 'basespace/model'
+
 module Bio
 module BaseSpace
 
-class Coverage
-  attr_reader :swagger_types
-  attr_accessor :chrom, :bucket_size, :mean_coverage, :end_pos, :start_pos
-
+class Coverage < Model
   def initialize
     @swagger_types = {
-      :chrom          => 'str',
-      :bucket_size    => 'int',
-      :mean_coverage  => 'list<int>',
-      :end_pos        => 'int',
-      :start_pos      => 'int'
+      'Chrom'         => 'str',
+      'BucketSize'    => 'int',
+      'MeanCoverage'  => 'list<int>',
+      'EndPos'        => 'int',
+      'StartPos'      => 'int',
     }
-
-    @chrom            = nil # str
-    # Each returned number will represent coverage of this many bases.
-    @bucket_size      = nil # int
-    @mean_coverage    = nil # list<Str>
-    # End position, possibly adjusted to match zoom boundaries
-    @end_pos          = nil # int
-    # Start position, possibly adjusted to match zoom boundaries
-    @start_pos        = nil # int
+    @attributes = {
+      'Chrom'         => nil, # str
+      'BucketSize'    => nil, # int Each returned number will represent coverage of this many bases.
+      'MeanCoverage'  => nil, # list<Str>
+      'EndPos'        => nil, # int End position, possibly adjusted to match zoom boundaries
+      'StartPos'      => nil, # int Start position, possibly adjusted to match zoom boundaries
+    }
   end
 
   def to_s
-    return "Chr#{@chrom}: #{@start_pos}-#{@end_pos}: BucketSize=#{@bucket_size}"
-  end
-
-  def to_str
-    return self.inspect
+    return "Chr#{get_attr('Chrom')}: #{get_attr('StartPos')}-#{get_attr('EndPos')}: BucketSize=#{get_attr('BucketSize')}"
   end
 end
 

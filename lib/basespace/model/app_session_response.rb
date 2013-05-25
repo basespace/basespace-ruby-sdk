@@ -11,23 +11,23 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+require 'basespace/model'
+
 module Bio
 module BaseSpace
 
-class AppSessionResponse
-  attr_reader :swagger_types
-  attr_accessor :response_status, :response, :notifications
-
+class AppSessionResponse < Model
   def initialize
     @swagger_types = {
-      :response_status  => 'ResponseStatus',
-      :response         => 'AppSession',
-      :notifications    => 'list<Str>'
+      'ResponseStatus'  => 'ResponseStatus',
+      'Response'        => 'AppSession',
+      'Notifications'   => 'list<Str>',
     }
-
-    @response_status    = nil # ResponseStatus
-    @response           = nil # Coverage
-    @notifications      = nil # list<Str>
+    @attributes = {
+      'ResponseStatus'  => nil, # ResponseStatus
+      'Response'        => nil, # Coverage
+      'Notifications'   => nil, # list<Str>'
+    }
   end
 end
 

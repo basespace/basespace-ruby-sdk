@@ -186,40 +186,53 @@ class APIClient
       instance = klass.new
     end
 
+    if $DEBUG
+      puts ">>> Deserialize a '#{obj_class}' object from JSON data ..."
+      puts JSON.pretty_generate(obj)
+    end
+
     instance.swagger_types.each do |attr, attr_type|
       if obj.has_key?(attr) or obj.has_key?(attr.to_s)
-        # puts '@@@@ ' + obj.inspect
-        # puts '@@@@ ' + attr.to_s
-        # puts '@@@@ ' + attr_type.to_s
+        if $DEBUG
+          # puts '@@@@ ' + obj.inspect
+          # puts '@@@@ ' + attr.to_s
+          # puts '@@@@ ' + attr_type.to_s
+          puts ">> for the '#{attr}' value ..."
+          puts ({"attr" => attr, "attr_type" => attr_type, "value" => obj[attr]}.inspect)
+        end
         value = obj[attr]
         # puts value
         case attr_type.downcase
         when 'str'
-          instance.__send__("#{attr}=", value.to_s)
+          instance.set_attr(attr, value.to_s)
         when 'int'
-          instance.__send__("#{attr}=", value.to_i)
+          instance.set_attr(attr, value.to_i)
         when 'float'
-          instance.__send__("#{attr}=", value.to_f)
+          instance.set_attr(attr, value.to_f)
         when 'datetime'
-          instance.__send__("#{attr}=", DateTime.parse(value))
+          instance.set_attr(attr, DateTime.parse(value))
         when 'bool'
-          instance.__send__("#{attr}=", bool(value))
+          instance.set_attr(attr, bool(value))
         when /list</
           sub_class = attr_type[/list<(.*)>/, 1]
           sub_values = []
           value.each do |sub_value|
             sub_values << deserialize(sub_value, sub_class)
           end
-          instance.__send__("#{attr}=", sub_values)
+          instance.set_attr(attr, sub_values)
         when 'dict'  # support for parsing dictionary
           # puts value.inspect
           # [TODO] May need to convert value -> Hash (check in what format the value is passed)
-          instance.__send__("#{attr}=", value)
+          instance.set_attr(attr, value)
         else
           # print "recursive call w/ " + attrType
-          instance.__send__("#{attr}=", deserialize(value, attr_type))
+          instance.set_attr(attr, deserialize(value, attr_type))
         end
       end
+    end
+    if $DEBUG
+      puts ">> and the resulted '#{obj_class}' instance ..."
+      puts instance.attributes.inspect
     end
     return instance
   end

@@ -66,7 +66,7 @@ class BaseSpaceAPI < BaseAPI
     temp_api = APIClient.new(access_token, @api_server)
     response = temp_api.deserialize(obj, 'AppSessionResponse')
     # AppSessionResponse object has a response method which returns a AppSession object
-    app_sess = response.response
+    app_sess = response.get_attr('Response')
     # AppSession object has a serialize_references method which converts an array of
     # AppSessionLaunchObject objects by calling serialize_object method in each object.
     # The method in turn calls the serialize_object method of the given BaseSpaceAPI object
@@ -134,6 +134,8 @@ class BaseSpaceAPI < BaseAPI
       http.request(request)
     }
     obj = JSON.parse(response.body)
+    # [TODO] this JSON obj seems to be fine but get_trigger_object fails. why?
+    #p obj 
     # TODO add exception if response isn't OK, e.g. incorrect server gives path not recognized
     return get_trigger_object(obj)
   end

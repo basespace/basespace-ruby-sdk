@@ -19,6 +19,7 @@ require 'basespace/api/billing_api'
 require 'basespace/api/basespace_api'
 require 'basespace/api/basespace_error'
 
+require 'basespace/model'
 require 'basespace/model/app_result'
 require 'basespace/model/app_result_response'
 require 'basespace/model/app_session'
