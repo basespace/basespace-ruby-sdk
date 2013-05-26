@@ -11,25 +11,25 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+require 'basespace/model'
+
 module Bio
 module BaseSpace
 
-class ResponseStatus
-  attr_reader :swagger_types
-  attr_accessor :message, :errors, :error_code, :stack_trace
-
+class ResponseStatus < Model
   def initialize
     @swagger_types = {
-      :message      => 'str',
-      :errors       => 'list<Str>',
-      :error_code   => 'str',
-      :stack_trace  => 'str'
+      'Message'     => 'str',
+      'Errors'      => 'list<Str>',
+      'ErrorCode'   => 'str',
+      'StackTrace'  => 'str',
     }
-
-    @message        = nil # str
-    @errors         = nil # list<Str>
-    @error_code     = nil # str
-    @stack_trace    = nil # str
+    @attributes = {
+      'Message'     => nil, # str
+      'Errors'      => nil, # list<Str>
+      'ErrorCode'   => nil, # str
+      'StackTrace'  => nil, # str
+    }
   end
 end
 

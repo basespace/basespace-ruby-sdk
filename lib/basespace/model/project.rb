@@ -12,42 +12,37 @@
 # limitations under the License.
 
 require 'basespace/api/basespace_error'
+require 'basespace/model'
 require 'basespace/model/query_parameters'
 
 module Bio
 module BaseSpace
 
 # Represents a BaseSpace Project object.
-class Project
-  attr_reader :swagger_types
-  attr_accessor :name, :href_samples, :href_app_results, :date_created, :id, :href, :user_owned_by
-
+class Project < Model
   def initialize
     @swagger_types = {
-      :name              => 'str',
-      :href_samples      => 'str',
-      :href_app_results  => 'str',
-      :date_created      => 'datetime',
-      :id                => 'str',
-      :href              => 'str',
-      :user_owned_by     => 'UserCompact'
+      'Name'            => 'str',
+      'HrefSamples'     => 'str',
+      'HrefAppResults'  => 'str',
+      'DateCreated'     => 'datetime',
+      'Id'              => 'str',
+      'Href'            => 'str',
+      'UserOwnedBy'     => 'UserCompact',
     }
-
-    @name                = nil # str
-    @href_samples        = nil # str
-    @href_app_results    = nil # str
-    @date_created        = nil # str
-    @id                  = nil # str
-    @href                = nil # str
-    @user_owned_by       = nil # UserCompact
+    @attributes = {
+      'Name'            => nil, # str
+      'HrefSamples'     => nil, # str
+      'HrefAppResults'  => nil, # str
+      'DateCreated'     => nil, # datetime
+      'Id'              => nil, # str
+      'Href'            => nil, # str
+      'UserOwnedBy'     => nil, # UserCompact
+    }
   end
 
   def to_s
-    return "#{@name} - id=#{@id}"
-  end
-
-  def to_str
-    return self.inspect
+    return "#{get_attr('Name')} - id=#{get_attr('Id')}"
   end
 
   # Is called to test if the Project instance has been initialized.
@@ -55,7 +50,7 @@ class Project
   # Throws:
   #     ModelNotInitializedError - Indicates the object has not been populated yet.
   def is_init
-    raise ModelNotInitializedError.new('The project model has not been initialized yet') unless @id
+    raise ModelNotInitializedError.new('The project model has not been initialized yet') unless get_attr('Id')
   end
   
   # Returns the scope-string to used for requesting BaseSpace access to the object
@@ -63,7 +58,7 @@ class Project
   # :param scope: The scope-type that is request (write|read)
   def get_access_str(scope = 'write')
     is_init
-    return scope + ' project ' + @id.to_s
+    return scope + ' project ' + get_attr('Id').to_s
   end
   
   # Returns a list of AppResult objects.
@@ -73,7 +68,7 @@ class Project
   def get_app_results(api, my_qp = {}, statuses = [])
     is_init
     query_pars = QueryParameters.new(my_qp)
-    return api.get_app_results_by_project(@id, query_pars, statuses)
+    return api.get_app_results_by_project(get_attr('Id'), query_pars, statuses)
   end
 
   # Returns a list of Sample objects.
@@ -81,7 +76,7 @@ class Project
   # :param api: An instance of BaseSpaceAPI
   def get_samples(api)
     is_init
-    return api.get_samples_by_project(@id)
+    return api.get_samples_by_project(get_attr('Id'))
   end
   
   # Return a newly created app result object
@@ -91,7 +86,7 @@ class Project
   # :param desc: A describtion of the app result
   def create_app_result(api, name, desc, app_session_id = nil, samples = [])
     is_init
-    return api.create_app_result(@id, name, desc, app_session_id, samples)
+    return api.create_app_result(get_attr('Id'), name, desc, app_session_id, samples)
   end
 end
 

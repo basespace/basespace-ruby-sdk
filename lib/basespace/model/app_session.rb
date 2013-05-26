@@ -11,57 +11,56 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+require 'basespace/model'
+
 module Bio
 module BaseSpace
 
 # AppLaunch contains the data returned 
-class AppSession
-  attr_reader :swagger_types
-  attr_accessor :id, :href, :type, :user_created_by, :date_created, :status, :status_summary, :application, :references
-
+class AppSession < Model
   def initialize
     @swagger_types = {
-      :id               => 'str',
-      :href             => 'str',
-      :type             => 'str',
-      :user_created_by  => 'User',
-      :date_created     => 'datetime',
-      :status           => 'str',
-      :status_summary   => 'str',
-      :application      => 'Application',
-      :references       => 'list<AppSessionLaunchObject>'
+      'Id'             => 'str',
+      'Href'           => 'str',
+      'Type'           => 'str',
+      'UserCreatedBy'  => 'User',
+      'DateCreated'    => 'datetime',
+      'Status'         => 'str',
+      'StatusSummary'  => 'str',
+      'Application'    => 'Application',
+      'References'     => 'list<AppSessionLaunchObject>',
     }
-
-    # [TODO] UserUserCreatedBy (typo of UserCreatedBy?)
-    @user_created_by    = nil #  The user that triggered your application
-    @id                 = nil
-    @status             = nil
-    @status_summary     = nil
-    @href               = nil #  The URI of BaseSpace
-    @date_created       = nil #  The datetime the user acted in BaseSpace
-    @references         = nil
+    @attributes = {
+      'Id'             => nil,
+      'Href'           => nil, # The URI of BaseSpace
+      'Type'           => nil,
+      # [TODO] UserUserCreatedBy in Python code would be typo of UserCreatedBy (bug in Python SDK)
+      'UserCreatedBy'  => nil, # The user that triggered your application
+      'DateCreated'    => nil, # The datetime the user acted in BaseSpace
+      'Status'         => nil,
+      'StatusSummary'  => nil,
+      'Application'    => nil,
+      'References'     => nil,
+    }
   end
 
   def to_s
-    return "App session by #{@user_created_by} - Id: #{@id} - status: #{@status}"
-  end
-
-  def to_str
-    return self.inspect
+    return "App session by #{get_attr('UserCreatedBy')} - Id: #{get_attr('Id')} - status: #{get_attr('Status')}"
   end
 
   def serialize_references(api)
     ref = []
-    @references.each do |r|
+    # [TODO] should this attribute initialized with []?
+    get_attr('References').each do |r|
       res = r.serialize_object(api)  # AppSessionLaunchObject
       ref << res
     end
-    @references = ref
+    set_attr('References', ref)
     return self
   end
     
   def can_work_on
-    return ['running'].include?(@status.downcase)
+    return ['running'].include?(get_attr('Status').downcase)
   end
     
   # Sets the status of the AppSession (note: once set to 'completed' or 'aborted' no more work can be done to the instance)
@@ -70,16 +69,17 @@ class AppSession
   # :param Status: The status value, must be completed, aborted, working, or suspended
   # :param Summary: The status summary
   def set_status(api, status, summary)
-    if @status.downcase == 'complete' or @status.downcase == 'aborted'
-      raise "The status of AppSession = #{self.to_s} is #{@status}, no further status changes are allowed."
+    current_status = get_attr('Status')
+    if current_status.downcase == 'complete' or current_status.downcase == 'aborted'
+      raise "The status of AppSession = #{self.to_s} is #{current_status}, no further status changes are allowed."
     end
 
     # To prevent the AppResult object from being in an inconsistent state
     # and having two identical objects floating around, we update the current object
     # and discard the returned object
-    new_session      = api.set_app_session_state(@id, @status, @summary)
-    @status          = new_session.status
-    @status_summary  = new_session.status_summary
+    new_session = api.set_app_session_state(get_attr('Id'), status, summary)
+    set_attr('Status', new_session.status)
+    set_attr('StatusSummary', new_session.status_summary)
     return self
   end
  

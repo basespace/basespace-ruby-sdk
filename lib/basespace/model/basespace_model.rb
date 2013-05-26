@@ -11,23 +11,32 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+require 'basespace/model'
+
 module Bio
 module BaseSpace
 
-class BaseSpaceModel
-  attr_accessor :id, :api
+class BaseSpaceModel < Model
+  attr_accessor :api
 
   def initialize
-    @id = nil  # to be overriden
+    # [TODO] This class is not similar to other modles. Need to check if this port is OK.
+    @swagger_types = {
+      'Id'  => 'str',
+    }
+    @attributes = {
+      'Id'  => nil,
+    }
+  end
+
+  # [TODO] Do we need this?
+  def id
+    get_attr('Id')
   end
 
   def to_s
     is_init
-    return @id
-  end
-  
-  def to_str
-    return self.inspect
+    return get_attr('Id')
   end
   
   def is_init

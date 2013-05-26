@@ -11,31 +11,27 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+require 'basespace/model'
+
 module Bio
 module BaseSpace
 
-class VariantHeader
-  attr_reader :swagger_types
-  attr_accessor :metadata, :samples, :legends
-
+class VariantHeader < Model
   def initialize
     @swagger_types = {
-      :metadata  => 'dict',
-      :samples   => 'dict',
-      :legends   => 'dict',
+      'Metadata'  => 'dict',
+      'Samples'   => 'dict',
+      'Legends'   => 'dict',
     }
-
-    @metadata    = nil # dict
-    @samples     = nil # dict
-    @legends     = nil # dict
+    @attributes = {
+      'Metadata'  => nil, # dict
+      'Samples'   => nil, # dict
+      'Legends'   => nil, # dict
+    }
   end
 
   def to_s
-    return "VariantHeader: SampleCount=#{@samples.length}"
-  end
-
-  def to_str
-    return self.inspect
+    return "VariantHeader: SampleCount=#{get_attr('Samples').length}"
   end
 end
 

@@ -11,23 +11,23 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+require 'basespace/model'
+
 module Bio
 module BaseSpace
 
-class VariantsHeaderResponse
-  attr_reader :swagger_types
-  attr_accessor :response_status, :response, :notifications
-
+class VariantsHeaderResponse < Model
   def initialize
     @swagger_types = {
-      :response_status  => 'ResponseStatus',
-      :response         => 'VariantHeader',
-      :notifications    => 'list<Str>'
+      'ResponseStatus'  => 'ResponseStatus',
+      'Response'        => 'VariantHeader',
+      'Notifications'   => 'list<Str>',
     }
-
-    @response_status    = nil # ResponseStatus
-    @response           = nil # VariantHeader
-    @notifications      = nil # list<Str>
+    @attributes = {
+      'ResponseStatus'  => nil, # ResponseStatus
+      'Response'        => nil, # VariantHeader
+      'Notifications'   => nil, # list<Str>
+    }
   end
 end
 

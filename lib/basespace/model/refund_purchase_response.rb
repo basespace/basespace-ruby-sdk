@@ -11,22 +11,23 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+require 'basespace/model'
+
 module Bio
 module BaseSpace
 
-class RefundPurchaseResponse
-  attr_reader :swagger_types
-  attr_accessor :response_status, :response, :notifications
-
+class RefundPurchaseResponse < Model
   def initialize
     @swagger_types = {
-      :response_status  => 'ResponseStatus',
-      :response         => 'Purchase',
-      :notifications    => 'list<Str>'
+      'ResponseStatus'  => 'ResponseStatus',
+      'Response'        => 'Purchase',
+      'Notifications'   => 'list<Str>',
     }
-    @response_status  = nil # ResponseStatus
-    @response         = nil # Purchase
-    @notifications    = nil # list<Str>
+    @attributes = {
+      'ResponseStatus'  => nil, # ResponseStatus
+      'Response'        => nil, # Purchase
+      'Notifications'   => nil, # list<Str>
+    }
   end
 end
 

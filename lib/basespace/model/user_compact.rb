@@ -11,31 +11,27 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+require 'basespace/model'
+
 module Bio
 module BaseSpace
 
-class UserCompact
-  attr_reader :swagger_types
-  attr_accessor :name, :id, :href
-
+class UserCompact < Model
   def initialize
     @swagger_types = {
-      :name  => 'str',
-      :id    => 'str',
-      :href  => 'str'
+      'Name'  => 'str',
+      'Id'    => 'str',
+      'Href'  => 'str',
     }
-
-    @name    = nil # str
-    @id      = nil # str
-    @href    = nil # str
+    @attributes = {
+      'Name'  => nil, # str
+      'Id'    => nil, # str
+      'Href'  => nil, # str
+    }
   end
 
   def to_s
-    return "#{@id}: #{@name}"
-  end
-
-  def to_str
-    return self.inspect
+    return "#{get_attr('Id')}: #{get_attr('Name')}"
   end
 end
 

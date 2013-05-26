@@ -11,31 +11,31 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+require 'basespace/model'
+
 module Bio
 module BaseSpace
 
-class VariantInfo
-  attr_reader :swagger_types
-  attr_accessor :cigar, :idrep, :refrep, :ru, :vartype_del, :vartype_ins, :vartype_snv
-
+class VariantInfo < Model
   def initialize
     @swagger_types = {
-      :cigar        => 'list<Str>',
-      :idrep        => 'list<Str>',                 
-      :refrep       => 'list<Str>',
-      :ru           => 'list<Str>',
-      :vartype_del  => 'list<Str>',
-      :vartype_ins  => 'list<Str>',
-      :vartype_snv  => 'list<Str>',
+      'CIGAR'        => 'list<Str>',
+      'IDREP'        => 'list<Str>',
+      'REFREP'       => 'list<Str>',
+      'RU'           => 'list<Str>',
+      'VARTYPE_DEL'  => 'list<Str>',
+      'VARTYPE_INS'  => 'list<Str>',
+      'VARTYPE_SNV'  => 'list<Str>',
     }
-
-    @cigar          = nil
-    @idrep          = nil
-    @refrep         = nil
-    @ru             = nil
-    @vartype_del    = nil
-    @vartype_ins    = nil
-    @vartype_snv    = nil
+    @attributes = {
+      'CIGAR'        => nil,
+      'IDREP'        => nil,
+      'REFREP'       => nil,
+      'RU'           => nil,
+      'VARTYPE_DEL'  => nil,
+      'VARTYPE_INS'  => nil,
+      'VARTYPE_SNV'  => nil,
+    }
   end
 end
 
