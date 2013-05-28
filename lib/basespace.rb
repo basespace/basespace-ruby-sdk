@@ -61,6 +61,49 @@ require 'basespace/model/variant_header'
 require 'basespace/model/variant_info'
 require 'basespace/model/variants_header_response'
 
+require 'json'
+
+module Bio
+  module BaseSpace
+    def self.load_credentials
+      filename = "credentials.json"
+      filepath1 = ::File.join('.', filename)
+      filepath2 = ::File.join(::File.dirname(__FILE__), filename)  # [TODO] This can be lib/ instead of examples/
+      if ::File.exists?(filepath1)
+        jsonfile = filepath1
+      elsif ::File.exists?(filepath2)
+        jsonfile = filepath2
+      end
+      if jsonfile
+        json = JSON.parse(::File.read(jsonfile))
+        if $DEBUG
+          $stderr.puts "    # ----- Bio::BaseSpace.load_credientials ----- "
+          $stderr.puts "    # Loaded credentials from #{jsonfile}"
+          $stderr.puts "    # "
+        end
+      else
+        json = nil
+        $stderr.puts "    # ----- Bio::BaseSpace.load_credientials ----- "
+        $stderr.puts "    # You can put your credentials for the BaseSpace in the"
+        $stderr.puts "    #   #{filepath1}"
+        $stderr.puts "    # or"
+        $stderr.puts "    #   #{filepath2}"
+        $stderr.puts "    # file in the following format:"
+        hash = {
+          'client_id'       => '<your client id>',
+          'client_secret'   => '<your client secret>',
+          'access_token'    => '<your access token>',
+          'app_session_id'  => '<app session id>',
+          'basespace_url'   => 'https://api.basespace.illumina.com/',
+          'api_version'     => 'v1pre3',
+        }
+        $stderr.puts JSON.pretty_generate(JSON.parse(hash.to_json))
+      end
+      return json
+    end
+  end # BaseSpace
+end # Bio
+
 
 # indent 4 -> 2
 # CamelCase -> camel_case
