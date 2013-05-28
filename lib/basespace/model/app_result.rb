@@ -92,8 +92,11 @@ class AppResult < Model
       begin
         sample = api.get_sample_by_id(id)
         res << sample
-      rescue
-        e = 1
+      rescue => err
+        # [TODO] What to do with this 'err'?
+        $stderr.puts "    # ----- AppResult#get_referenced_samples ----- "
+        $stderr.puts "    # Error: #{err}"
+        $stderr.puts "    # "
       end
     end
     return res
