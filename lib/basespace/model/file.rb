@@ -54,14 +54,16 @@ class File < Model
   end
 
   def to_s
-    s = @name
+    s = get_attr('Name')
     begin
       s += "- status: #{get_attr('UploadStatus')}"
-    rescue
-      # [TODO] What to do with this?
-      e = 1
+    rescue => err
+      # [TODO] What to do with this 'err'?
+      $stderr.puts "    # ----- File#to_s ----- "
+      $stderr.puts "    # Error: #{err}"
+      $stderr.puts "    # "
     end
-    return s 
+    return s
   end
 
   # Is called to test if the File instance has been initialized.
