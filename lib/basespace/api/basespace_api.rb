@@ -119,7 +119,11 @@ class BaseSpaceAPI < BaseAPI
     else
       resource_path = resource_path.sub('{AppSessionId}', id)
     end
-    #puts resource_path
+    if $DEBUG
+      $stderr.puts "    # ----- BaseSpaceAPI#get_app_session ----- "
+      $stderr.puts "    # resource_path: #{resource_path}"
+      $stderr.puts "    # "
+    end
     uri = URI.parse(resource_path)
     uri.user = @key
     uri.password = @secret
@@ -134,8 +138,6 @@ class BaseSpaceAPI < BaseAPI
       http.request(request)
     }
     obj = JSON.parse(response.body)
-    # [TODO] this JSON obj seems to be fine but get_trigger_object fails. why?
-    #p obj 
     # TODO add exception if response isn't OK, e.g. incorrect server gives path not recognized
     return get_trigger_object(obj)
   end
