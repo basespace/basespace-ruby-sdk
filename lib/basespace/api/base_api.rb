@@ -127,6 +127,13 @@ class BaseAPI
   end
 
   def make_curl_request(data, url)
+    if $DEBUG
+      $stderr.puts "    # ----- BaseAPI#make_curl_request ----- "
+      $stderr.puts "    # caller: #{caller}"
+      $stderr.puts "    # data: #{data}"
+      $stderr.puts "    # url: #{url}"
+      $stderr.puts "    # "
+    end
     post = hash2urlencode(data)
     uri = URI.parse(url)
     #res = Net::HTTP.post_form(uri, post).body
@@ -138,6 +145,11 @@ class BaseAPI
       http.post(uri.path, post)
     }
     obj = JSON.parse(res.body)
+    if $DEBUG
+      $stderr.puts "    # res: #{res}"
+      $stderr.puts "    # obj: #{obj}"
+      $stderr.puts "    # "
+    end
     if obj.has_key?('error')
       raise "BaseSpace exception: " + obj['error'] + " - " + obj['error_description']
     end
