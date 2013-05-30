@@ -67,29 +67,27 @@ module Bio
   module BaseSpace
     def self.load_credentials
       filename = "credentials.json"
-      filepath1 = ::File.join('.', filename)
-      filepath2 = ::File.join(::File.dirname(__FILE__), filename)  # [TODO] This can be lib/ instead of examples/
-      if ::File.exists?(filepath1)
-        jsonfile = filepath1
-      elsif ::File.exists?(filepath2)
-        jsonfile = filepath2
+      if ENV['BASESPACE_CREDENTIALS']
+        jsonfile = ENV['BASESPACE_CREDENTIALS']
+      else
+        jsonfile = ::File.join('.', filename)
       end
-      if jsonfile
-        json = JSON.parse(::File.read(jsonfile))
+      if ::File.exists?(jsonfile)
+        hash = JSON.parse(::File.read(jsonfile))
         if $DEBUG
           $stderr.puts "    # ----- Bio::BaseSpace.load_credientials ----- "
           $stderr.puts "    # Loaded credentials from #{jsonfile}"
           $stderr.puts "    # "
         end
       else
-        json = nil
+        hash = nil
         $stderr.puts "    # ----- Bio::BaseSpace.load_credientials ----- "
         $stderr.puts "    # You can put your credentials for the BaseSpace in the"
-        $stderr.puts "    #   #{filepath1}"
-        $stderr.puts "    # or"
-        $stderr.puts "    #   #{filepath2}"
-        $stderr.puts "    # file in the following format:"
-        hash = {
+        $stderr.puts "    #   #{jsonfile}"
+        $stderr.puts "    # file or point to the file with an environmental variable"
+        $stderr.puts "    #   export BASESPACE_CREDENTIALS=/path/to/your/#{filename}"
+        $stderr.puts "    # in the following format:"
+        data = {
           'client_id'       => '<your client id>',
           'client_secret'   => '<your client secret>',
           'access_token'    => '<your access token>',
@@ -97,9 +95,9 @@ module Bio
           'basespace_url'   => 'https://api.basespace.illumina.com/',
           'api_version'     => 'v1pre3',
         }
-        $stderr.puts JSON.pretty_generate(JSON.parse(hash.to_json))
+        $stderr.puts JSON.pretty_generate(JSON.parse(data.to_json))
       end
-      return json
+      return hash
     end
   end # BaseSpace
 end # Bio
