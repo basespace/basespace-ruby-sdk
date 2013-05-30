@@ -63,7 +63,7 @@ class QueryParameters
     end
     @passed.each do |p, v|
       raise UnknownParameterError.new(p) unless LEGAL[p]
-      raise IllegalParameterError.new(p, LEGAL[p]) unless (LEGAL[p].length > 0 and ! @passed[p])
+      raise IllegalParameterError.new(p, LEGAL[p]) if (LEGAL[p].length > 0 and ! LEGAL[p].include?(@passed[p]))
     end
   end
 end

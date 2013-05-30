@@ -26,6 +26,12 @@ module BaseSpace
 # Parent class for BaseSpaceAPI and BillingAPI objects
 class BaseAPI
   def initialize(access_token = nil)
+    if  $DEBUG
+      $stderr.puts "    # ----- BaseAPI#initialize ----- "
+      $stderr.puts "    # caller: #{caller}"
+      $stderr.puts "    # access_token: #{access_token}"
+      $stderr.puts "    # "
+    end
     @api_client = nil
     set_timeout(10)
     set_access_token(access_token)        # logic for setting the access-token 
@@ -40,21 +46,28 @@ class BaseAPI
     if not @api_client and no_api
       raise 'Access-token not set, use the "set_access_token"-method to supply a token value'
     end
-    if verbose
-      puts "    # #{resource_path}"
-    end
-    
     # Make the API Call
+    if verbose or $DEBUG
+      $stderr.puts "    # ----- BaseAPI#single_request ----- "
+      $stderr.puts "    # caller: #{caller}"
+      $stderr.puts "    # resource_path: #{resource_path}"
+      $stderr.puts "    # method: #{method}"
+      $stderr.puts "    # query_params: #{query_params}"
+      $stderr.puts "    # post_data: #{post_data}"
+      $stderr.puts "    # header_params: #{header_params}"
+      $stderr.puts "    # force_post: #{force_post}"
+      $stderr.puts "    # "
+    end
     response = @api_client.call_api(resource_path, method, query_params, post_data, header_params, force_post)
-    if verbose
-      puts "    # "
-      puts "    # force_post: #{force_post}"
-      puts response.inspect
+    if verbose or $DEBUG
+      $stderr.puts "    # ----- BaseAPI#single_request ----- "
+      $stderr.puts "    # response: #{response.inspect}"
+      $stderr.puts "    # "
     end
     unless response
       raise 'BaseSpace error: None response returned'
     end
-    
+
     # throw exception here for various error messages
     if response['ResponseStatus'].has_key?('ErrorCode')
       raise "BaseSpace error: #{response['ResponseStatus']['ErrorCode']}: #{response['ResponseStatus']['Message']}"
@@ -72,18 +85,21 @@ class BaseAPI
     end
     
     # Make the API Call
-    if verbose
-      puts "    # Path: #{resource_path}"
-      puts "    # Pars: #{query_params}"
+    if verbose or $DEBUG
+      $stderr.puts "    # ----- BaseAPI#list_request ----- "
+      $stderr.puts "    # caller: #{caller}"
+      $stderr.puts "    # Path: #{resource_path}"
+      $stderr.puts "    # Pars: #{query_params}"
+      $stderr.puts "    # "
     end
     response = @api_client.call_api(resource_path, method, query_params, nil, header_params)  # post_data = nil
+    if verbose or $DEBUG
+      $stderr.puts "    # ----- BaseAPI#list_request ----- "
+      $stderr.puts "    # response: #{response.inspect}"
+      $stderr.puts "    # "
+    end
     unless response
       raise "BaseSpace Exception: No data returned"
-    end
-    
-    if verbose
-      puts "    # response: "
-      puts response.inspect
     end
     unless response.kind_of?(Array)  # list
       response = [response]
@@ -95,20 +111,29 @@ class BaseAPI
     
     # convert list response dict to object type
     # TODO check that Response is present -- errors sometime don't include
-    #convertet = [@api_client.deserialize(c, my_model) for c in responseObjects[0].convertToObjectList()]
-    # [TODO] Check if this port is correct
     convertet = []
-    response_objects.each do |c|
-      convertet << @api_client.deserialize(c, my_model)
+    if response_object = response_objects.first
+      response_object.convert_to_object_list.each do |c|
+        convertet << @api_client.deserialize(c, my_model)
+      end
     end
     return convertet
   end
 
   def hash2urlencode(hash)
-    return hash.map{|k,v| URI.encode(k.to_s) + "=" + URI.encode(v.to_s)}.join("&")
+    # URI.escape (alias URI.encode) is obsolete since Ruby 1.9.2.
+    #return hash.map{|k,v| URI.encode(k.to_s) + "=" + URI.encode(v.to_s)}.join("&")
+    return hash.map{|k,v| URI.encode_www_form_component(k.to_s) + "=" + URI.encode_www_form_component(v.to_s)}.join("&")
   end
 
   def make_curl_request(data, url)
+    if $DEBUG
+      $stderr.puts "    # ----- BaseAPI#make_curl_request ----- "
+      $stderr.puts "    # caller: #{caller}"
+      $stderr.puts "    # data: #{data}"
+      $stderr.puts "    # url: #{url}"
+      $stderr.puts "    # "
+    end
     post = hash2urlencode(data)
     uri = URI.parse(url)
     #res = Net::HTTP.post_form(uri, post).body
@@ -120,6 +145,11 @@ class BaseAPI
       http.post(uri.path, post)
     }
     obj = JSON.parse(res.body)
+    if $DEBUG
+      $stderr.puts "    # res: #{res}"
+      $stderr.puts "    # obj: #{obj}"
+      $stderr.puts "    # "
+    end
     if obj.has_key?('error')
       raise "BaseSpace exception: " + obj['error'] + " - " + obj['error_description']
     end

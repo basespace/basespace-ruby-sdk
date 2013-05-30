@@ -34,6 +34,8 @@ class BaseSpaceAPI < BaseAPI
   DEVICE_URL     = "/oauthv2/deviceauthorization"
   WEB_AUTHORIZE  = '/oauth/authorize'
 
+  attr_reader :app_session_id
+
   def initialize(client_key, client_secret, api_server, version, app_session_id = nil, access_token = nil)
     end_with_slash = %r(/$)
     unless api_server[end_with_slash]
@@ -119,7 +121,11 @@ class BaseSpaceAPI < BaseAPI
     else
       resource_path = resource_path.sub('{AppSessionId}', id)
     end
-    #puts resource_path
+    if $DEBUG
+      $stderr.puts "    # ----- BaseSpaceAPI#get_app_session ----- "
+      $stderr.puts "    # resource_path: #{resource_path}"
+      $stderr.puts "    # "
+    end
     uri = URI.parse(resource_path)
     uri.user = @key
     uri.password = @secret
@@ -134,8 +140,6 @@ class BaseSpaceAPI < BaseAPI
       http.request(request)
     }
     obj = JSON.parse(response.body)
-    # [TODO] this JSON obj seems to be fine but get_trigger_object fails. why?
-    #p obj 
     # TODO add exception if response isn't OK, e.g. incorrect server gives path not recognized
     return get_trigger_object(obj)
   end
