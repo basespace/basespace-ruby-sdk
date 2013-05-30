@@ -111,11 +111,11 @@ class BaseAPI
     
     # convert list response dict to object type
     # TODO check that Response is present -- errors sometime don't include
-    #convertet = [@api_client.deserialize(c, my_model) for c in responseObjects[0].convertToObjectList()]
-    # [TODO] Check if this port is correct
     convertet = []
-    response_objects.each do |c|
-      convertet << @api_client.deserialize(c, my_model)
+    if response_object = response_objects.first
+      response_object.convert_to_object_list.each do |c|
+        convertet << @api_client.deserialize(c, my_model)
+      end
     end
     return convertet
   end
