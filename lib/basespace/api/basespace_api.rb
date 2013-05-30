@@ -34,6 +34,8 @@ class BaseSpaceAPI < BaseAPI
   DEVICE_URL     = "/oauthv2/deviceauthorization"
   WEB_AUTHORIZE  = '/oauth/authorize'
 
+  attr_reader :app_session_id
+
   def initialize(client_key, client_secret, api_server, version, app_session_id = nil, access_token = nil)
     end_with_slash = %r(/$)
     unless api_server[end_with_slash]
