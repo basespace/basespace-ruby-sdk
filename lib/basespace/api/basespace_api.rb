@@ -260,7 +260,7 @@ class BaseSpaceAPI < BaseAPI
   # :param id: The id of the appresult.
   # :param query_pars: An (optional) object of type QueryParameters for custom sorting and filtering 
   def get_app_result_files(id, qp = {})
-    query_pars     = QueryParameters.new(qp)
+    query_pars     = qp.kind_of?(Hash) ? QueryParameters.new(qp) : qp
     query_pars.validate
     my_model       = 'File'
     resource_path  = '/appresults/{Id}/files'
@@ -292,7 +292,7 @@ class BaseSpaceAPI < BaseAPI
   # :param id: The id of the user
   # :param qp: An (optional) object of type QueryParameters for custom sorting and filtering
   def get_project_by_user(id, qp = {})
-    query_pars     = QueryParameters.new(qp)
+    query_pars     = qp.kind_of?(Hash) ? QueryParameters.new(qp) : qp
     query_pars.validate
     my_model       = 'Project'
     resource_path  = '/users/{Id}/projects'
@@ -309,7 +309,7 @@ class BaseSpaceAPI < BaseAPI
   # :param id: An user id
   # :param query_pars: An (optional) object of type QueryParameters for custom sorting and filtering
   def get_accessible_runs_by_user(id, qp = {})
-    query_pars     = QueryParameters.new(qp)
+    query_pars     = qp.kind_of?(Hash) ? QueryParameters.new(qp) : qp
     query_pars.validate
     my_model       = 'RunCompact'
     resource_path  = '/users/{Id}/runs'
@@ -327,7 +327,7 @@ class BaseSpaceAPI < BaseAPI
   # :param query_pars: An (optional) object of type QueryParameters for custom sorting and filtering
   # :param statuses: An (optional) list of AppResult statuses to filter by
   def get_app_results_by_project(id, qp = {}, statuses = [])
-    query_pars     = QueryParameters.new(qp)
+    query_pars     = qp.kind_of?(Hash) ? QueryParameters.new(qp) : qp
     query_pars.validate
     my_model       = 'AppResult'
     resource_path  = '/projects/{Id}/appresults'
@@ -348,7 +348,7 @@ class BaseSpaceAPI < BaseAPI
   # :param id: The id of the project
   # :param query_pars: An (optional) object of type QueryParameters for custom sorting and filtering
   def get_samples_by_project(id, qp = {})
-    query_pars     = QueryParameters.new(qp)
+    query_pars     = qp.kind_of?(Hash) ? QueryParameters.new(qp) : qp
     query_pars.validate
     my_model       = 'Sample'
     resource_path  = '/projects/{Id}/samples'
@@ -382,7 +382,7 @@ class BaseSpaceAPI < BaseAPI
   # :param id: A Sample id
   # :param query_pars: An (optional) object of type QueryParameters for custom sorting and filtering
   def get_files_by_sample(id, qp = {})
-    query_pars     = QueryParameters.new(qp)
+    query_pars     = qp.kind_of?(Hash) ? QueryParameters.new(qp) : qp
     query_pars.validate
     my_model       = 'File'
     resource_path  = '/samples/{Id}/files'
@@ -429,7 +429,7 @@ class BaseSpaceAPI < BaseAPI
   # 
   # :param query_pars: An (optional) object of type QueryParameters for custom sorting and filtering
   def get_available_genomes(qp = {})
-    query_pars     = QueryParameters.new(qp)
+    query_pars     = qp.kind_of?(Hash) ? QueryParameters.new(qp) : qp
     query_pars.validate
     my_model       = 'GenomeV1'
     resource_path  = '/genomes'
@@ -469,7 +469,7 @@ class BaseSpaceAPI < BaseAPI
   # :param format: Set to 'vcf' to get the results as lines in VCF format
   # :param query_pars: An (optional) object of type QueryParameters for custom sorting and filtering
   def filter_variant_set(id, chrom, start_pos, end_pos, format, qp = {'SortBy' => 'Position'})
-    query_pars     = QueryParameters.new(qp)
+    query_pars     = qp.kind_of?(Hash) ? QueryParameters.new(qp) : qp
     query_pars.validate
     my_model       = 'Variant'
     resource_path  = '/variantset/{Id}/variants/chr{Chrom}'
