@@ -54,16 +54,17 @@ class File < Model
   end
 
   def to_s
-    s = get_attr('Name')
+    str = get_attr('Name')
     begin
-      s += "- status: #{get_attr('UploadStatus')}"
+      str += " - id: '#{get_attr('Id')}', size: '#{get_attr('Size')}'"
+      str += ", status: '#{get_attr('UploadStatus')}'" if get_attr('UploadStatus')
     rescue => err
       # [TODO] What to do with this 'err'?
       $stderr.puts "    # ----- File#to_s ----- "
       $stderr.puts "    # Error: #{err}"
       $stderr.puts "    # "
     end
-    return s
+    return str
   end
 
   # Is called to test if the File instance has been initialized.
@@ -93,10 +94,10 @@ class File < Model
   # :param loadlDir: The local directory to place the file in.
   # :param range: Specify the start and stop byte of the file chunk that needs retrieved.
   def download_file(api, local_dir, range = [])
-    unless range.empty?
-      return api.file_download(get_attr('Id'),local_dir, get_attr('Name'), range)
-    else
+    if range.empty?
       return api.file_download(get_attr('Id'),local_dir, get_attr('Name'))
+    else
+      return api.file_download(get_attr('Id'),local_dir, get_attr('Name'), range)
     end
   end
 
