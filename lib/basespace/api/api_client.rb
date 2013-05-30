@@ -28,6 +28,14 @@ class APIClient
   attr_accessor :api_key, :api_server, :timeout
 
   def initialize(access_token = nil, api_server = nil, timeout = 10)
+    if $DEBUG
+      $stderr.puts "    # ----- BaseAPI#initialize ----- "
+      $stderr.puts "    # caller: #{caller}"
+      $stderr.puts "    # access_token: #{access_token}"
+      $stderr.puts "    # api_server: #{api_server}"
+      $stderr.puts "    # timeout: #{timeout}"
+      $stderr.puts "    # "
+    end
     raise UndefinedParameterError.new('AccessToken') unless access_token
     @api_key = access_token
     @api_server = api_server
@@ -90,6 +98,17 @@ class APIClient
       cgi_params = hash2urlencode(sent_query_params)
     end
 
+    if $DEBUG
+      $stderr.puts "    # ----- APIClient#call_api ----- "
+      $stderr.puts "    # caller: #{caller}"
+      $stderr.puts "    # url: #{url}"
+      $stderr.puts "    # method: #{method}"
+      $stderr.puts "    # headers: #{headers}"
+      $stderr.puts "    # cgi_params: #{cgi_params}"
+      $stderr.puts "    # post_data: #{post_data}"
+      $stderr.puts "    # "
+    end
+
     case method
     when 'GET'
       if cgi_params
@@ -98,7 +117,7 @@ class APIClient
       # [TODO] confirm this works or not
       #request = urllib2.Request(url, headers)
       uri = URI.parse(url)
-      request = Net::HTTP::Get.new(uri.path)
+      request = Net::HTTP::Get.new(uri.path, headers)
     when 'POST', 'PUT', 'DELETE'
       if cgi_params
         force_post_url = url 
@@ -115,7 +134,7 @@ class APIClient
         # [TODO] confirm this works or not
         #request = urllib2.Request(url, headers, data)#, @timeout)
         uri = URI.parse(url)
-        request = Net::HTTP::Post.new(uri.path)
+        request = Net::HTTP::Post.new(uri.path, headers)
       end
       if ['PUT', 'DELETE'].include?(method) # urllib doesnt do put and delete, default to pycurl here
         response = put_call(url, query_params, headers, data)
@@ -144,7 +163,9 @@ class APIClient
     begin
       data = JSON.parse(response.body)
     rescue Error => err
-      err
+      $stderr.puts "    # ----- APIClient#call_api ----- "
+      $stderr.puts "    # Error: #{err}"
+      $stderr.puts "    # "
       data = nil
     end
     return data
@@ -187,21 +208,23 @@ class APIClient
     end
 
     if $DEBUG
-      puts ">>> Deserialize a '#{obj_class}' object from JSON data ..."
-      puts JSON.pretty_generate(obj)
+      $stderr.puts "    # ----- APIClient#deserialize ----- "
+      $stderr.puts "    # caller: #{caller}"
+      $stderr.puts "    # obj_class: #{obj_class}"
+      $stderr.puts "    # obj: #{obj}"  # JSON.pretty_generate(obj)
+      $stderr.puts "    # "
     end
 
     instance.swagger_types.each do |attr, attr_type|
       if obj.has_key?(attr) or obj.has_key?(attr.to_s)
         if $DEBUG
-          # puts '@@@@ ' + obj.inspect
-          # puts '@@@@ ' + attr.to_s
-          # puts '@@@@ ' + attr_type.to_s
-          puts ">> for the '#{attr}' value ..."
-          puts ({"attr" => attr, "attr_type" => attr_type, "value" => obj[attr]}.inspect)
+          $stderr.puts "    # # ----- APIClient#deserialize/swagger_types ----- "
+          $stderr.puts "    # # attr: #{attr}"
+          $stderr.puts "    # # attr_type: #{attr_type}"
+          $stderr.puts "    # # value: #{obj[attr]}"
+          $stderr.puts "    # # "
         end
         value = obj[attr]
-        # puts value
         case attr_type.downcase
         when 'str'
           instance.set_attr(attr, value.to_s)
@@ -221,18 +244,30 @@ class APIClient
           end
           instance.set_attr(attr, sub_values)
         when 'dict'  # support for parsing dictionary
-          # puts value.inspect
+          if $DEBUG
+            $stderr.puts "    # # # ----- APIClient#deserialize/swagger_types/dict ----- "
+            $stderr.puts "    # # # dict: #{value}"
+            $stderr.puts "    # # # "
+          end
           # [TODO] May need to convert value -> Hash (check in what format the value is passed)
           instance.set_attr(attr, value)
         else
-          # print "recursive call w/ " + attrType
+          if $DEBUG
+            # print "recursive call w/ " + attrType
+            $stderr.puts "    # # # ----- APIClient#deserialize/swagger_types/recursive call ----- "
+            $stderr.puts "    # # # attr: #{attr}"
+            $stderr.puts "    # # # attr_type: #{attr_type}"
+            $stderr.puts "    # # # value: #{value}"
+            $stderr.puts "    # # # "
+          end
           instance.set_attr(attr, deserialize(value, attr_type))
         end
       end
     end
     if $DEBUG
-      puts ">> and the resulted '#{obj_class}' instance ..."
-      puts instance.attributes.inspect
+      $stderr.puts "    # # ----- APIClient#deserialize/instance ----- "
+      $stderr.puts "    # # instance: #{instance.attributes.inspect}"
+      $stderr.puts "    # # "
     end
     return instance
   end
