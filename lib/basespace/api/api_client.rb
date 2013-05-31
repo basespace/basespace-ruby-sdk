@@ -61,7 +61,9 @@ class APIClient
   end
 
   def hash2urlencode(hash)
-    return hash.map{|k,v| URI.encode(k.to_s) + "=" + URI.encode(v.to_s)}.join("&")
+    # URI.escape (alias URI.encode) is obsolete since Ruby 1.9.2.
+    #return hash.map{|k,v| URI.encode(k.to_s) + "=" + URI.encode(v.to_s)}.join("&")
+    return hash.map{|k,v| URI.encode_www_form_component(k.to_s) + "=" + URI.encode_www_form_component(v.to_s)}.join("&")
   end
 
   def put_call(resource_path, post_data, headers, trans_file)
