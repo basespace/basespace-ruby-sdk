@@ -93,6 +93,9 @@ puts "We get the following access map for the write request"
 puts access_map
 puts
 
+# [NOTE] You'll need to use a writable project for the following code.
+# It will fail if the session is read only (e.g., demo projects)
+
 ## PAUSE HERE
 # Have the user visit the verification uri to grant us access
 puts "Please visit the following URL within 15 seconds and grant access"
