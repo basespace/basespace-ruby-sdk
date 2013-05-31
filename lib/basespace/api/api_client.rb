@@ -61,7 +61,9 @@ class APIClient
   end
 
   def hash2urlencode(hash)
-    return hash.map{|k,v| URI.encode(k.to_s) + "=" + URI.encode(v.to_s)}.join("&")
+    # URI.escape (alias URI.encode) is obsolete since Ruby 1.9.2.
+    #return hash.map{|k,v| URI.encode(k.to_s) + "=" + URI.encode(v.to_s)}.join("&")
+    return hash.map{|k,v| URI.encode_www_form_component(k.to_s) + "=" + URI.encode_www_form_component(v.to_s)}.join("&")
   end
 
   def put_call(resource_path, post_data, headers, trans_file)
@@ -90,10 +92,10 @@ class APIClient
     uri = request = response = data = cgi_params = nil
 
     if query_params
-      # Need to remove None (in Python, nil in Ruby?) values, these should not be sent
+      # Need to remove None (in Python, nil in Ruby) values, these should not be sent
       sent_query_params = {}
       query_params.each do |param, value|
-        sent_query_params[param] = value if bool(value)  # [TODO] confirm this works or not
+        sent_query_params[param] = value if bool(value)
       end
       cgi_params = hash2urlencode(sent_query_params)
     end
@@ -162,7 +164,7 @@ class APIClient
             
     begin
       data = JSON.parse(response.body)
-    rescue Error => err
+    rescue => err
       $stderr.puts "    # ----- APIClient#call_api ----- "
       $stderr.puts "    # Error: #{err}"
       $stderr.puts "    # "
@@ -202,7 +204,11 @@ class APIClient
       return obj.to_f
     when 'bool'
       return bool(obj)
-    else # models in BaseSpace
+    when 'file'
+      # Bio::BaseSpace::File
+      instance = File.new 
+    else
+      # models in BaseSpace
       klass = Object.const_get(obj_class)
       instance = klass.new
     end

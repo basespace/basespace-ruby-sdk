@@ -76,7 +76,7 @@ runs = user.get_runs(my_api)
 puts "The runs for this user are #{runs}"
 puts
 
-=begin [TODO] commented out as this example is same as the above (bug in Python version?)
+=begin [NOTE] commented out as this example is same as the above (bug in Python version?)
 # In the same manner we can get a list of accessible user runs
 runs = user.get_runs(my_api)
 print "Runs retrieved from user instance #{runs}"
