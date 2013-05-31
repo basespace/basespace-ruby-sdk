@@ -116,10 +116,10 @@ class BaseSpaceAPI < BaseAPI
     # end
     
     resource_path = @api_server + '/appsessions/{AppSessionId}'
-    unless id
-      resource_path = resource_path.sub('{AppSessionId}', @app_session_id)
-    else
+    if id
       resource_path = resource_path.sub('{AppSessionId}', id)
+    else
+      resource_path = resource_path.sub('{AppSessionId}', @app_session_id)
     end
     if $DEBUG
       $stderr.puts "    # ----- BaseSpaceAPI#get_app_session ----- "
@@ -198,8 +198,9 @@ class BaseSpaceAPI < BaseAPI
       raise "This BaseSpaceAPI instance has either no client_secret or no client_id set and no alternative id was supplied for method get_verification_code"
     end
     data = {'client_id' => @key, 'client_secret' => @secret, 'code' => device_code, 'grant_type' => 'device', 'redirect_uri' => 'google.com'}
-    # [TODO] confirm dict is a Hash in Ruby
     dict = make_curl_request(data, @api_server + TOKEN_URL)
+    # [TODO] confirm dict is a Hash in Ruby
+    $stderr.puts "[TODO] confirm dict is a Hash in Ruby: #{dict.class} #{dict}"
     return dict['access_token']
   end
 
