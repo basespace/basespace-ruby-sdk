@@ -86,7 +86,7 @@ class Project < Model
   # :param desc: A describtion of the app result
   def create_app_result(api, name, desc, app_session_id = nil, samples = [])
     is_init
-    return api.create_app_result(get_attr('Id'), name, desc, app_session_id, samples)
+    return api.create_app_result(get_attr('Id'), name, desc, samples, app_session_id)
   end
 end
 
