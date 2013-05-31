@@ -25,6 +25,7 @@ class Project < Model
       'Name'            => 'str',
       'HrefSamples'     => 'str',
       'HrefAppResults'  => 'str',
+      'HrefBaseSpaceUI' => 'str',
       'DateCreated'     => 'datetime',
       'Id'              => 'str',
       'Href'            => 'str',
@@ -34,6 +35,7 @@ class Project < Model
       'Name'            => nil, # str
       'HrefSamples'     => nil, # str
       'HrefAppResults'  => nil, # str
+      'HrefBaseSpaceUI' => nil, # str
       'DateCreated'     => nil, # datetime
       'Id'              => nil, # str
       'Href'            => nil, # str

@@ -101,6 +101,13 @@ class File < Model
     end
   end
 
+  # Return the S3 url of the file.
+  # 
+  # :param api: A BaseSpaceAPI with read access on the scope including the file object.
+  def get_file_url(api)
+    return api.file_url(get_attr('Id'))
+  end
+
   def delete_file(api)
     raise 'Not yet implemented'
   end

@@ -668,6 +668,29 @@ class BaseSpaceAPI < BaseAPI
     return 1
   end
 
+  # Returns URL of file (on S3)
+  # 
+  # :param id: The file id
+  def file_url(id)  # @ReservedAssignment
+    resource_path  = '/files/{Id}/content'
+    resource_path  = resource_path.sub('{format}', 'json')
+    resource_path  = resource_path.sub('{Id}', id)
+    method         = 'GET'
+    query_params   = {}
+    header_params  = {}
+
+    query_params['redirect'] = 'meta' # we need to add this parameter to get the Amazon link directly 
+    
+    response = @api_client.call_api(resource_path, method, query_params, nil, header_params)
+    if response['ResponseStatus'].has_key?('ErrorCode')
+      raise 'BaseSpace error: ' + response['ResponseStatus']['ErrorCode'].to_s + ": " + response['ResponseStatus']['Message']
+    end
+    
+    # return the Amazon URL 
+    return response['Response']['HrefContent']
+  end
+
+
   # Helper method, do not call
   # 
   # :param id: file id 
