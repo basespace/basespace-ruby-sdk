@@ -35,7 +35,7 @@ class Coverage < Model
   end
 
   def to_s
-    return "Chr#{get_attr('Chrom')}: #{get_attr('StartPos')}-#{get_attr('EndPos')}: BucketSize=#{get_attr('BucketSize')}"
+    return "Chrom #{get_attr('Chrom')}: #{get_attr('StartPos')}-#{get_attr('EndPos')}, BucketSize=#{get_attr('BucketSize')}"
   end
 end
 
