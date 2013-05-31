@@ -36,6 +36,14 @@ class BaseSpaceAPI < BaseAPI
 
   attr_reader :app_session_id
 
+  def self.start
+    if opts = Bio::BaseSpace.load_credentials
+      self.new(opts['client_id'], opts['client_secret'], opts['basespace_url'], opts['api_version'], opts['app_session_id'], opts['access_token'])
+    else
+      raise "Please specify your BaseSpace credentials in the credentials.json file or use Bio::BaseSpace::BaseSpaceAPI.new with arguments"
+    end
+  end
+
   def initialize(client_key, client_secret, api_server, version, app_session_id = nil, access_token = nil)
     end_with_slash = %r(/$)
     unless api_server[end_with_slash]
