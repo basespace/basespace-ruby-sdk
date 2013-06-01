@@ -52,7 +52,10 @@ class AppResult < Model
   end
 
   def to_s
-    return "AppResult: #{get_attr('Name')}" #+ " - #{get_attr('Status')"
+    # [NOTE] Simplified in Ruby to align with the Sample class.
+    #        See example 3_accessing_files.rb (3_AccessingFiles.py)
+    #return "AppResult: #{get_attr('Name')}" #+ " - #{get_attr('Status')"
+    return get_attr('Name')
   end
 
   # Returns the scope-string to be used for requesting BaseSpace access to the object

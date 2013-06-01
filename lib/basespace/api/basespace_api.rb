@@ -36,6 +36,14 @@ class BaseSpaceAPI < BaseAPI
 
   attr_reader :app_session_id
 
+  def self.start
+    if opts = Bio::BaseSpace.load_credentials
+      self.new(opts['client_id'], opts['client_secret'], opts['basespace_url'], opts['api_version'], opts['app_session_id'], opts['access_token'])
+    else
+      raise "Please specify your BaseSpace credentials in the credentials.json file or use Bio::BaseSpace::BaseSpaceAPI.new with arguments"
+    end
+  end
+
   def initialize(client_key, client_secret, api_server, version, app_session_id = nil, access_token = nil)
     end_with_slash = %r(/$)
     unless api_server[end_with_slash]
@@ -116,10 +124,10 @@ class BaseSpaceAPI < BaseAPI
     # end
     
     resource_path = @api_server + '/appsessions/{AppSessionId}'
-    unless id
-      resource_path = resource_path.sub('{AppSessionId}', @app_session_id)
-    else
+    if id
       resource_path = resource_path.sub('{AppSessionId}', id)
+    else
+      resource_path = resource_path.sub('{AppSessionId}', @app_session_id)
     end
     if $DEBUG
       $stderr.puts "    # ----- BaseSpaceAPI#get_app_session ----- "
@@ -198,8 +206,9 @@ class BaseSpaceAPI < BaseAPI
       raise "This BaseSpaceAPI instance has either no client_secret or no client_id set and no alternative id was supplied for method get_verification_code"
     end
     data = {'client_id' => @key, 'client_secret' => @secret, 'code' => device_code, 'grant_type' => 'device', 'redirect_uri' => 'google.com'}
-    # [TODO] confirm dict is a Hash in Ruby
     dict = make_curl_request(data, @api_server + TOKEN_URL)
+    # [TODO] confirm dict is a Hash in Ruby
+    $stderr.puts "[TODO] confirm dict is a Hash in Ruby: #{dict.class} #{dict}"
     return dict['access_token']
   end
 
@@ -260,7 +269,7 @@ class BaseSpaceAPI < BaseAPI
   # :param id: The id of the appresult.
   # :param query_pars: An (optional) object of type QueryParameters for custom sorting and filtering 
   def get_app_result_files(id, qp = {})
-    query_pars     = QueryParameters.new(qp)
+    query_pars     = qp.kind_of?(Hash) ? QueryParameters.new(qp) : qp
     query_pars.validate
     my_model       = 'File'
     resource_path  = '/appresults/{Id}/files'
@@ -292,7 +301,7 @@ class BaseSpaceAPI < BaseAPI
   # :param id: The id of the user
   # :param qp: An (optional) object of type QueryParameters for custom sorting and filtering
   def get_project_by_user(id, qp = {})
-    query_pars     = QueryParameters.new(qp)
+    query_pars     = qp.kind_of?(Hash) ? QueryParameters.new(qp) : qp
     query_pars.validate
     my_model       = 'Project'
     resource_path  = '/users/{Id}/projects'
@@ -309,7 +318,7 @@ class BaseSpaceAPI < BaseAPI
   # :param id: An user id
   # :param query_pars: An (optional) object of type QueryParameters for custom sorting and filtering
   def get_accessible_runs_by_user(id, qp = {})
-    query_pars     = QueryParameters.new(qp)
+    query_pars     = qp.kind_of?(Hash) ? QueryParameters.new(qp) : qp
     query_pars.validate
     my_model       = 'RunCompact'
     resource_path  = '/users/{Id}/runs'
@@ -327,7 +336,7 @@ class BaseSpaceAPI < BaseAPI
   # :param query_pars: An (optional) object of type QueryParameters for custom sorting and filtering
   # :param statuses: An (optional) list of AppResult statuses to filter by
   def get_app_results_by_project(id, qp = {}, statuses = [])
-    query_pars     = QueryParameters.new(qp)
+    query_pars     = qp.kind_of?(Hash) ? QueryParameters.new(qp) : qp
     query_pars.validate
     my_model       = 'AppResult'
     resource_path  = '/projects/{Id}/appresults'
@@ -348,7 +357,7 @@ class BaseSpaceAPI < BaseAPI
   # :param id: The id of the project
   # :param query_pars: An (optional) object of type QueryParameters for custom sorting and filtering
   def get_samples_by_project(id, qp = {})
-    query_pars     = QueryParameters.new(qp)
+    query_pars     = qp.kind_of?(Hash) ? QueryParameters.new(qp) : qp
     query_pars.validate
     my_model       = 'Sample'
     resource_path  = '/projects/{Id}/samples'
@@ -382,7 +391,7 @@ class BaseSpaceAPI < BaseAPI
   # :param id: A Sample id
   # :param query_pars: An (optional) object of type QueryParameters for custom sorting and filtering
   def get_files_by_sample(id, qp = {})
-    query_pars     = QueryParameters.new(qp)
+    query_pars     = qp.kind_of?(Hash) ? QueryParameters.new(qp) : qp
     query_pars.validate
     my_model       = 'File'
     resource_path  = '/samples/{Id}/files'
@@ -429,7 +438,7 @@ class BaseSpaceAPI < BaseAPI
   # 
   # :param query_pars: An (optional) object of type QueryParameters for custom sorting and filtering
   def get_available_genomes(qp = {})
-    query_pars     = QueryParameters.new(qp)
+    query_pars     = qp.kind_of?(Hash) ? QueryParameters.new(qp) : qp
     query_pars.validate
     my_model       = 'GenomeV1'
     resource_path  = '/genomes'
@@ -469,7 +478,7 @@ class BaseSpaceAPI < BaseAPI
   # :param format: Set to 'vcf' to get the results as lines in VCF format
   # :param query_pars: An (optional) object of type QueryParameters for custom sorting and filtering
   def filter_variant_set(id, chrom, start_pos, end_pos, format, qp = {'SortBy' => 'Position'})
-    query_pars     = QueryParameters.new(qp)
+    query_pars     = qp.kind_of?(Hash) ? QueryParameters.new(qp) : qp
     query_pars.validate
     my_model       = 'Variant'
     resource_path  = '/variantset/{Id}/variants/chr{Chrom}'
@@ -666,6 +675,29 @@ class BaseSpaceAPI < BaseAPI
 
     return 1
   end
+
+  # Returns URL of file (on S3)
+  # 
+  # :param id: The file id
+  def file_url(id)  # @ReservedAssignment
+    resource_path  = '/files/{Id}/content'
+    resource_path  = resource_path.sub('{format}', 'json')
+    resource_path  = resource_path.sub('{Id}', id)
+    method         = 'GET'
+    query_params   = {}
+    header_params  = {}
+
+    query_params['redirect'] = 'meta' # we need to add this parameter to get the Amazon link directly 
+    
+    response = @api_client.call_api(resource_path, method, query_params, nil, header_params)
+    if response['ResponseStatus'].has_key?('ErrorCode')
+      raise 'BaseSpace error: ' + response['ResponseStatus']['ErrorCode'].to_s + ": " + response['ResponseStatus']['Message']
+    end
+    
+    # return the Amazon URL 
+    return response['Response']['HrefContent']
+  end
+
 
   # Helper method, do not call
   # 

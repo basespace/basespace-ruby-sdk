@@ -111,6 +111,7 @@ class BaseAPI
     
     # convert list response dict to object type
     # TODO check that Response is present -- errors sometime don't include
+    # [TODO] check why the Python SDK only uses the first element in the response_objects
     convertet = []
     if response_object = response_objects.first
       response_object.convert_to_object_list.each do |c|
