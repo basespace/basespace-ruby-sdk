@@ -22,22 +22,26 @@ module BaseSpace
 class Sample < Model
   def initialize
     @swagger_types = {
-      'Name'            => 'str',
-      'HrefFiles'       => 'str',
-      'DateCreated'     => 'datetime',
-      'SampleNumber'    => 'int',
-      'Id'              => 'str',
-      'Href'            => 'str',
-      'UserOwnedBy'     => 'UserCompact',
-      'ExperimentName'  => 'str',
-      'Run'             => 'RunCompact',
       'HrefGenome'      => 'str',
+      'SampleNumber'    => 'int',
+      'ExperimentName'  => 'str',
+      'HrefFiles'       => 'str',
+      # AppSession
       'IsPairedEnd'     => 'int',
       'Read1'           => 'int',
       'Read2'           => 'int',
       'NumReadsRaw'     => 'int',
       'NumReadsPF'      => 'int',
+      'Id'              => 'str',
+      'Href'            => 'str',
+      'UserOwnedBy'     => 'UserCompact',
+      'Name'            => 'str',
+      'SampleId'        => 'str',
+      'Status'          => 'str',
+      'StatusSummary'   => 'str',
+      'DateCreated'     => 'datetime',
       'References'      => 'dict',
+      'Run'             => 'RunCompact',
     }
     @attributes = {
       'Name'            => nil, # str
@@ -56,6 +60,9 @@ class Sample < Model
       'NumReadsRaw'     => nil, # int
       'NumReadsPF'      => nil, # int
       'References'      => nil, # dict
+      'SampleId'        => nil, # dict
+      'Status'          => nil, # dict
+      'StatusSummary'   => nil, # dict
     }
   end
 
