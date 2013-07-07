@@ -1,54 +1,38 @@
-# BaseSpace Python SDK
+# BaseSpace Ruby SDK
 
-``BaseSpacePy`` is a Python based SDK to be used in the development of Apps and scripts for working with Illumina's BaseSpace cloud-computing solution for next-gen sequencing data analysis. 
-The primary purpose of the SDK is to provide an easy-to-use Python environment enabling developers to authenticate a user, retrieve data, and upload data/results from their own analysis to BaseSpace.
+``Bio::BaseSpace`` is a Ruby based SDK to be used in the development of Apps and scripts for working with Illumina's BaseSpace cloud-computing solution for next-gen sequencing data analysis.
+
+The primary purpose of the SDK is to provide an easy-to-use Ruby environment enabling developers to authenticate a user, retrieve data, and upload data/results from their own analysis to BaseSpace.
 
 
 *Note:* It will be necessary to have created a BaseSpace account with a new App and have the ``client_key`` and ``client_secret`` codes for the App available to run a number of the following examples.
 
 ## Availability
 
-Version 0.1.1 of ``BaseSpacePy`` can be checked out here:
+Current version of ``Bio::BaseSpace`` can be checked out here:
 
-	git clone git@github.com:basespace/basespace-python-sdk.git
+	git clone https://github.com/joejimbo/basespace-ruby-sdk.git
+or by,
+	git clone git@github.com:joejimbo/basespace-ruby-sdk.git
 
 ## Setup
 
-*Requirements:* Python 2.6 with the packages 'urllib2', 'pycurl', 'multiprocessing' and 'shutil' available.
+*Requirements:* Ruby 1.9.3 and above. The multi-part file upload will currently only run on a unix setup.
 
-The multi-part file upload will currently only run on a unix setup.
+You can include 'Bio::BaseSpace' by setting below environmental variable: 
 
-To install 'BaseSpacePy' run the 'setup.py' script in the ``src`` directory (for a global install you will need to run this command with root privileges):
+	export RUBYLIB=/path/to/basespace-ruby-sdk/lib/
 
-	cd basespace-python-sdk/src
-	python setup.py install
-	
-If you do not have root access, you may use the ``--prefix`` option to specify the install directory (make sure this directory is in your PYTHONPATH):
+or add it to your Ruby scripts using Bio::BaseSpace:
 
-	python setup.py install --prefix=/folder/in/my/pythonpath
-	
+	$: << '/path/to/basespace-ruby-sdk/lib/'
 
-For more install options type: 
-
-	python setup.py --help
-
-Altenatively you may include the src directory in your PYTHONPATH by doing the following export:
-
-	export PYTHONPATH=$PYTHONPATH:/my/path/basespace-python-sdk/src
-
-or add it to the PYTHONPATH at the top of your Python scripts using BaseSpacePy:
+To test that everything is working as expected, launch a Interactive Ruby and try importing 'Bio::BaseSpace': 
 
 
-	import sys
-	sys.path.append('/my/path/basespace-python-sdk/src')
-	import BaseSpacePy
-
-
-To test that everything is working as expected, launch a Python prompt and try importing 'BaseSpacePy': 
-
-
-	mkallberg@ubuntu:~/$ python
-	>>> import BaseSpacePy
+	$ irb
+	>> require 'basespace'
+	>> include Bio::BaseSpace
 
 
 ## Application triggering
@@ -61,60 +45,69 @@ we are able to obtain information about the user who launched the App and the da
 First, we instantiate a BaseSpaceAPI object using the ``client_key`` and ``client_secret`` codes provided on the BaseSpace developer's website when registering our App, as well as the ``AppSessionId`` generated from the app-triggering: 
 
 
+	require 'basespace'
 	
-	from BaseSpacePy.api.BaseSpaceAPI import BaseSpaceAPI
+	include Bio::BaseSpace
 	
 	# initialize an authentication object using the key and secret from your app
 	# Fill in with your own values
-	client_key                 = <my key>
-	client_secret              = <my secret>
-	AppSessionId		   = <my appSession id>
-	BaseSpaceUrl               = 'https://api.basespace.illumina.com/'
-	version                    = 'v1pre3'
 	
-	# Using the basespaceApi we can request the appSession object corresponding to the AppSession id supplied
-	myAppSession = BSapi.getAppSession()
-	print myAppSession
+	client_id       = 'my client key'
+	client_secret   = 'my client secret'
+	app_session_id  = 'my app session id'
+	basespace_url   = 'https://api.basespace.illumina.com/'
+	api_version     = 'v1pre3'
+	
+	# First we will initialize a BaseSpace API object using our app information and the appSessionId
+	bs_api = BaseSpaceAPI.new(client_id, client_secret, basespace_url, api_version, app_session_id)
+	
+	# Using the bmy_app_session.spaceApi we can request the appSession object corresponding to the AppSession id supplied
+	my_app_session = bs_api.get_app_session
+	puts my_app_session
 	
 	# An app session contains a referal to one or more appLaunchObjects which reference the data module
-	# the user launched the app on. This can be a list of projects, samples, or a mixture of objects  
-	print "\nType of data the app was triggered on can be seen in 'references'"
-	print myAppSession.References
-	
+	# the user launched the app on. This can be a list of projects, samples, or a mixture of objects
+	puts "Type of data the app was triggered on can be seen in 'references'"
+	puts my_app_session.references.inspect   # .inspect is used to put surrounding [] 
+	puts
+
 The output will be:
 
-	Output[]:
-	
-	App session by 152152: Morten Kallberg - Id: <my appSession id> - status: Complete
+	App session by 600602: Toshiaki Katayama - Id: <my app session id> - status: Complete
 	Type of data the app was triggered on can be seen in 'references'
 	[Project]
 
 We can also get a handle to the user who started the AppSession and further information on the ``AppLaunchObject``:
 
-
 	# We can also get a handle to the user who started the AppSession
-	print "\nWe can get a handle for the user who triggered the app\n" + str(myAppSession.UserCreatedBy)
-
+	puts "We can get a handle for the user who triggered the app"
+	puts my_app_session.user_created_by
+	puts
+	
 	# Let's have a closer look at the appSessionLaunchObject
-	myReference =  myAppSession.References[0]
-	print "\nWe can get out information such as the href to the launch object:"
-	print myReference.HrefContent
-	print "\nand the specific type of that object:"
-	print myReference.Type
+	my_reference = my_app_session.references.first
+	
+	puts "We can get out information such as the href to the launch object:"
+	puts my_reference.href_content
+	puts
+	puts "and the specific type of that object:"
+	puts my_reference.type
+	puts
+
 
 The output will be:
 
-	Output[]:
-	
 	We can get a handle for the user who triggered the app
-	152152: Morten Kallberg
-
+	600602: Toshiaki Katayama
+	
 	We can get out information such as the href to the launch object:
-	v1pre3/projects/89
-
+	v1pre3/projects/1481480
+	
 	and the specific type of that object:
 	Project
-	
+
+-----
+
 To start working, we will want to expand our permission scope for the trigger object so we can read and write data. The details of this process is the subject of the next section. 
 We end this section by demonstrating how one can easily obtain the so-called "scope string" and make the access request:
 
@@ -126,8 +119,6 @@ We end this section by demonstrating how one can easily obtain the so-called "sc
 
 The output will be:
 
-	Output[]:
-	
 	The scope string for requesting write access to the reference object is:
 	write project 89
 
@@ -139,8 +130,6 @@ We can easily request write access to the reference object so our App can start 
 
 The output will be:
 
-	Output[]:
-	
 	We get the following access map
 	{u'device_code': u'<my device code>', u'verification_uri': u'https://basespace.illumina.com/oauth/device', u'verification_with_code_uri': u'https://basespace.illumina.com/oauth/device?code=<my user code>', u'interval': 1, u'expires_in': 1800, u'user_code': u'<my user code>'}
 
@@ -151,7 +140,6 @@ Have the user visit the verification uri to grant us access
 
 The output will be:
 
-	Output[]:
 	Please visit the uri within 15 seconds and grant access
 	https://basespace.illumina.com/oauth/device?code=<my user code>
 
