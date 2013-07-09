@@ -207,8 +207,6 @@ class BaseSpaceAPI < BaseAPI
     end
     data = {'client_id' => @key, 'client_secret' => @secret, 'code' => device_code, 'grant_type' => 'device', 'redirect_uri' => 'google.com'}
     dict = make_curl_request(data, @api_server + TOKEN_URL)
-    # [TODO] confirm dict is a Hash in Ruby
-    $stderr.puts "[TODO] confirm dict is a Hash in Ruby: #{dict.class} #{dict}"
     return dict['access_token']
   end
 
