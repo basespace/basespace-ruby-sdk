@@ -12,7 +12,9 @@ The primary purpose of the SDK is to provide an easy-to-use Ruby environment ena
 Current version of ``Bio::BaseSpace`` can be checked out here:
 
 	git clone https://github.com/joejimbo/basespace-ruby-sdk.git
+
 or by,
+
 	git clone git@github.com:joejimbo/basespace-ruby-sdk.git
 
 ## Setup
@@ -98,64 +100,82 @@ We can also get a handle to the user who started the AppSession and further info
 The output will be:
 
 	We can get a handle for the user who triggered the app
-	600602: Toshiaki Katayama
+	13039: Eri Kibukawa
 	
 	We can get out information such as the href to the launch object:
-	v1pre3/projects/1481480
+	v1pre3/projects/848850
 	
 	and the specific type of that object:
 	Project
 
------
 
 To start working, we will want to expand our permission scope for the trigger object so we can read and write data. The details of this process is the subject of the next section. 
 We end this section by demonstrating how one can easily obtain the so-called "scope string" and make the access request:
 
-	print "\nWe can get out the specific project objects by using 'content':" 
-	myReference =  myReference.Content
-	print myReference
-	print "\nThe scope string for requesting write access to the reference object is:"
-	print myReference.getAccessStr(scope='write')
+	puts "\nWe can get out the specific project objects by using 'content':" 
+	my_reference_content =  my_reference.content
+	puts my_reference_content
+	puts "\nThe scope string for requesting write access to the reference object is:"
+	puts my_reference_content.get_access_str('write')
 
 The output will be:
+    	We can get out the specific project objects by using 'content':
+	MyProject - id=848850
 
 	The scope string for requesting write access to the reference object is:
-	write project 89
+	write project 848850
 
-We can easily request write access to the reference object so our App can start contributing analysis by default we ask for write permission to and authentication for a device:
+We can easily request write access to the reference object so our App can start contributing analysis 
+by default we ask for write permission to and authentication for a device:
 
-	accessMap = BSapi.getAccess(myReference)
-	print "\nWe get the following access map"
-	print accessMap
+   	access_map = bs_api.get_access(my_reference_content, 'write')
+	puts "We get the following access map"
+	puts access_map
 
 The output will be:
 
-	We get the following access map
-	{u'device_code': u'<my device code>', u'verification_uri': u'https://basespace.illumina.com/oauth/device', u'verification_with_code_uri': u'https://basespace.illumina.com/oauth/device?code=<my user code>', u'interval': 1, u'expires_in': 1800, u'user_code': u'<my user code>'}
+    	We get the following access map
+	{"device_code"=>"<my device code>", "user_code"=>"<my user code>", "verification_uri"=>"https://basespace.illumina.com/oauth/device", "verification_with_code_uri"=>"https://basespace.illumina.com/oauth/device?code=<my user code>", "expires_in"=>1800, "interval"=>1}
 
 Have the user visit the verification uri to grant us access
 
-	print "\nPlease visit the uri within 15 seconds and grant access"
-	print accessMap['verification_with_code_uri']
+	puts "\nPlease visit the uri within 15 seconds and grant access"
+	puts access_map['verification_with_code_uri']
 
 The output will be:
 
 	Please visit the uri within 15 seconds and grant access
 	https://basespace.illumina.com/oauth/device?code=<my user code>
 
+
+Accept for this test code through web browser
+
+	link = access_map['verification_with_code_uri']
+	host = RbConfig::CONFIG['host_os']
+	case host
+	when /mswin|mingw|cygwin/
+	  system("start #{link}")
+	when /darwin/
+	  system("open #{link}")
+	when /linux/
+	  system("xdg-open #{link}")
+	end
+	sleep(15)
+
 Once the user has granted us access to objects we requested we can get the BaseSpace access-token and start browsing simply by calling ``updatePriviliges`` on the ``baseSpaceApi`` instance:
 
-	code = accessMap['device_code']
-	BSapi.updatePrivileges(code)
-	print "\nThe BaseSpaceAPI instance was update with write privileges" 
+	code = access_map['device_code']
+	bs_api.update_privileges(code)
+	puts "The BaseSpaceAPI instance was update with write privileges"
 
 The output will be:
 
-	Output[]:
-
 	The BaseSpaceAPI instance was update with write privileges
 
-For more details on access-requests and authentication and an example of the web-based case see example 1_Authentication.py 
+
+For more details on access-requests and authentication and an example of the web-based case see example 1_authentication.rb
+
+-----
 
 ## Requesting an access-token for data browsing
 
