@@ -65,6 +65,22 @@ require 'json'
 
 module Bio
   module BaseSpace
+
+    # Loads login and authentication credentials from a JSON file.
+    # 
+    # If the environment variable "BASESPACE_CREDENTIALS" is set, then the
+    # path to the JSON files is taken from there. Otherwise, the current
+    # directory is searched for the file "credentials.json".
+    #
+    # On success, returns a hash with the values for
+    # * client_id
+    # * client_secret
+    # * access_token
+    # * app_session_id
+    # * basespace_url
+    # * api_version
+    #
+    # On failure, returns nil.
     def self.load_credentials
       filename = "credentials.json"
       if ENV['BASESPACE_CREDENTIALS']
@@ -99,6 +115,7 @@ module Bio
       end
       return hash
     end
+
   end # BaseSpace
 end # Bio
 

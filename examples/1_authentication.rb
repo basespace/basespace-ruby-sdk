@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-# Copyright 2013 Toshiaki Katayama
+# Copyright 2013 Toshiaki Katayama, Joachim Baran
 #
 #     Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -23,10 +23,10 @@ include Bio::BaseSpace
 # Demonstrates the basic BaseSpace authentication process The work-flow is as follows: 
 # scope-request -> user grants access -> browsing data. The scenario is demonstrated both for device and web-based apps.
 # 
-# Further we demonstrate how a BaseSpaceAPI instance may be preserved across multiple http-request for the same app session using 
-# python's pickle module.
+# Further we demonstrate how a BaseSpaceAPI instance may be preserved across multiple
+# http-request for the same app session using Python's pickle module.
 # 
-# NOTE: You will need to fill client values for your app below
+# NOTE You will need to fill client values for your app below!
 
 opts = {
   # FILL IN WITH YOUR APP VALUES HERE!
@@ -38,7 +38,7 @@ opts = {
   'api_version'     => 'v1pre3',
 }
 
-# test if client variables have been set
+# Test if client variables have been set.
 unless opts.select{|k,v| v[/^<.*>$/]}.empty?
   opts = Bio::BaseSpace.load_credentials
   exit 1 unless opts
@@ -46,11 +46,11 @@ end
 
 bs_api = BaseSpaceAPI.new(opts['client_id'], opts['client_secret'], opts['basespace_url'], opts['api_version'], opts['app_session_id'])
 
-# First, get the verification code and uri for scope 'browse global'
+# First, get the verification code and uri for scope 'browse global'.
 device_info = bs_api.get_verification_code('browse global')
 
 ## PAUSE HERE
-# Have the user visit the verification uri to grant us access
+# Have the user visit the verification uri to grant us access.
 puts "Please visit the following URL within 15 seconds and grant access"
 puts device_info['verification_with_code_uri']
 
@@ -67,13 +67,13 @@ end
 sleep(15)
 ## PAUSE HERE
 
-# Once the user has granted us access to objects we requested, we can
-# get the basespace access token and start browsing simply by calling updatePriviliges
+# Once the user has granted us access to objects we requested, we can get
+# the basespace access token and start browsing simply by calling updatePriviliges
 # on the baseSpaceApi instance.
 code = device_info['device_code']
 bs_api.update_privileges(code)
 
-# As a reference the provided access-token can be obtained from the BaseSpaceApi object
+# As a reference the provided access-token can be obtained from the BaseSpaceAPI object.
 puts "My Access-token: #{bs_api.get_access_token}"
 puts
 
@@ -92,7 +92,7 @@ puts bs_api
 puts
 
 #################### Web-based verification #################################
-# The scenario where the authentication is done through a web-browser
+# The scenario where the authentication is done through a web-browser.
 
 bs_api_web = BaseSpaceAPI.new(opts['client_id'], opts['client_secret'], opts['basespace_url'], opts['api_version'], opts['app_session_id'])
 user_url= bs_api_web.get_web_verification_code('browse global', 'http://localhost', 'myState')
@@ -114,7 +114,7 @@ end
 
 # Once the grant has been given you will be redirected to a url looking something like this
 # http://localhost/?code=<MY DEVICE CODE FROM REDICRECT>&state=myState&action=oauthv2authorization
-# By getting the code parameter from the above http request we can now get our access-token
+# By getting the code parameter from the above http request we can now get our access-token.
 
 my_code = '<MY DEVICE CODE FROM REDICRECT>'
 #bs_api_web.update_privileges(my_code)
@@ -126,13 +126,13 @@ my_code = '<MY DEVICE CODE FROM REDICRECT>'
 # Here we demonstrate how the Python pickle module may be used to achieve this end.
 # 
 # The example will be for an instance of BaseSpaceAPI, but the same technique may be used for BaseSpaceAuth.
-# In fact, a single instance of BaseSpaceAuth would be enough for a single App and could be shared by all http-requests, as the identity of 
-# this object is only given by the client_key and client_secret. 
+# In fact, a single instance of BaseSpaceAuth would be enough for a single App and could be shared by all
+# http-requests, as the identity of this object is only given by the client_key and client_secret. 
 # 
 # (There is, of course, no problem in having multiple identical BaseSpaceAuth instances).
 #
 
-# In Ruby, we'll use Marshal in place of the Python's pickle
+# In Ruby, we'll use Marshal in place of Python's "pickle".
 
 user = bs_api.get_user_by_id('current')
 puts "Get current user"
@@ -140,23 +140,23 @@ puts user
 puts bs_api
 puts
 
-#### Here some work goes on
+#### Carry on with the work...
 
-# now we wish to store the API object for the next time we get a request in this session
-# make a file to store the BaseSpaceAPi instance in, for easy identification we will name this by any id that may be used for identifying
-# the session again.
+# Now we wish to store the API object for the next time we get a request in this session
+# make a file to store the BaseSpaceAPI instance in. For easy identification we will name
+# this by any id that may be used for identifying the session again.
 my_session_id = bs_api.app_session_id + '.marshal'
 File.open(my_session_id, 'w') do |f|
   Marshal.dump(bs_api, f)
 end
 
-# Imagine the current request is done, we will simulate this by deleting the api instance  
+# Imagine the current request is done, we will simulate this by deleting the api instance.
 bs_api = nil
 puts "Try printing the removed API, we get: '#{bs_api}' (<-- should be empty)"
 puts
 
-# Next request in the session with id = id123 comes in
-# We'll check if if there already is a BaseSpaceAPI stored for the session
+# Next request in the session with id = id123 comes in.
+# We will check if there is already a BaseSpaceAPI stored for the session.
 if File.exists?(my_session_id)
   File.open(my_session_id) do |f|
     bs_api = Marshal.load(f)
@@ -168,3 +168,4 @@ else
   puts "Looks like we haven't stored anything for this session yet"
   # create a BaseSpaceAPI for the first time
 end
+

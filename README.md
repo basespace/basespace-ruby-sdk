@@ -16,7 +16,7 @@ REQUIREMENTS
 =========================================
 
 *  Ruby 1.9.3 or newer.
-*  The multi-part file upload will currently only run on a unix setup.
+*  Multi-part file upload will currently only work on UNIX operating systems (s.a. Linux or Mac OS X)
 
 INSTALL
 =========================================
@@ -126,8 +126,10 @@ Initial Ruby version ported from the v 0.1.2 release of BaseSpacePy
 COPYING / LICENSE
 =========================================
 
-See License.txt in the bio-basespace directory for details on licensing and distribution.
+See License.txt for details on licensing and distribution.
 
 KNOWN BUGS
 =========================================
+
+Please refer to our [issue tracker](https://github.com/joejimbo/basespace-ruby-sdk/issues) for a list of known bugs or to submit a new bug report.
 
