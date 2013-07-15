@@ -200,14 +200,14 @@ Again we will start out by initializing a ``BaseSpaceAPI`` object:
 	# First we will initialize a BaseSpace API object using our app information and the appSessionId
 	bs_api = BaseSpaceAPI.new(client_id, client_secret, basespace_url, api_version, app_session_id)
 	
-# First, get the verification code and uri for scope 'browse global'
+First, get the verification code and uri for scope 'browse global'
 
 	device_info = bs_api.get_verification_code('browse global')
 	puts
 	puts "URL for user to visit and grant access: "
 	puts device_info['verification_with_code_uri']
 	
-# At this point the user must visit the verification uri to grant us access
+At this point the user must visit the verification uri to grant us access
 
 	## PAUSE HERE
 	# Have the user visit the verification uri to grant us access
