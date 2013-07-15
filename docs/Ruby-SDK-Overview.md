@@ -175,7 +175,6 @@ The output will be:
 
 For more details on access-requests and authentication and an example of the web-based case see example 1_authentication.rb
 
------
 
 ## Requesting an access-token for data browsing
 
@@ -189,41 +188,47 @@ Here we demonstrate the basic BaseSpace authentication process. The work-flow ou
 
 Again we will start out by initializing a ``BaseSpaceAPI`` object:
 
-	from BaseSpacePy.api.BaseSpaceAPI import BaseSpaceAPI
-	import time
+	require 'basespace'
+	include Bio::BaseSpace
 
-	client_key                 = <my key>
-	client_secret              = <my secret>
-	AppSessionId		   = <my appSession id>
+	client_id       = 'my client key'
+	client_secret   = 'my client secret'
+	app_session_id  = 'my app session id'
+	basespace_url   = 'https://api.basespace.illumina.com/'
+	api_version     = 'v1pre3'
+	
+	# First we will initialize a BaseSpace API object using our app information and the appSessionId
+	bs_api = BaseSpaceAPI.new(client_id, client_secret, basespace_url, api_version, app_session_id)
+	
+# First, get the verification code and uri for scope 'browse global'
 
-	BaseSpaceUrl               = 'https://api.basespace.illumina.com/'
-	version                    = 'v1pre3'
-
-
-
-First get verification code and uri for scope 'browse global'
-
-	deviceInfo = BSapi.getVerificationCode('browse global')
-	print "\n URL for user to visit and grant access: "
-	print deviceInfo['verification_with_code_uri']
-
-
-At this point the user must visit the verification uri to grant us access
+	device_info = bs_api.get_verification_code('browse global')
+	puts
+	puts "URL for user to visit and grant access: "
+	puts device_info['verification_with_code_uri']
+	
+# At this point the user must visit the verification uri to grant us access
 
 	## PAUSE HERE
 	# Have the user visit the verification uri to grant us access
-	print "\nPlease visit the uri within 15 seconds and grant access"
-	print deviceInfo['verification_with_code_uri']
-	webbrowser.open_new(deviceInfo['verification_with_code_uri'])
-	time.sleep(15)
-	## PAUSE HERE
+	puts "\nPlease visit the uri within 15 seconds and grant access"
+	puts device_info['verification_with_code_uri']
 
+	link = device_info['verification_with_code_uri']
+	host = RbConfig::CONFIG['host_os']
+	case host
+	when /mswin|mingw|cygwin/
+	system("start #{link}")
+	when /darwin/
+	system("open #{link}")
+	when /linux/
+	system("xdg-open #{link}")
+	end
+	sleep(15)
+	## PAUSE HERE
 
 The output will be:
 
-
-	Output[]:
-	
 	URL for user to visit and grant access: 
 	https://basespace.illumina.com/oauth/device?code=<my code>
 
@@ -233,34 +238,30 @@ The output will be:
 
 Once the user has granted us access to objects we requested, we can get the basespace access_token and start browsing simply by calling ``updatePriviliges`` on the baseSpaceApi instance.
 
-	code = deviceInfo['device_code']
-	BSapi.updatePrivileges(code)
+	code = device_info['device_code']
+	bs_api.update_privileges(code)
 
 As a reference the provided access-token can be obtained from the BaseSpaceApi object
 
-	print "\nMy Access-token:"
-	print BSapi.getAccessToken()
+	puts "My Access-token: #{bs_api.get_access_token}"
+	puts
 
 The output will be:
 
-	Output[]:
-	
 	My Access-token:
 	<my access-token>
 
 At this point we can start using the ``BaseSpaceAPI`` instance to browse the available data for the current user, the details of this process is the subject of the next section. Here we will end with showing how the API object can be used to list all BaseSpace genome instances: 
 
 	# We will get all available genomes with our new api! 
-	allGenomes  = myAPI.getAvailableGenomes()
-	print "\nGenomes \n" + str(allGenomes)
+	all_genomes  = bs_api.get_available_genomes
+	puts "Genomes: #{all_genomes}"
 
 The output will be:
 
-	Output[]:
-		
 	Genomes 
 	[Arabidopsis thaliana, Bos Taurus, Escherichia coli, Homo sapiens, Mus musculus, Phix,\
-	 Rhodobacter sphaeroides, Rattus norvegicus, Saccharomyces cerevisiae, Staphylococcus aureus, Bacillus Cereus]
+	 Rhodobacter sphaeroides, Rattus norvegicus, Saccharomyces cerevisiae, Staphylococcus aureus]
 
 
 ## Browsing data with global browse access
@@ -272,119 +273,108 @@ a ``user`` instance we can use it to retrieve all project belonging to that user
 First we will initialize a ``BaseSpaceAPI`` using our access-token for ``global browse``:
 
 
+	require 'basespace'
+	include Bio::BaseSpace
 
-	from BaseSpacePy.api.BaseSpaceAPI import BaseSpaceAPI
-	
 	# REST server information and user access_token 
-	server          = 'https://api.basespace.illumina.com/'
-	version         = 'v1pre3'
-	client_key                 = <my key>
-	client_secret              = <my secret>
-	AppSessionId		   = <my appSession id>
-	accessToken                = "<my access token>"
 	
-	# First, create a client for making calls for this user session 
-	myAPI   = BaseSpaceAPI(client_key, client_secret, BaseSpaceUrl, version, AppSessionId,AccessToken=accessToken)
-
-
+	client_id       = 'my client key'
+	client_secret   = 'my client secret'
+	access_token    = 'your access token'
+	app_session_id  = 'my app session id'
+	basespace_url   = 'https://api.basespace.illumina.com/'
+	api_version     = 'v1pre3'
+	
+	# First, create a client for making calls for this user session
+	my_api = BaseSpaceAPI.new(client_id, client_secret, basespace_url, api_version, app_session_id, access_token)
+	
 First we will try to retrieve a genome object:
 
 	# Now grab the genome with id=4
-	myGenome    = myAPI.getGenomeById('4')
+	my_genome = my_api.get_genome_by_id('4')
+	puts "The Genome is #{my_genome}"
+	puts "We can get more information from the genome object"
+	puts "Id: #{my_genome.id}"
+	puts "Href: #{my_genome.href}"
+	puts "DisplayName: #{my_genome.display_name}"
 
-	print "\nThe Genome is " + str(myGenome)
-	print "We can get more information from the genome object"
-	print 'Id: ' + myGenome.Id
-	print 'Href: ' + myGenome.Href
-	print 'DisplayName: ' + myGenome.DisplayName
 
 The output will be:
-
-
-	Output[]:
 
 	The Genome is Homo sapiens
 	We can get more information from the genome object
 	Id: 4
-	Href: v1pre2/genomes/4
+	Href: v1pre3/genomes/4
 	DisplayName: Homo Sapiens - UCSC (hg19)
 
 
 Using a comparable method we can get a list of all available genomes:
 
 	# Get a list of all genomes
-	allGenomes  = myAPI.getAvailableGenomes()
-	print "\nGenomes \n" + str(allGenomes)
-
+	all_genomes  = my_api.get_available_genomes
+	puts "Genomes: #{all_genomes}"
 
 The output will be:
 
-	Output[]:
-	
 	Genomes 
 	[Arabidopsis thaliana, Bos Taurus, Escherichia coli, Homo sapiens, Mus musculus, Phix,\
-	 Rhodobacter sphaeroides, Rattus norvegicus, Saccharomyces cerevisiae, Staphylococcus aureus, Bacillus Cereus]
+	 Rhodobacter sphaeroides, Rattus norvegicus, Saccharomyces cerevisiae, Staphylococcus aureus]
 
 Now, let us retrieve the ``User`` objects for the current user, and list all projects for this user:
 
 	# Take a look at the current user
-	user        = myAPI.getUserById('current')
-	print "\nThe current user is \n" + str(user)
+	user = my_api.get_user_by_id('current')
+	puts "The current user is #{user}"
+	puts
 	
 	# Now list the projects for this user
-	myProjects   = myAPI.getProjectByUser('current')
-	print "\nThe projects for this user are \n" + str(myProjects)
-
+	my_projects = my_api.get_project_by_user('current')
+	puts "The projects for this user are #{my_projects}"
+	puts
+	
 The output will be:
 
-	Output[]:
-	
+	[BaseSpaceDemo - id=2, Cancer Sequencing Demo - id=4, HiSeq 2500 - id=7, ResequencingPhixRun - id=12, TrainingRun - id=114, Note - id=165, 120313-tra - id=606, S.abortusequi-17_L2508 - id=619, TSChIP-Seq - id=14042, BCereusDemoData_Illumina - id=34061]
+
 	The current user is 
-	152152: Morten Kallberg
+	<user id>: Your Name
 	
 	The projects for this user are 
-	[HiSeq 2500, Bolt, YourProject, 2X151 Rhodobacter Resequencing, EColi resequencing]
-
+	[BaseSpaceDemo - id=2, Cancer Sequencing Demo - id=4, HiSeq 2500 - id=7, ResequencingPhixRun - id=12, TSChIP-Seq - id=14042, BCereusDemoData_Illumina - id=34061]
 
 We can also achieve this by making a call using the ``user`` instance. Notice that these calls take an instance of ``BaseSpaceAPI`` with apporpriate 
 priviliges to complete the transaction as parameter, this true for all retrieval method calls made on data objects:
 
-
-
-	myProjects2 = user.getProjects(myAPI)
-	print "\nProjects retrieved from the user instance \n" + str(myProjects2)
+	my_projects2 = user.get_projects(my_api)
+	puts "Projects retrieved from the user instance"
+	puts my_projects2
 	
 	# List the runs available for the current user
-	runs = user.getRuns(myAPI)
-	print "\nThe runs for this user are \n" + str(runs)
+	runs = user.get_runs(my_api)
+	puts "The runs for this user are"
+	puts runs
 
 The output will be:
 
-
-	Output[]:
+	Projects retrieved from the user instance
+	[BaseSpaceDemo - id=2, Cancer Sequencing Demo - id=4, HiSeq 2500 - id=7, ResequencingPhixRun - id=12, TSChIP-Seq - id=14042, BCereusDemoData_Illumina - id=34061]
 	
-	Projects retrieved from the user instance 
-	[HiSeq 2500, Bolt, YourProject, 2X151 Rhodobacter Resequencing, EColi resequencing]
+	The runs for this user are
+	[BacillusCereus, Genome-in-a-Day, TSCA_test, 2x151PhiX, TruSeq Amplicon_Cancer Panel, CancerDemo]
 	
-	The runs for this user are 
-	[2X151 Rhodobacter Resequencing, 2x26 Validation Human 4-Plex, EColi resequencing]
-
-
 In the same manner we can get a list of accessible user runs:
 
-
-
-	runs = user.getRuns(myAPI)
-	print "\nRuns retrieved from user instance \n" + str(runs)
+	runs = user.get_runs(my_api)
+	puts "Runs retrieved from user instance"
+	puts runs
 
 The output will be:
 
-	Output[]:
-	
 	Runs retrieved from user instance 
-	[2X151 Rhodobacter Resequencing, 2x26 Validation Human 4-Plex, EColi resequencing]
+	[BacillusCereus, Genome-in-a-Day, TSCA_test, 2x151PhiX, TruSeq Amplicon_Cancer Panel, CancerDemo]
 
-	
+-----
+
 ## Accessing file-trees and querying BAM or VCF files
 
 In this section we demonstrate how to access samples and analysis from a projects and how to work with the available file data for such instances.
@@ -393,20 +383,39 @@ In addition, we take a look at some of the special queuring methods associated w
 Again, start out by initializing a ``BaseSpaceAPI`` instance and retrieving all projects belonging to the current user:
 
 	# First, create a client for making calls for this user session 
-	myAPI           = BaseSpaceAPI(client_key, client_secret, BaseSpaceUrl, version, AppSessionId,AccessToken=accessToken)
-	user        = myAPI.getUserById('current')
-	myProjects   = myAPI.getProjectByUser('current')
+	require 'basespace'
+	include Bio::BaseSpace
 
+	'client_id'       = '<your client key>'
+	'client_secret'   = '<your client secret>'
+	'access_token'    = '<your access token>'
+	'app_session_id'  = '<app session id>'
+	'basespace_url'   = 'https://api.basespace.illumina.com/'
+	'api_version'     = 'v1pre3'
+
+	my_api       = BaseSpaceAPI.new(client_id, client_secret, basespace_url, api_version, app_session_id, access_token)
+	user         = my_api.get_user_by_id('current')
+	my_projects  = my_api.get_project_by_user('current')
+
+	app_results  = nil
+	samples      = nil
 
 Now we can list all the analyses and samples for these projects
 
 	# Let's list all the AppResults and samples for these projects
 	for singleProject in myProjects:
-	    print "# " + str(singleProject)
-	    appResults = singleProject.getAppResults(myAPI)
-	    print "    The App results for project " + str(singleProject) + " are \n\t" + str(appResults)
-	    samples = singleProject.getSamples(myAPI)
-	    print "    The samples for project " + str(singleProject) + " are \n\t" + str(samples)
+
+	my_projects.each do |single_project|
+		puts "# Project: #{single_project}"
+		
+		app_results = single_project.get_app_results(my_api)
+		puts "    The App results for project #{single_project} are"
+		puts "      #{app_results}"
+		
+		samples = single_project.get_samples(my_api)
+		puts "    The samples for project #{single_project} are"
+		puts "      #{samples}"
+	end
 
 The output will be:
 
@@ -429,11 +438,11 @@ The output will be:
 
 We'll take a further look at the files belonging to the sample from the last project in the loop above:
 
-	for s in samples:
-	    print "Sample " + str(s)
-	    ff = s.getFiles(myAPI)
-	    print ff
-
+	app_results.each do |app_res|
+	puts "# AppResult: #{app_res.id}"
+	files = app_res.get_files(my_api)
+	puts files
+	end
 
 The output will be:
 
@@ -450,12 +459,12 @@ Now, have a look at some of the methods calls specific to ``Bam`` and ``VCF`` fi
 	# Now do some work with files 
 	# we'll grab a BAM by id and get the coverage for an interval + accompanying meta-data 
 
-	myBam = myAPI.getFileById('2150156')
-	print myBam
-	cov     = myBam.getIntervalCoverage(myAPI,'chr2','1','20000')
-	print cov 
-	covMeta = myBam.getCoverageMeta(myAPI,'chr2')
-	print covMeta
+	my_bam = my_api.get_file_by_id('5595005')
+	puts "# BAM: #{my_bam}"
+	cov = my_bam.get_interval_coverage(my_api, 'chr2', '1', '20000')
+	puts cov
+	cov_meta = my_bam.get_coverage_meta(my_api, 'chr2')
+	puts cov_meta
 
 The output will be:
 
@@ -468,13 +477,14 @@ The output will be:
 For ``VCF``-files we can filter variant calls based on chromosome and location as well:
 
 	# and a vcf file
-	myVCF = myAPI.getFileById('2150158')
+	my_vcf = my_api.get_file_by_id('3360125')
 
 	# Get the variant meta info 
-	varMeta = myVCF.getVariantMeta(myAPI)
-	print varMeta
-	var     = myVCF.filterVariant(myAPI,'2','1', '11000') 
-	print var
+
+	var_meta = my_vcf.get_variant_meta(my_api)
+	puts var_meta
+	var = my_vcf.filter_variant(my_api, 'phix', '1', '5386')
+	puts var
 
 The output will be:
 
