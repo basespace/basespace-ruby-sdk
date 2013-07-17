@@ -119,21 +119,6 @@ end
 my_code = '<MY DEVICE CODE FROM REDICRECT>'
 #bs_api_web.update_privileges(my_code)
 
-
-#################### Storing BaseSpaceApi using python's pickle module #################################
-#
-# It may sometimes be useful to preserve certain api objects across a series of http requests from the same user-session. 
-# Here we demonstrate how the Python pickle module may be used to achieve this end.
-# 
-# The example will be for an instance of BaseSpaceAPI, but the same technique may be used for BaseSpaceAuth.
-# In fact, a single instance of BaseSpaceAuth would be enough for a single App and could be shared by all
-# http-requests, as the identity of this object is only given by the client_key and client_secret. 
-# 
-# (There is, of course, no problem in having multiple identical BaseSpaceAuth instances).
-#
-
-# In Ruby, we'll use Marshal in place of Python's "pickle".
-
 user = bs_api.get_user_by_id('current')
 puts "Get current user"
 puts user
