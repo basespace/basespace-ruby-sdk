@@ -115,13 +115,35 @@ First, install the gem as described just above. Then use [RSpec](http://rspec.in
 
     rspec -c -f d
 
+PORTING
+=========================================
+
+BaseSpace Ruby SDK was initially ported by translating the BaseSpace Python SDK to Ruby. If it becomes necessary to port further code from the Python SDK, then the following porting guidelines should be observed:
+
+*  indentation: Python 4 spaces, Ruby 2 spaces
+*  compund words: Python `ExampleLabel`, Ruby `example_label`
+*  constructors: Python `def __init__(self):`, Ruby `def initialize`
+*  class variables: Python `self.swaggerTypes = { "Key":"value" }`, Ruby `@swagger_types = { "Key" => "value" }`
+*  void types: Python `None`, Ruby `nil`
+*  string representation: Python `__str__(self)`, Ruby `to_s (return @val.to_s)`
+*  object dump: Python `__repr__(self)`, Ruby `to_str (return self.inspect)` or `self.attributes.inspect` for attribute values
+*  exceptions: Python `FooBarException` -> `FooBarError`
+*  types:
+   *  Python `str`, Ruby `String`
+   *  Python `int`, Ruby `Integer`
+   *  Python `float`, Ruby `Float`
+   *  Python `bool`, Ruby `true`/`false`
+   *  Python `list<>`, Ruby `Array`
+   *  Python `dict`, Ruby `Hash`
+   *  Python `file`, Ruby `File`
+
 CHANGELOG
 =========================================
 
 v 0.1.2
 -----------------------------------------
  
-Initial Ruby version ported from the v 0.1.2 release of BaseSpacePy
+Initial Ruby version ported from the v 0.1.2 release of BaseSpacePy.
 
 COPYING / LICENSE
 =========================================
