@@ -64,6 +64,10 @@ require 'basespace/model/variants_header_response'
 require 'json'
 
 module Bio
+
+  # BaseSpace Ruby SDK is to be used in the development of Apps and scripts
+  # for working with Illumina's BaseSpace cloud-computing solution for next-gen
+  # sequencing data analysis.
   module BaseSpace
 
     # Loads login and authentication credentials from a JSON file.
@@ -119,24 +123,4 @@ module Bio
   end # BaseSpace
 end # Bio
 
-
-# indent 4 -> 2
-# CamelCase -> camel_case
-# def __init__(self): -> def initialize
-# self.swaggerTypes = { "Key":"value" } -> @swagger_types = { "Key" => "value" }
-# self.Value -> @attributes = {'Value' => value}, get_attr('Value'), set_attr('Value', value)
-# None = nil
-# module Bio::BaseSpace ... end
-# __str__(self) -> to_s (return @val.to_s)
-# __repr__(self) -> to_str (return self.inspect) or self.attributes.inspect for attribute values
-# __fooBar__ -> self.foo_bar (or private method?)
-# FooBarException -> FooBarError
-
-# 'str' -> String
-# 'int' -> Integer
-# 'float' -> Float
-# 'bool' -> true/false?
-# 'list<>' -> Array
-# 'dict' -> Hash
-# 'file' -> File
 
