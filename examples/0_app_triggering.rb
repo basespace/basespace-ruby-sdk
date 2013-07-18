@@ -73,7 +73,7 @@ puts my_reference.type                   # same as my_reference.get_attr('Type')
 puts
 
 # Now we will want to ask for more permission for the specific reference object.
-my_reference_content =  my_reference.content
+my_reference_content = my_reference.content
 
 puts "We can get out the specific project objects by using 'content':" 
 puts my_reference_content
