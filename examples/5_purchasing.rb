@@ -57,12 +57,13 @@ bill_api = BillingAPI.new(opts['basespace_store_url'], opts['api_version'], opts
 # Create a consumable purchase, and associated it with an AppSession
 # also add tags to provide (fake) details about the purchase.
 puts "Creating purchase"
+# purch = billAPI.createPurchase({'id':product_id,'quantity':4, 'tags':["test","test_tag"] }, AppSessionId)
 products = {
   'id'        => opts['product_id'],
   'quantity'  => 4,
   'tags'      => ["test", "test_tag"],
 }
-purch = bill_api.create_purchase(products, app_session_id)
+purch = bill_api.create_purchase(products, opts['app_session_id'])
 
 # Record the purchase Id and RefundSecret for refunding later.
 purchase_id    = purch.id
