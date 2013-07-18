@@ -1,4 +1,4 @@
-# Copyright 2013 Toshiaki Katayama
+# Copyright 2013 Toshiaki Katayama, Joachim Baran
 #
 #     Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@ require 'basespace/api/basespace_error'
 module Bio
 module BaseSpace
 
-# This class can be passed as an optional argument for a filtering getUserProducts list response
+# This class can be passed as an optional argument for a filtering getUserProducts list response.
 class QueryParametersPurchasedProduct
   attr_accessor :passed
 
@@ -25,6 +25,9 @@ class QueryParametersPurchasedProduct
     'ProductIds'  => [],
   }
 
+  # Create a new QueryParametersPurchasedProduct instance.
+  #
+  # +pars+:: Query parameters used for list filtering.
   def initialize(pars = {})
     @passed = {}
     pars.each do |k, v|
@@ -33,23 +36,30 @@ class QueryParametersPurchasedProduct
     validate
   end
         
+  # Return a string representation of all query parameters.
   def to_s
     return @passed.to_s
   end
 
+  # Return debugging information of the object.
   def to_str
     return self.inspect
   end
 
+  # Return the query parameters.
   def get_parameter_dict
     return @passed
   end
 
+  # Check if the query parameters are valid.
+  #
+  # Throws UnknownParameterError for illegal parameters.
   def validate
     @passed.each do |k, v|
       raise UnknownParameterError.new(k) unless LEGAL.has_key?(k)
     end
   end
+
 end
 
 end # module BaseSpace

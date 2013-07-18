@@ -1,4 +1,4 @@
-# Copyright 2013 Toshiaki Katayama
+# Copyright 2013 Toshiaki Katayama, Joachim Baran
 #
 #     Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,7 +16,10 @@ require 'basespace/model'
 module Bio
 module BaseSpace
 
+# Genome model.
 class GenomeV1 < Model
+
+  # Create a new GenomeV1 instance.
   def initialize
     @swagger_types = {
       'Source'       => 'str',
@@ -36,6 +39,7 @@ class GenomeV1 < Model
     }
   end
 
+  # Return species name, or if absent, return display name, or if absent too, return the Href.
   def to_s
     if get_attr('SpeciesName')
       return get_attr('SpeciesName')

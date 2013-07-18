@@ -1,4 +1,4 @@
-# Copyright 2013 Toshiaki Katayama
+# Copyright 2013 Toshiaki Katayama, Joachim Baran
 #
 #     Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,7 +16,10 @@ require 'basespace/model'
 module Bio
 module BaseSpace
 
+# Models coverage metadata.
 class CoverageMetadata < Model
+
+  # Create a new CoeverageMetadata instance.
   def initialize
     @swagger_types = {
       'MaxCoverage'          => 'int',
@@ -28,9 +31,11 @@ class CoverageMetadata < Model
     }
   end
 
+  # Return a string denoting the maximum coverage and coverage granularity.
   def to_s
     return "CoverageMeta: max=#{get_attr('MaxCoverage')} gran=#{get_attr('CoverageGranularity')}"
   end
+
 end
 
 end # module BaseSpace

@@ -1,4 +1,4 @@
-# Copyright 2013 Toshiaki Katayama
+# Copyright 2013 Toshiaki Katayama, Joachim Baran
 #
 #     Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,7 +16,10 @@ require 'basespace/model'
 module Bio
 module BaseSpace
 
+# An AppResultResponse is used to initiate the creation of an AppResults object.
 class AppResultResponse < Model
+
+  # Create a new result response instance.
   def initialize
     @swagger_types = {
       'ResponseStatus'  => 'ResponseStatus',
@@ -29,6 +32,7 @@ class AppResultResponse < Model
       'Notifications'   => nil,  # list<Str>
     }
   end
+
 end
 
 end # module BaseSpace

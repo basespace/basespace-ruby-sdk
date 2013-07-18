@@ -1,4 +1,4 @@
-# Copyright 2013 Toshiaki Katayama
+# Copyright 2013 Toshiaki Katayama, Joachim Baran
 #
 #     Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -18,8 +18,14 @@ require 'basespace/model/query_parameters_purchased_product'
 module Bio
 module BaseSpace
 
-# The API class used for all communication with the BaseSpace Billng server
+# The API class used for all communication with the BaseSpace Billng server.
 class BillingAPI < BaseAPI
+  # Create a new BillingAPI object.
+  #
+  # +api_server+:: URI of the BaseSpace API server.
+  # +version+:: Version of the API to use.
+  # +app_session_id+:: AppSession ID.
+  # +access_token+:: Access token that is provided by App triggering. 
   def initialize(api_server, version, app_session_id = nil, access_token = nil)
     end_with_slash = %r(/$)
     unless api_server[end_with_slash]
@@ -33,10 +39,10 @@ class BillingAPI < BaseAPI
     super(access_token)
   end
 
-  # Creates a purchase with the specified products
+  # Creates a purchase with the specified products.
   # 
-  # :param products: List of dicts to purchase, each of which has a product 'id'
-  #     and 'quantity' to purchase
+  # +products+:: List of dicts to purchase, each of which has a product 'id' and 'quantity' to purchase.
+  # +app_session_id+:: AppSession ID.
   def create_purchase(products, app_session_id = nil)
     my_model       = 'PurchaseResponse'
     resource_path  = '/purchases/'
@@ -54,9 +60,9 @@ class BillingAPI < BaseAPI
     return single_request(my_model, resource_path, method, query_params, header_params, post_data, verbose)
   end
           
-  # Request a purchase object by Id
+  # Request a purchase object by ID.
   # 
-  # :param id: The Id of the purchase
+  # +id+:: The ID of the purchase.
   def get_purchase_by_id(id)
     my_model       = 'PurchaseResponse'
     resource_path  = '/purchases/{Id}'
@@ -68,9 +74,10 @@ class BillingAPI < BaseAPI
     return single_request(my_model, resource_path, method, query_params, header_params)
   end
 
-  # Returns the Products for the current user
-  # :param id: The id of the user, optional
-  # :param qps: Query parameters, a dictionary for filtering by 'Tags' and/or 'ProductIds', optional
+  # Returns the Products for the current user.
+  #
+  # +id+:: The ID of the user.
+  # +qps+:: Query parameters, a dictionary for filtering by 'Tags' and/or 'ProductIds'.
   def get_user_products(id = 'current', qps = {})
     query_pars     = QueryParametersPurchasedProduct.new(qps)
     my_model       = 'PurchasedProduct'
@@ -82,11 +89,11 @@ class BillingAPI < BaseAPI
     return self.__listRequest__(my_model, resource_path, method, query_params, header_params)
   end
 
-  # Creates a purchase with the specified products
+  # Creates a purchase with the specified products.
   # 
-  # :param purchase_id: The Id of the purchase
-  # :param refund_secret: The RefundSecret that was provided in the Response from createPurchase()
-  # :param comment: An optional comment about the refund
+  # +purchase_id+:: The ID of the purchase.
+  # +refund_secret+:: The RefundSecret that was provided in the Response from createPurchase.
+  # +comment+:: An optional comment about the refund.
   def refund_purchase(purchase_id, refund_secret, comment = nil)
     my_model       = 'RefundPurchaseResponse'
     resource_path  = '/purchases/{id}/refund'

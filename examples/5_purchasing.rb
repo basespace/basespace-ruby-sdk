@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-# Copyright 2013 Toshiaki Katayama
+# Copyright 2013 Toshiaki Katayama, Joachim Baran
 #
 #     Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -24,9 +24,8 @@ include Bio::BaseSpace
 # via the API using the purchase id and tags, which are used by developers
 # to help clarify exactly what was purchased.
 # 
-# NOTE: You will need to fill client values for your app below
+# NOTE You will need to fill client values for your app below!
 
-# cloud-hoth
 opts = {
   # FILL IN WITH YOUR APP VALUES HERE!
   'client_id'            => '<your client key>',     # from dev portal app Credentials tab
@@ -39,7 +38,7 @@ opts = {
   'product_id'           => '',                      # from dev portal Pricing tab
 }
 
-# test if client variables have been set
+# Test if client variables have been set.
 unless opts.select{|k,v| v[/^<.*>$/]}.empty?
   opts = Bio::BaseSpace.load_credentials
   exit 1 unless opts
@@ -49,14 +48,14 @@ unless opts['client_id'] or opts['product_id']
   raise "Please fill in client values (in the script) before running the script"
 end
 
-# First, create a client for making calls for this user session 
+# First, create a client for making calls for this user session.
 bill_api = BillingAPI.new(opts['basespace_store_url'], opts['api_version'], opts['app_session_id'], opts['access_token'])
 
-# create a non-consumable purchase
+# Create a non-consumable purchase.
 #purch = bill_api.create_purchase([{'id':product_id,'quantity':4 }])
 
-# create a consumable purchase, and associated it with an AppSession
-# also add tags to provide (fake) details about the purchase
+# Create a consumable purchase, and associated it with an AppSession
+# also add tags to provide (fake) details about the purchase.
 puts "Creating purchase"
 # purch = billAPI.createPurchase({'id':product_id,'quantity':4, 'tags':["test","test_tag"] }, AppSessionId)
 products = {
@@ -66,7 +65,7 @@ products = {
 }
 purch = bill_api.create_purchase(products, opts['app_session_id'])
 
-# record the purchase Id and RefundSecret for refunding later
+# Record the purchase Id and RefundSecret for refunding later.
 purchase_id    = purch.id
 refund_secret  = purch.refund_secret
 
@@ -96,7 +95,7 @@ puts
 
 puts "Refunding the Purchase"
 puts
-# note we must use the same access token that was provided used for the purchase
+# NOTE We must use the same access token that was provided used for the purchase.
 refunded_purchase = bill_api.refund_purchase(purchase_id, refund_secret, 'the product did not function well as a frisbee')
 
 puts "Getting all purchases for the current user with the tags we used for the purchase above"

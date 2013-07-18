@@ -1,4 +1,4 @@
-# Copyright 2013 Toshiaki Katayama
+# Copyright 2013 Toshiaki Katayama, Joachim Baran
 #
 #     Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -19,12 +19,16 @@ require 'uri'
 
 Net::HTTP.version_1_2
 
-
 module Bio
 module BaseSpace
 
-# Parent class for BaseSpaceAPI and BillingAPI objects
+# Parent class for BaseSpaceAPI and BillingAPI objects. It provides rudimentary
+# API access functionality.
 class BaseAPI
+
+  # Create a new BaseAPI instance using a given access token.
+  #
+  # +access_token+:: Access token provided by App triggering.
   def initialize(access_token = nil)
     if  $DEBUG
       $stderr.puts "    # ----- BaseAPI#initialize ----- "
@@ -37,10 +41,25 @@ class BaseAPI
     set_access_token(access_token)        # logic for setting the access-token 
   end
 
+  # Set a new access token. The value of a previously supplied access token
+  # is simply overwritten here.
+  #
+  # +access_token+:: Access token provided by App triggering.
   def update_access_token(access_token)
     @api_client.api_key = access_token
   end
 
+  # Make a single request to the BaseSpace REST API.
+  #
+  # +my_model+:: Class or classname of the model that is applied in deserialization.
+  # +resource_path+:: URI that should be used for the API call.
+  # +method+:: HTTP method for the rest call (GET, POST, DELETE, etc.)
+  # +query_params+:: query parameters that should be sent along to the API.
+  # +header_params+:: Additional settings that should be transferred in the HTTP header.
+  # +post_data+:: Hash that contains data to be transferred.
+  # +verbose+:: Truth value indicating whether verbose output should be provided.
+  # +force_post+:: Truth value that indicates whether a POST should be forced.
+  # +no_api+:: (unclear; TODO)
   def single_request(my_model, resource_path, method, query_params, header_params, post_data = nil, verbose = false, force_post = false, no_api = true)
     # test if access-token has been set
     if not @api_client and no_api
@@ -78,6 +97,15 @@ class BaseAPI
     return response_object.response
   end
 
+  # Send a list request to the BaseSpace REST API.
+  #
+  # +my_model+:: Class or classname of the model that is applied in deserialization.
+  # +resource_path+:: URI that should be used for the API call.
+  # +method+:: HTTP method for the rest call (GET, POST, DELETE, etc.)
+  # +query_params+:: query parameters that should be sent along to the API.
+  # +header_params+:: Additional settings that should be transferred in the HTTP header.
+  # +verbose+:: Truth value indicating whether verbose output should be provided.
+  # +no_api+:: (unclear; TODO)
   def list_request(my_model, resource_path, method, query_params, header_params, verbose = false, no_api = true)
     # test if access-token has been set
     if not @api_client and no_api
@@ -121,12 +149,21 @@ class BaseAPI
     return convertet
   end
 
+  # URL encode a Hash of data values.
+  #
+  # +hash+:: data encoded in a Hash.
   def hash2urlencode(hash)
     # URI.escape (alias URI.encode) is obsolete since Ruby 1.9.2.
     #return hash.map{|k,v| URI.encode(k.to_s) + "=" + URI.encode(v.to_s)}.join("&")
     return hash.map{|k,v| URI.encode_www_form_component(k.to_s) + "=" + URI.encode_www_form_component(v.to_s)}.join("&")
   end
 
+  # Post data to the given BaseSpace API URL. Method name is a bit of a 
+  # misnomer, because 'curl' is not used by this method -- instead only
+  # Ruby core classes are used.
+  #
+  # +data+:: Data that should be transferred to the API.
+  # +url+:: URL of the BaseSpace API.
   def make_curl_request(data, url)
     if $DEBUG
       $stderr.puts "    # ----- BaseAPI#make_curl_request ----- "
@@ -157,17 +194,19 @@ class BaseAPI
     return obj
   end
     
+  # Return a string representation of this object.
   def to_s
     return "BaseSpaceAPI instance - using token=#{get_access_token}"
   end
-  
+
+  # Return a string representation of this object.
   def to_str
     return self.to_s
   end
 
-  # Specify the timeout in seconds for each request made
+  # Specify the timeout in seconds for each request.
   #
-  # :param time: timeout in second
+  # +param time+:: Timeout in second.
   def set_timeout(time)
     @timeout = time
     if @api_client
@@ -175,6 +214,9 @@ class BaseAPI
     end
   end
   
+  # Sets a new API token.
+  #
+  # +token+:: New API token.
   def set_access_token(token)
     @api_client = nil
     if token
@@ -190,7 +232,7 @@ class BaseAPI
     return ""  # [TODO] Should return nil in Ruby?
   end
   
-  # Returns the server uri used by this instance
+  # Returns the server URI used by this instance.
   def get_server_uri
     return @api_client.api_server
   end

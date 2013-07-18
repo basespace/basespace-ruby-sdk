@@ -1,4 +1,4 @@
-# Copyright 2013 Toshiaki Katayama
+# Copyright 2013 Toshiaki Katayama, Joachim Baran
 #
 #     Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -19,6 +19,8 @@ module BaseSpace
 
 # Represents a BaseSpace file object.
 class File < Model
+
+  # Create a new File instance.
   def initialize
     @swagger_types = {
       'Name'          => 'str',
@@ -53,6 +55,7 @@ class File < Model
     }
   end
 
+  # Returns the name of the file, its ID, size and upload status.
   def to_s
     str = get_attr('Name')
     begin
@@ -67,17 +70,16 @@ class File < Model
     return str
   end
 
-  # Is called to test if the File instance has been initialized.
+  # Tests if the File instance has been initialized.
   # 
-  # Throws:
-  #     ModelNotInitializedError if the instance has not been populated yet.
+  # Throws ModelNotInitializedError, if the instance has not been populated yet.
   def is_init
     raise ModelNotInitializedError.new('The File model has not been initialized yet') unless get_attr('Id')
   end
         
-  # Is called to test if the File instance is matches the filtype parameter 
+  # Tests if the File instance matches the filetype parameter.
   #       
-  # :param filetype: The filetype for coverage or variant requests
+  # +filetype+:: The filetype for coverage or variant requests (bam|vcf).
   def is_valid_file_option(filetype)
     if filetype == 'bam'
       raise WrongFiletypeError.new(get_attr('Name')) unless get_attr('HrefCoverage')
@@ -87,12 +89,12 @@ class File < Model
     end
   end                
 
-  # Download the file object to the specified localDir or a byte range of the file, by specifying the 
-  # start and stop byte in the range.
+  # Download the file object to the specified local directory or a byte range of the file,
+  # by specifying the start and stop byte in the range.
   # 
-  # :param api: A BaseSpaceAPI with read access on the scope including the file object.
-  # :param loadlDir: The local directory to place the file in.
-  # :param range: Specify the start and stop byte of the file chunk that needs retrieved.
+  # +api+:: A BaseSpaceAPI instance with read access to the file object.
+  # +local_dir+:: The local directory to place the file in.
+  # :range+:: Two-item array with start and stop byte of the file chunk that needs retrieved.
   def download_file(api, local_dir, range = [])
     if range.empty?
       return api.file_download(get_attr('Id'),local_dir, get_attr('Name'))
@@ -101,23 +103,26 @@ class File < Model
     end
   end
 
-  # Return the S3 url of the file.
+  # Return the S3 URL of the file.
   # 
-  # :param api: A BaseSpaceAPI with read access on the scope including the file object.
+  # +api+:: A BaseSpaceAPI instance with read access to the file object.
   def get_file_url(api)
     return api.file_url(get_attr('Id'))
   end
 
+  # Delete the file; not implemented yet.
+  # 
+  # +api+:: A BaseSpaceAPI instance with delete permissions on the file object.
   def delete_file(api)
     raise 'Not yet implemented'
   end
 
   # Return a coverage object for the specified region and chromosome.
   # 
-  # :param api: An instance of BaseSpaceAPI
-  # :param Chrom: Chromosome as a string - for example 'chr2'
-  # :param StartPos: The start position of region of interest as a string
-  # :param EndPos: The end position of region of interest as a string
+  # +api+:: BaseSpaceAPI instance.
+  # +chrom+:: Chromosome as a string - for example 'chr2'.
+  # +start_pos+:: The start position of region of interest as a string.
+  # +end_pos+:: The end position of region of interest as a string.
   def get_interval_coverage(api, chrom, start_pos, end_pos)
     is_init
     is_valid_file_option('bam')
@@ -125,26 +130,24 @@ class File < Model
     return api.get_interval_coverage(get_attr('Id'), chrom, start_pos, end_pos)
   end
     
-  # Returns a list of Variant objects available in the specified region
+  # Returns a list of Variant objects available in the specified region.
   # 
-  # :param api: An instance of BaseSpaceAPI
-  # :param Chrom: Chromosome as a string - for example 'chr2'
-  # :param StartPos: The start position of region of interest as a string
-  # :param EndPos: The end position of region of interest as a string
-  # :param q: An instance of 
-  #
-  # TODO allow to pass a queryParameters object for custom filtering
-  def filter_variant(api, chrom, start_pos, end_pos, q = nil)
+  # +api+:: BaseSpaceAPI instance.
+  # +chrom+:: Chromosome as a string - for example 'chr2'.
+  # +start_pos+:: The start position of region of interest as a string.
+  # +end_pos+:: The end position of region of interest as a string.
+  # +qp+: TODO queryParameters object for custom filtering.
+  def filter_variant(api, chrom, start_pos, end_pos, qp = nil)
     is_init
     is_valid_file_option('vcf')
     set_attr('Id', get_attr('HrefVariants').split('/').last)
     return api.filter_variant_set(get_attr('Id'), chrom, start_pos, end_pos, 'txt')
   end
 
-  # Return an object of CoverageMetadata for the selected region
+  # Return an object of CoverageMetadata for the selected region.
   # 
-  # :param api: An instance of BaseSpaceAPI.
-  # :param Chrom: The chromosome of interest.
+  # +api+:: BaseSpaceAPI instance.
+  # +chrom+:: Chromosome as a string - for example 'chr2'.
   def get_coverage_meta(api, chrom)
     is_init
     is_valid_file_option('bam')
@@ -152,9 +155,9 @@ class File < Model
     return api.get_coverage_meta_info(get_attr('Id'), chrom)
   end
 
-  # Return the the meta info for a VCF file as a VariantInfo object
+  # Return the the meta info for a VCF file as a VariantInfo object.
   # 
-  # :param api: An instance of BaseSpaceAPI
+  # +api+:: BaseSpaceAPI instance.
   def get_variant_meta(api)
     is_init
     is_valid_file_option('vcf')

@@ -1,4 +1,4 @@
-# Copyright 2013 Toshiaki Katayama
+# Copyright 2013 Toshiaki Katayama, Joachim Baran
 #
 #     Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,36 +17,48 @@ require 'base64'
 module Bio
 module BaseSpace
 
-# [TODO] This file is not yet ported as the multipartFileUpload class is
-# just mentioned in the comment section of the BaseSpaceAPI.py file.
-
+# Multipart file upload helper class.
+#
+# TODO This file is not yet ported as the multipartFileUpload class is
+# just mentioned in the comment section of the BaseSpaceAPI file.
 class UploadTask
-  def initialize(self, api, bs_file_id, piece, total, myfile, attempt)
+
+  # Create a new upload task object.
+  #
+  # +api+:: BaseSpaceAPI instance.
+  # +bs_file_id+:: BaseSpace file ID.
+  # +part+:: Part number of the multi-part upload.
+  # +total+:: Total number of parts in the multi-part upload.
+  # +myfile+:: Local file to be uploaded.
+  # +attempt+:: Number of attempts that the file was previously uploaded (upload tries).
+  def initialize(self, api, bs_file_id, part, total, myfile, attempt)
     @api         = api
-    @piece       = piece       # piece number
-    @total       = total       # out of total piece count
+    @part        = part       # part number
+    @total       = total       # out of total part count
     @file        = myfile      # the local file to be uploaded
     @bs_file_id  = bs_file_id  # the baseSpace fileId
     @attempt     = attempt     # the # of attempts we've made to upload this guy
     @state       = 0           # 0=pending, 1=ran, 2=error
   end
     
+  # Returns the filename (without path) if the file to be uploaded.
   def upload_file_name
-    return @file.split('/').last + '_' + @piece.to_s
+    return @file.split('/').last + '_' + @part.to_s
   end
   
+  # Upload a part of the file.
   def call
     # read the byte string in
     @attempt += 1
-    trans_file = @file + @piece.to_s
-    cmd = "split -d -n #{@piece}/#{@total} #{@file}"
+    trans_file = @file + @part.to_s
+    cmd = "split -d -n #{@part}/#{@total} #{@file}"
     out = `#{cmd}`
     File.open(trans_file, "w") do |f|
       f.write(out)
     end
     # [TODO] confirm whether md5(out).digest is equivalent to MD5.digest (or MD5.hexdigest?)
     @md5 = Base64.encode64(Digest::MD5.digest(out))
-    res = self.api.upload_multipart_unit(@bs_file_id, @piece, @md5, trans_file)
+    res = self.api.upload_multipart_unit(@bs_file_id, @part, @md5, trans_file)
     # puts "my result #{res}"
     File.delete(trans_file)
     if res['Response'].has_key?('ETag')
@@ -57,9 +69,11 @@ class UploadTask
     return self
   end
    
+  # Returns information about which part of which file is uploaded, including the total number of parts.
   def to_s
-    return "#{@piece} / #{@total} - #{@file}"
+    return "#{@part} / #{@total} - #{@file}"
   end
+
 end # class UploadTask
     
 class Consumer  # [TODO] inherit multiprocessing.Process

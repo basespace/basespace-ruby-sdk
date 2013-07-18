@@ -20,13 +20,20 @@ require 'date'
 
 Net::HTTP.version_1_2
 
-
 module Bio
 module BaseSpace
 
+# This class provides wrapper methods to the BaseSpace API RESTful interface. It also
+# handles serialization and deserialization of objects (Ruby to/from JSON). It is primarily
+# used as a helper class for BaseSpaceAPI.
 class APIClient
   attr_accessor :api_key, :api_server, :timeout
 
+  # Create a new instance that will carry out REST calls.
+  #
+  # +access_token+:: Access token that is provided by App triggering.
+  # +api_server+:: URI of the BaseSpace API server.
+  # +timeout+:: Timeout for REST calls.
   def initialize(access_token = nil, api_server = nil, timeout = 10)
     if $DEBUG
       $stderr.puts "    # ----- BaseAPI#initialize ----- "
@@ -42,6 +49,12 @@ class APIClient
     @timeout = timeout
   end
 
+  # POST data to a provided URI.
+  #
+  # +resource_path+:: URI to which the data should be POSTed.
+  # +post_data+:: Hash that contains the data.
+  # +headers+:: Header of the POST call.
+  # +data+:: (unused; TODO)
   def force_post_call(resource_path, post_data, headers, data = nil)
     # [TODO] Confirm whether we can expect those two parameters are Hash objects:
     # headers = { "key" => "value" }
@@ -60,16 +73,28 @@ class APIClient
     return res.body
   end
 
+  # URL encode a Hash of data values.
+  #
+  # +hash+:: data encoded in a Hash.
   def hash2urlencode(hash)
     # URI.escape (alias URI.encode) is obsolete since Ruby 1.9.2.
     #return hash.map{|k,v| URI.encode(k.to_s) + "=" + URI.encode(v.to_s)}.join("&")
     return hash.map{|k,v| URI.encode_www_form_component(k.to_s) + "=" + URI.encode_www_form_component(v.to_s)}.join("&")
   end
 
+  # Makes a PUT call to a given URI for depositing file contents.
+  #
+  # +resource_path+:: URI to which the data should be transferred.
+  # +post_data+:: (unused; TODO)
+  # +headers+:: Header of the PUT call.
+  # +trans_file+:: Path to the file that should be transferred.
   def put_call(resource_path, post_data, headers, trans_file)
     return %x(curl -H "x-access-token:#{@api_key}" -H "Content-MD5:#{headers['Content-MD5'].strip}" -T "#{trans_file}" -X PUT #{resource_path})
   end
 
+  # Deserialize a boolean value to a Ruby object.
+  #
+  # +value+:: serialized representation of the boolean value.
   def bool(value)
     case value
     when nil, false, 0, 'nil', 'false', '0', 'None'
@@ -80,7 +105,16 @@ class APIClient
     return result
   end
 
-  # [TODO] Need check. Logic in this method is too ugly to understand....
+  # Carries out a RESTful operation on the BaseSpace API.
+  #
+  # TODO Need check. Logic in this method is rather complicated...
+  #
+  # +resource_path+:: URI that should be used for the API call.
+  # +method+:: HTTP method for the rest call (GET, POST, DELETE, etc.)
+  # +query_params+:: query parameters that should be sent along to the API.
+  # +post_data+:: Hash that contains data to be transferred.
+  # +header_params+:: Additional settings that should be transferred in the HTTP header.
+  # +force_post+:: Truth value that indicates whether a POST should be forced.
   def call_api(resource_path, method, query_params, post_data, header_params = nil, force_post = false)
     url = @api_server + resource_path
 
@@ -175,10 +209,7 @@ class APIClient
 
   # Serialize a list to a CSV string, if necessary.
   #
-  # Args:
-  #   obj -- data object to be serialized
-  # Returns:
-  #   string -- json serialization of object
+  # +obj+:: Data object to be serialized.
   def to_path_value(obj)
     if obj.kind_of?(Array)
       return obj.join(',')
@@ -187,13 +218,10 @@ class APIClient
     end
   end
 
-  # Derialize a JSON string into an object.
+  # Deserialize a JSON string into an object.
   #
-  # Args:
-  #     obj -- string or object to be deserialized
-  #     obj_class -- class literal for deserialzied object, or string of class name
-  # Returns:
-  #     object -- deserialized object
+  # +obj+:: String or object to be deserialized.
+  # +obj_class+:: Class literal for deserialzied object, or string of class name.
   def deserialize(obj, obj_class)
     case obj_class.downcase
     when 'str'

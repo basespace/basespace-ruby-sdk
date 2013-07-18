@@ -1,4 +1,4 @@
-# Copyright 2013 Toshiaki Katayama
+# Copyright 2013 Toshiaki Katayama, Joachim Baran
 #
 #     Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,8 +16,10 @@ require 'basespace/model'
 module Bio
 module BaseSpace
 
-# AppLaunch contains the data returned 
+# App sessions records when an App is being launched.
 class AppSession < Model
+
+  # Create a new AppSession instance.
   def initialize
     @swagger_types = {
       'Id'             => 'str',
@@ -34,7 +36,7 @@ class AppSession < Model
       'Id'             => nil,
       'Href'           => nil, # The URI of BaseSpace
       'Type'           => nil,
-      # [TODO] UserUserCreatedBy in Python code would be typo of UserCreatedBy (bug in Python SDK)
+      # TODO UserUserCreatedBy in Python code would be typo of UserCreatedBy (bug in Python SDK)
       'UserCreatedBy'  => nil, # The user that triggered your application
       'DateCreated'    => nil, # The datetime the user acted in BaseSpace
       'Status'         => nil,
@@ -44,10 +46,14 @@ class AppSession < Model
     }
   end
 
+  # Return a string representation of the object, showing user information, ID and status.
   def to_s
     return "App session by #{get_attr('UserCreatedBy')} - Id: #{get_attr('Id')} - status: #{get_attr('Status')}"
   end
 
+  # Serialize references.
+  #
+  # +api+:: BaseSpaceAPI instance.
   def serialize_references(api)
     ref = []
     # [TODO] should this attribute initialized with []?
@@ -58,16 +64,19 @@ class AppSession < Model
     set_attr('References', ref)
     return self
   end
-    
+
+  # Returns whether the App is running.
   def can_work_on
     return ['running'].include?(get_attr('Status').downcase)
   end
     
-  # Sets the status of the AppSession (note: once set to 'completed' or 'aborted' no more work can be done to the instance)
+  # Sets the status of the AppSession.
+  #
+  # Note: once set to 'completed' or 'aborted', no more work can be done to the instance
   # 
-  # :param api: An instance of BaseSpaceAPI
-  # :param Status: The status value, must be completed, aborted, working, or suspended
-  # :param Summary: The status summary
+  # +api+:: BaseSpaceAPI instance.
+  # +status+:: Status value, either: completed, aborted, working, or suspended.
+  # +summary+:: Status summary.
   def set_status(api, status, summary)
     current_status = get_attr('Status')
     if current_status.downcase == 'complete' or current_status.downcase == 'aborted'
@@ -88,20 +97,3 @@ end
 end # module BaseSpace
 end # module Bio
 
-# deprecated
-#    def getLaunchType(self):
-#        '''
-#        Returns a list [<launch type name>, list of objects] where <launch type name> is one of Projects, Samples, Analyses 
-#        '''
-#        try: 
-#            self.Projects
-#            return ['Projects', self.Projects]
-#        except: e=1
-#        try: 
-#            self.Samples
-#            return ['Samples', self.Samples]
-#        except: e=1
-#        try: 
-#            self.Analyses
-#            return ['Analyses', self.Analyses]
-#        except: e=1

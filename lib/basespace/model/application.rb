@@ -1,4 +1,4 @@
-# Copyright 2013 Toshiaki Katayama
+# Copyright 2013 Toshiaki Katayama, Joachim Baran
 #
 #     Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,7 +16,11 @@ require 'basespace/model'
 module Bio
 module BaseSpace
 
+# An App representation, which contains data such as name, homepage URI, a short
+# description and the data the App was created.
 class Application < Model
+
+  # Create a new instance.
   def initialize
     @swagger_types = {
       'Id'                => 'str',
@@ -35,6 +39,7 @@ class Application < Model
       'DateCreated'       => nil,
     }
   end
+
 end
 
 end # module BaseSpace

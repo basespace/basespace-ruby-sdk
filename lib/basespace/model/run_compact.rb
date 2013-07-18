@@ -1,4 +1,4 @@
-# Copyright 2013 Toshiaki Katayama
+# Copyright 2013 Toshiaki Katayama, Joachim Baran
 #
 #     Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,7 +16,10 @@ require 'basespace/model'
 module Bio
 module BaseSpace
 
+# Run compact model.
 class RunCompact < Model
+
+  # Create a new RunCompact instance.
   def initialize
     @swagger_types = {
       'DateCreated'     => 'datetime',
@@ -32,16 +35,19 @@ class RunCompact < Model
     }
   end
 
+  # Return the experiment name.
   def to_s
     return get_attr('ExperimentName')
   end
 
-  # Returns the scope-string to used for requesting BaseSpace access to the object
-  # :param scope: The type that is request (write|read)
+  # Returns the scope-string to used for requesting BaseSpace access to the object.
+  #
+  # +scope+:: The type that is requested (write|read).
   def get_access_str(scope = 'write')
     is_init
     return scope + ' run ' + get_attr('Id').to_s
   end
+
 end
 
 end # module BaseSpace

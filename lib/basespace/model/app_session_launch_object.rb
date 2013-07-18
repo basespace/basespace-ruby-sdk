@@ -1,4 +1,4 @@
-# Copyright 2013 Toshiaki Katayama
+# Copyright 2013 Toshiaki Katayama, Joachim Baran
 #
 #     Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,7 +16,10 @@ require 'basespace/model'
 module Bio
 module BaseSpace
 
+# Records the launch as part of an AppSession.
 class AppSessionLaunchObject < Model
+
+  # Create a new instance.
   def initialize
     @swagger_types = {
       'Content'      => 'dict',
@@ -34,15 +37,20 @@ class AppSessionLaunchObject < Model
     }
   end
 
+  # Returns the type of the object.
   def to_s
     return get_attr('Type').to_s
   end
 
+  # Serializes the object.
+  #
+  # +api+:: BaseSpaceAPI instance.
   def serialize_object(api)
     res = api.serialize_object(get_attr('Content'), get_attr('Type'))
     set_attr('Content', res)
     return self
   end
+
 end
 
 end # module BaseSpace
