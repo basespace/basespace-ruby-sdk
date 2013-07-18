@@ -115,6 +115,12 @@ First, install the gem as described just above. Then use [RSpec](http://rspec.in
 
     rspec -c -f d
 
+### Generating Class and Method Documentation
+
+This requires [RDoc](http://rdoc.rubyforge.org) to be installed. When executed, it will write HTML into the `doc` directory.
+
+    rdoc -m lib/basespace.rb -f horo
+
 PORTING
 =========================================
 
