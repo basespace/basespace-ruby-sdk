@@ -1,4 +1,4 @@
-# Copyright 2013 Toshiaki Katayama
+# Copyright 2013 Toshiaki Katayama, Joachim Baran
 #
 #     Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,7 +16,10 @@ require 'basespace/model'
 module Bio
 module BaseSpace
 
+# Variant model.
 class Variant < Model
+
+  # Create a new Variant instance.
   def initialize
     @swagger_types = {
       'CHROM'         => 'str',                 
@@ -42,9 +45,11 @@ class Variant < Model
     }
   end
 
+  # Return the genomic coordinate and ID of the variant as string.
   def to_s
     return "Variant - #{get_attr('CHROM')}: #{get_attr('POS')} id=#{get_attr('Id')}"
   end
+
 end
 
 end # module BaseSpace

@@ -1,4 +1,4 @@
-# Copyright 2013 Toshiaki Katayama
+# Copyright 2013 Toshiaki Katayama, Joachim Baran
 #
 #     Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,7 +16,10 @@ require 'basespace/model'
 module Bio
 module BaseSpace
 
+# Variant header model.
 class VariantHeader < Model
+
+  # Create a new VariantHeader instance.
   def initialize
     @swagger_types = {
       'Metadata'  => 'dict',
@@ -30,6 +33,7 @@ class VariantHeader < Model
     }
   end
 
+  # Return the sample count as string.
   def to_s
     return "VariantHeader: SampleCount=#{get_attr('Samples').length}"
   end

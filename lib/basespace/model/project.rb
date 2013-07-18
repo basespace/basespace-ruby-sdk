@@ -1,4 +1,4 @@
-# Copyright 2013 Toshiaki Katayama
+# Copyright 2013 Toshiaki Katayama, Joachim Baran
 #
 #     Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -20,6 +20,8 @@ module BaseSpace
 
 # Represents a BaseSpace Project object.
 class Project < Model
+
+  # Create a new Project instance.
   def initialize
     @swagger_types = {
       'Name'            => 'str',
@@ -43,21 +45,21 @@ class Project < Model
     }
   end
 
+  # Returns the name and ID of the project.
   def to_s
     return "#{get_attr('Name')} - id=#{get_attr('Id')}"
   end
 
-  # Is called to test if the Project instance has been initialized.
+  # Test if the Project instance has been initialized.
   # 
-  # Throws:
-  #     ModelNotInitializedError - Indicates the object has not been populated yet.
+  # Throws ModelNotInitializedError, if the object has not been populated yet.
   def is_init
     raise ModelNotInitializedError.new('The project model has not been initialized yet') unless get_attr('Id')
   end
   
-  # Returns the scope-string to used for requesting BaseSpace access to the object
+  # Returns the scope-string to used for requesting BaseSpace access to the object.
   # 
-  # :param scope: The scope-type that is request (write|read)
+  # +scope+:: The scope-type that is requested (write|read).
   def get_access_str(scope = 'write')
     is_init
     return scope + ' project ' + get_attr('Id').to_s
@@ -65,8 +67,9 @@ class Project < Model
   
   # Returns a list of AppResult objects.
   # 
-  # :param api: An instance of BaseSpaceAPI
-  # :param statuses: An optional list of statuses
+  # +api+:: BaseSpaceAPI instance.
+  # +my_qp+:: Query parameters for filtering the returned list.
+  # +statuses+:: An optional list of statuses.
   def get_app_results(api, my_qp = {}, statuses = [])
     is_init
     query_pars = QueryParameters.new(my_qp)
@@ -75,21 +78,24 @@ class Project < Model
 
   # Returns a list of Sample objects.
   # 
-  # :param api: An instance of BaseSpaceAPI
+  # +api+:: BaseSpaceAPI instance.
   def get_samples(api)
     is_init
     return api.get_samples_by_project(get_attr('Id'))
   end
   
-  # Return a newly created app result object
+  # Return a newly created AppResult object.
   # 
-  # :param api: An instance of BaseSpaceAPI
-  # :param name: The name of the app result
-  # :param desc: A describtion of the app result
+  # +api+:: BaseSpaceAPI instance.
+  # +name+:: The name of the AppResult.
+  # +desc+:: A description of the AppResult.
+  # +app_session_id+:: An App session ID.
+  # +samples+:: A list of samples.
   def create_app_result(api, name, desc, app_session_id = nil, samples = [])
     is_init
     return api.create_app_result(get_attr('Id'), name, desc, samples, app_session_id)
   end
+
 end
 
 end # module BaseSpace

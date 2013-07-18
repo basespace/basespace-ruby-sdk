@@ -1,4 +1,4 @@
-# Copyright 2013 Toshiaki Katayama
+# Copyright 2013 Toshiaki Katayama, Joachim Baran
 #
 #     Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -19,6 +19,8 @@ module BaseSpace
 
 # Represents a BaseSpace Purchase object.
 class Purchase < Model
+
+  # Create a new Purchase instance.
   def initialize
     @swagger_types = {
       'Id'                   => 'str',
@@ -68,16 +70,18 @@ class Purchase < Model
     }
   end
   
+  # Return the purchase ID.
   def to_s
     return @id.to_s
   end
 
-  # Is called to test if the Purchase instance has been initialized.
-  # Throws:
-  #     ModelNotInitializedError - Indicates the object has not been populated yet.
+  # Test if the Purchase instance has been initialized.
+  #
+  # Throws ModelNotInitializedError, if the object has not been populated yet.
   def is_init
     raise ModelNotInitializedError.new('The project model has not been initialized yet') unless get_attr('Id')
   end
+
 end
 
 end # module BaseSpace

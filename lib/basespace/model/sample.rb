@@ -1,4 +1,4 @@
-# Copyright 2013 Toshiaki Katayama
+# Copyright 2013 Toshiaki Katayama, Joachim Baran
 #
 #     Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -20,6 +20,8 @@ module BaseSpace
 
 # Representation of a BaseSpace Sample object.
 class Sample < Model
+
+  # Return a new Sample instance.
   def initialize
     @swagger_types = {
       'Name'            => 'str',
@@ -59,14 +61,14 @@ class Sample < Model
     }
   end
 
+  # Return the name of the sample.
   def to_s
     return get_attr('Name')
   end
 
-  # Is called to test if the sample instance has been initialized.
+  # Test if the sample instance has been initialized.
   # 
-  # Throws:
-  #     ModelNotInitializedError - Indicated the Id variable is not set.
+  # Throws ModelNotInitializedError, if the Id variable is not set.
   def is_init
     raise ModelNotInitializedError.new('The sample model has not been initialized yet') unless get_attr('Id')
   end
@@ -75,17 +77,20 @@ class Sample < Model
   #  pass
   #end
 
-  # Returns the scope-string to used for requesting BaseSpace access to the sample.
+  # Returns the scope-string to be used for requesting BaseSpace access to the sample.
   # 
-  # :param scope: The scope type that is request (write|read).
+  # +scope+:: The scope type that is requested (write|read).
   def get_access_str(scope = 'write')
     is_init
     return scope + ' sample ' + get_attr('Id').to_s
   end
 
-  # Return the AppResults referenced by this sample. Note the returned AppResult objects
-  # do not have their "References" field set, to get a fully populate AppResult object
-  # you must use getAppResultById in BaseSpaceAPI.
+  # Return the AppResults referenced by this sample.
+  #
+  # Note: the returned AppResult objects do not have their "References" field set,
+  # to get a fully populate AppResult object you must use getAppResultById in BaseSpaceAPI.
+  #
+  # +api+:: BaseSpaceAPI instance.
   def get_referenced_app_results(api)
     res = []
     get_attr('References').each do |s|
@@ -98,15 +103,16 @@ class Sample < Model
     return res
   end
     
-  # Returns a list of File objects
+  # Returns a list of File objects.
   # 
-  # :param api: A BaseSpaceAPI instance
-  # :param myQp: Query parameters to sort and filter the file list by.
+  # +api+:: BaseSpaceAPI instance.
+  # +my_qp+:: Query parameters to sort and filter the file list by.
   def get_files(api, my_qp = {})
     is_init
     query_pars = QueryParameters.new(my_qp)
     return api.get_files_by_sample(get_attr('Id'), query_pars)
   end
+
 end
 
 end # module BaseSpace

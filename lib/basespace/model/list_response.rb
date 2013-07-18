@@ -1,4 +1,4 @@
-# Copyright 2013 Toshiaki Katayama
+# Copyright 2013 Toshiaki Katayama, Joachim Baran
 #
 #     Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,7 +17,10 @@ require 'basespace/model'
 module Bio
 module BaseSpace
 
+# A list response object.
 class ListResponse < Model
+
+  # Create a new ListResponse instance.
   def initialize
     @swagger_types = {
       'ResponseStatus'  => 'ResponseStatus',
@@ -31,6 +34,7 @@ class ListResponse < Model
     }
   end
 
+  # Converts the object to a Ruby Array.
   def convert_to_object_list
     l = []
     get_attr('Response').items.each do |m|
@@ -41,6 +45,7 @@ class ListResponse < Model
     end
     return l
   end
+
 end
 
 end # module BaseSpace

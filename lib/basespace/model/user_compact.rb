@@ -1,4 +1,4 @@
-# Copyright 2013 Toshiaki Katayama
+# Copyright 2013 Toshiaki Katayama, Joachim Baran
 #
 #     Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,7 +16,10 @@ require 'basespace/model'
 module Bio
 module BaseSpace
 
+# User compact model.
 class UserCompact < Model
+
+  # Return a new UserCompact instance.
   def initialize
     @swagger_types = {
       'Name'  => 'str',
@@ -30,9 +33,11 @@ class UserCompact < Model
     }
   end
 
+  # Return the user ID and name as string.
   def to_s
     return "#{get_attr('Id')}: #{get_attr('Name')}"
   end
+
 end
 
 end # module BaseSpace

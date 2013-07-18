@@ -1,4 +1,4 @@
-# Copyright 2013 Toshiaki Katayama
+# Copyright 2013 Toshiaki Katayama, Joachim Baran
 #
 #     Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,7 +16,9 @@ require 'basespace/api/basespace_error'
 module Bio
 module BaseSpace
 
-# The QueryParameters class can be passed as an optional arguments for a specific sorting of list-responses (such as lists of sample, AppResult, or variants)
+# The QueryParameters class can be passed as an optional arguments for
+# a specific sorting of list-responses (such as lists of Sample, AppResult,
+# or Variant).
 class QueryParameters
   attr_accessor :passed, :required
 
@@ -32,6 +34,10 @@ class QueryParameters
     'Name'        => [],
   }
 
+  # Create a new QueryParameters instance.
+  #
+  # +pars+:: Query parameters.
+  # +required+:: List of required query parameters.
   def initialize(pars = {}, required = ['SortBy', 'Offset', 'Limit', 'SortDir'])
     @passed = {
       'SortBy'  => 'Id',
@@ -45,18 +51,24 @@ class QueryParameters
     @required = required
   end
 
+  # Returns a string representation of all query parameters contained in the object.
   def to_s
     return @passed.to_s
   end
 
+  # Returns a debugging string representation of the object.
   def to_str
     return self.inspect
   end
     
+  # Returns all query parameters.
   def get_parameter_dict
     return @passed
   end
     
+  # Check the validity of all query parameters.
+  #
+  # Throws UndefinedParameterError if a required parameters is not present.
   def validate
     @required.each do |p|
       raise UndefinedParameterError.new(p) unless @passed[p]
@@ -66,6 +78,7 @@ class QueryParameters
       raise IllegalParameterError.new(p, LEGAL[p]) if (LEGAL[p].length > 0 and ! LEGAL[p].include?(@passed[p]))
     end
   end
+
 end
 
 end # module BaseSpace

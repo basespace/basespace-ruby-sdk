@@ -1,4 +1,4 @@
-# Copyright 2013 Toshiaki Katayama
+# Copyright 2013 Toshiaki Katayama, Joachim Baran
 #
 #     Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,7 +16,10 @@ require 'basespace/model'
 module Bio
 module BaseSpace
 
+# Resource list model.
 class ResourceList < Model
+
+  # Create a new ResourceList instance.
   def initialize
     @swagger_types = {
       'Items'           => 'list<Str>',
@@ -37,6 +40,7 @@ class ResourceList < Model
       'Limit'           => nil, # int
     }
   end
+
 end
 
 end # module BaseSpace
