@@ -4,7 +4,6 @@
 
 The primary purpose of the SDK is to provide an easy-to-use Ruby environment enabling developers to authenticate a user, retrieve data, and upload data/results from their own analysis to BaseSpace.
 
-
 *Note:* It will be necessary to have created a BaseSpace account with a new App and have the ``client_key`` and ``client_secret`` codes for the App available to run a number of the following examples.
 
 ## Availability
@@ -17,9 +16,11 @@ or by,
 
 	git clone git@github.com:joejimbo/basespace-ruby-sdk.git
 
+*Note:* We will make the SDK available as a Ruby gem when our implementation is production ready. It will then also be listed on [Biogems.info](http://www.biogems.info).
+
 ## Setup
 
-*Requirements:* Ruby 1.9.3 and above. The multi-part file upload will currently only run on a unix setup.
+*Requirements:* Ruby 1.9.3 and above. The multi-part file upload will currently only run on a Unix setup.
 
 You can include 'Bio::BaseSpace' by setting below environmental variable: 
 
@@ -31,11 +32,9 @@ or add it to your Ruby scripts using Bio::BaseSpace:
 
 To test that everything is working as expected, launch a Interactive Ruby and try importing 'Bio::BaseSpace': 
 
-
 	$ irb
 	>> require 'basespace'
 	>> include Bio::BaseSpace
-
 
 ## Application triggering
 
@@ -147,7 +146,6 @@ The output will be:
 	Please visit the uri within 15 seconds and grant access
 	https://basespace.illumina.com/oauth/device?code=<my user code>
 
-
 Accept for this test code through web browser
 
 	link = access_map['verification_with_code_uri']
@@ -172,9 +170,7 @@ The output will be:
 
 	The BaseSpaceAPI instance was update with write privileges
 
-
 For more details on access-requests and authentication and an example of the web-based case see example 1_authentication.rb
-
 
 ## Requesting an access-token for data browsing
 
@@ -186,7 +182,7 @@ Here we demonstrate the basic BaseSpace authentication process. The work-flow ou
 
 *Note:* It will be useful if you are logged in to the BaseSpace web-site before launching this example to make the access grant procedure faster.
 
-Again we will start out by initializing a ``BaseSpaceAPI`` object:
+Again, we will start out by initializing a ``BaseSpaceAPI`` object:
 
 	require 'basespace'
 	include Bio::BaseSpace
@@ -235,7 +231,6 @@ The output will be:
 	Please visit the uri within 15 seconds and grant access
 	https://basespace.illumina.com/oauth/device?code=<my code>
 
-
 Once the user has granted us access to objects we requested, we can get the basespace access_token and start browsing simply by calling ``updatePriviliges`` on the baseSpaceApi instance.
 
 	code = device_info['device_code']
@@ -263,7 +258,6 @@ The output will be:
 	[Arabidopsis thaliana, Bos Taurus, Escherichia coli, Homo sapiens, Mus musculus, Phix,\
 	 Rhodobacter sphaeroides, Rattus norvegicus, Saccharomyces cerevisiae, Staphylococcus aureus]
 
-
 ## Browsing data with global browse access
 
 This section demonstrates basic browsing of BaseSpace objects once an access-token for global browsing has been obtained. We will see how 
@@ -271,7 +265,6 @@ objects can be retrieved using either the ``BaseSpaceAPI`` class or by use of me
 a ``user`` instance we can use it to retrieve all project belonging to that user).
 
 First we will initialize a ``BaseSpaceAPI`` using our access-token for ``global browse``:
-
 
 	require 'basespace'
 	include Bio::BaseSpace
@@ -298,7 +291,6 @@ First we will try to retrieve a genome object:
 	puts "Href: #{my_genome.href}"
 	puts "DisplayName: #{my_genome.display_name}"
 
-
 The output will be:
 
 	The Genome is Homo sapiens
@@ -306,7 +298,6 @@ The output will be:
 	Id: 4
 	Href: v1pre3/genomes/4
 	DisplayName: Homo Sapiens - UCSC (hg19)
-
 
 Using a comparable method we can get a list of all available genomes:
 
@@ -504,7 +495,6 @@ The output will be:
     VariantHeader: SampleCount=1
 	[Variant - chr2: 10236 id=['.'], Variant - chr2: 10249 id=['.'], ....]
 
-
 ## Creating an AppResult and uploading files
 
 In this section we will see how to create a new AppResults object, change the state of the related AppSession,
@@ -523,8 +513,6 @@ Assuming we have write access for the project, we will list the current analyses
 
 	appRes = p.getAppResults(myBaseSpaceAPI,statuses=['Running'])
 	print "\nThe current running AppResults are \n" + str(appRes)
-
-
 
 The output will be:
 
@@ -635,5 +623,48 @@ You can supply a dictionary of query parameters when you retrieving appresults, 
 
 ## Feature Requests and Bugs
 
-Please feel free to report any feedback regarding the Python SDK directly to the [Python SK Repository](https://github.com/basespace/basespace-python-sdk), we appreciate any and all feedback about the SDKs.  We will do anything we can to improve the SDK and make it easy for developers to use the SDK. 
+Please feel free to report any feedback regarding the BaseSpace Ruby SDK directly to the [GitHub repository](https://github.com/joejimbo/basespace-ruby-sdk). We appreciate any and all feedback about the SDKs and we will do anything we can to improve the functionality and quality of the SDK to make it easy for developers to use. 
+
+## Authors
+
+Joachim Baran, Raoul Bonnal, Francesco Strozzi, Toshiaki Katayama
+
+# Copying / License
+
+See [License.txt](https://raw.github.com/joejimbo/basespace-ruby-sdk/master/License.txt) for details on licensing and distribution.
+
+# Development Manual for SDK Developers
+
+## Building a New Version of the Gem
+
+    bundle exec rake gemspec
+    bundle exec gem build bio-basespace.gemspec
+    sudo gem install bio-basespace
+
+## Unit Testing
+
+First, install the gem as described just above. Then use [RSpec](http://rspec.info) for unit testing:
+
+    rspec -c -f d
+
+## Porting
+
+BaseSpace Ruby SDK was initially ported by translating the BaseSpace Python SDK to Ruby. If it becomes necessary to port further code from the Python SDK, then the following porting guidelines should be observed:
+
+*  indentation: Python 4 spaces, Ruby 2 spaces
+*  compund words: Python `ExampleLabel`, Ruby `example_label`
+*  constructors: Python `def __init__(self):`, Ruby `def initialize`
+*  class variables: Python `self.swaggerTypes = { "Key":"value" }`, Ruby `@swagger_types = { "Key" => "value" }`
+*  void types: Python `None`, Ruby `nil`
+*  string representation: Python `__str__(self)`, Ruby `to_s (return @val.to_s)`
+*  object dump: Python `__repr__(self)`, Ruby `to_str (return self.inspect)` or `self.attributes.inspect` for attribute values
+*  exceptions: Python `FooBarException` -> `FooBarError`
+*  types:
+   *  Python `str`, Ruby `String`
+   *  Python `int`, Ruby `Integer`
+   *  Python `float`, Ruby `Float`
+   *  Python `bool`, Ruby `true`/`false`
+   *  Python `list<>`, Ruby `Array`
+   *  Python `dict`, Ruby `Hash`
+   *  Python `file`, Ruby `File`
 
