@@ -1,4 +1,4 @@
-# Copyright 2013 Toshiaki Katayama
+# Copyright 2013 Toshiaki Katayama, Joachim Baran
 #
 #     Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,7 +16,10 @@ require 'basespace/model'
 module Bio
 module BaseSpace
 
+# Product information model.
 class Product < Model
+
+  # Create a new Product instance.
   def initialize
     @swagger_types = {
       'Id'                 => 'str',
@@ -36,9 +39,11 @@ class Product < Model
     }
   end
 
+  # Return the name of the product.
   def to_s
     return get_attr('Name').to_s
   end
+
 end
 
 end # module BaseSpace

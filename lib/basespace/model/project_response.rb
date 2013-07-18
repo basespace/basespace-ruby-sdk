@@ -1,4 +1,4 @@
-# Copyright 2013 Toshiaki Katayama
+# Copyright 2013 Toshiaki Katayama, Joachim Baran
 #
 #     Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,7 +16,10 @@ require 'basespace/model'
 module Bio
 module BaseSpace
 
+# Project response.
 class ProjectResponse < Model
+
+  # Create a new ProjectResponse instance.
   def initialize
     @swagger_types = {
       'ResponseStatus'  => 'ResponseStatus',
@@ -29,6 +32,7 @@ class ProjectResponse < Model
       'Notifications'   => nil, # list<Str>
     }
   end
+
 end
 
 end # module BaseSpace

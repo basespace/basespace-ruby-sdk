@@ -1,4 +1,4 @@
-# Copyright 2013 Toshiaki Katayama
+# Copyright 2013 Toshiaki Katayama, Joachim Baran
 #
 #     Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,9 +16,11 @@ require 'basespace/model'
 module Bio
 module BaseSpace
 
+# Basic representation of a BaseSpace model.
 class BaseSpaceModel < Model
   attr_accessor :api
 
+  # Create a new BaseSpaceModel instance.
   def initialize
     # [TODO] This class is not similar to other modles. Need to check if this port is OK.
     @swagger_types = {
@@ -29,20 +31,25 @@ class BaseSpaceModel < Model
     }
   end
 
-  # [TODO] Do we need this?
+  # Returns the ID of the model.
   def id
     get_attr('Id')
   end
 
+  # Returns the ID of the model.
   def to_s
     is_init
     return get_attr('Id')
   end
   
+  # Returns whether this object has been initialized, which is always the case (i.e., true).
   def is_init
     return true
   end
   
+  # Set a BaseSpaceAPI object for this BaseSpaceModel.
+  #
+  # +api+:: BaseSpaceAPI instance.
   def set_api(api)
     @api = api
   end

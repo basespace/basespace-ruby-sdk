@@ -1,4 +1,4 @@
-# Copyright 2013 Toshiaki Katayama
+# Copyright 2013 Toshiaki Katayama, Joachim Baran
 #
 #     Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,8 +16,10 @@ require 'basespace/model'
 module Bio
 module BaseSpace
 
-# Application data returned by GET purchase
+# Application data returned by GET purchase.
 class ApplicationCompact < Model
+
+  # Create a new instance.
   def initialize
     @swagger_types = {
       'Id'           => 'str',
@@ -31,9 +33,11 @@ class ApplicationCompact < Model
     }
   end
 
+  # Return the name of the App data returned by a GET purchase.
   def to_s
     return get_attr('Name').to_s
   end
+
 end
 
 end # module BaseSpace

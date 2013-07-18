@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-# Copyright 2013 Toshiaki Katayama
+# Copyright 2013 Toshiaki Katayama, Joachim Baran
 #
 #     Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -33,30 +33,32 @@ opts = {
   'api_version'     => 'v1pre3',
 }
 
-# test if client variables have been set
+# Test if client variables have been set.
 unless opts.select{|k,v| v[/^<.*>$/]}.empty?
   opts = Bio::BaseSpace.load_credentials
   exit 1 unless opts
 end
 
-# First, create a client for making calls for this user session 
+# First, create a client for making calls for this user session.
 bs_api = BaseSpaceAPI.new(opts['client_id'], opts['client_secret'], opts['basespace_url'], opts['api_version'], opts['app_session_id'], opts['access_token'])
 
-
-# Now we'll do some work of our own. First get a project to work on
-# we'll need write permission, for the project we are working on
-# meaning we will need get a new token and instantiate a new BaseSpaceAPI  
+# Now we'll do some work of our own. First get a project to work on.
+# We need write permission for the project we are working on,
+# meaning we will need get a new token and instantiate a new BaseSpaceAPI.
 prj = bs_api.get_project_by_id('89')  # [TODO] Original ID '89' was not accessible. Writable project is needed.
 
 # Assuming we have write access to the project
-# we will list the current App Results for the project 
+# we list the current App Results for the project.
 statuses = ['Running']
 app_res = prj.get_app_results(bs_api, {}, statuses)  # [TODO] should introduce hash options / keyword arguments (in Ruby 2.0)
 puts "The current running AppResults are #{app_res}"
 puts
 
-# now let's do some work!
-# to create an appResults for a project, simply give the name and description
+#
+# Retrieving results and setting status
+#
+
+# To create an appResults for a project, simply give the name and description.
 app_results = prj.create_app_result(bs_api, "testing", "this is my results")
 puts "Some info about our new app results"
 puts app_results
@@ -67,35 +69,34 @@ my_app_session = app_results.app_session
 puts my_app_session
 puts
 
-# we can change the status of our AppSession and add a status-summary as follows
+# We can change the status of our AppSession and add a status-summary as follows.
 my_app_session.set_status(bs_api, 'needsattention', "We worked hard, but encountered some trouble.")
 puts "After a change of status of the app sessions we get #{my_app_session}"
 puts
-# we'll set our appSession back to running so we can do some more work
+# We set our appSession back to running so we can do some more work.
 my_app_session.set_status(bs_api, 'running', "Back on track")
 
 
-### Let's list all AppResults again and see if our new object shows up 
+# Let's list all AppResults again and see if our new object shows up.
 app_res = prj.get_app_results(bs_api, {}, ['Running'])
 puts "The updated app results are #{app_res}"
 app_result2 = bs_api.get_app_result_by_id(app_results.id)
 puts app_result2
 puts
 
-## Now we will make another AppResult 
-## and try to upload a file to it
+# Now we will make another AppResult and try to upload a file to it
 app_results2 = prj.create_app_result(bs_api, "My second AppResult", "This one I will upload to")
 app_results2.upload_file(bs_api, '/home/mkallberg/Desktop/testFile2.txt', 'BaseSpaceTestFile.txt', '/mydir/', 'text/plain')
 puts "My AppResult number 2 #{app_results2}"
 puts
 
-## let's see if our new file made it
+# Let's see if our new file made it.
 app_result_files = app_results2.get_files(bs_api)
 puts "These are the files in the appResult"
 puts app_result_files
 f = app_result_files.last
 
-# we can even download our newly uploaded file
+# We can even download our newly uploaded file.
 f = bs_api.get_file_by_id(f.id)
 f.download_file(bs_api, '/home/mkallberg/Desktop/')
 

@@ -1,4 +1,4 @@
-# Copyright 2013 Toshiaki Katayama
+# Copyright 2013 Toshiaki Katayama, Joachim Baran
 #
 #     Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,7 +16,10 @@ require 'basespace/model'
 module Bio
 module BaseSpace
 
+# Representation of coverage.
 class Coverage < Model
+
+  # Create a new Coverage instance.
   def initialize
     @swagger_types = {
       'Chrom'         => 'str',
@@ -34,6 +37,7 @@ class Coverage < Model
     }
   end
 
+  # Return the genomic position and bucket size of the object.
   def to_s
     return "Chrom #{get_attr('Chrom')}: #{get_attr('StartPos')}-#{get_attr('EndPos')}, BucketSize=#{get_attr('BucketSize')}"
   end

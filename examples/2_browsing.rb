@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-# Copyright 2013 Toshiaki Katayama
+# Copyright 2013 Toshiaki Katayama, Joachim Baran
 #
 #     Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -33,16 +33,16 @@ opts = {
   'api_version'     => 'v1pre3',
 }
 
-# test if client variables have been set
+# Test if client variables have been set.
 unless opts.select{|k,v| v[/^<.*>$/]}.empty?
   opts = Bio::BaseSpace.load_credentials
   exit 1 unless opts
 end
 
-# First, create a client for making calls for this user session 
+# First, create a client for making calls for this user session.
 my_api = BaseSpaceAPI.new(opts['client_id'], opts['client_secret'], opts['basespace_url'], opts['api_version'], opts['app_session_id'], opts['access_token'])
 
-# Now let's grab the genome with id=4
+# Now let's grab the genome with id=4.
 my_genome = my_api.get_genome_by_id('4')
 puts "The Genome is #{my_genome}"
 puts "We can get more information from the genome object"
@@ -51,27 +51,27 @@ puts "Href: #{my_genome.href}"
 puts "DisplayName: #{my_genome.display_name}"
 puts
 
-# Get a list of all genomes
+# Get a list of all genomes.
 all_genomes  = my_api.get_available_genomes
 puts "Genomes: #{all_genomes}"
 puts
 
-# Let's have a look at the current user
+# Let's have a look at the current user.
 user = my_api.get_user_by_id('current')
 puts "The current user is #{user}"
 puts
 
-# Now list the projects for this user
+# Now list the projects for this user.
 my_projects = my_api.get_project_by_user('current')
 puts "The projects for this user are #{my_projects}"
 puts
 
-# We can also achieve this by making a call using the 'user instance'
+# We can also achieve this by making a call using the 'user instance'.
 my_projects2 = user.get_projects(my_api)
 puts "Projects retrieved from the user instance #{my_projects2}"
 puts
 
-# List the runs available for the current user
+# List the runs available for the current user.
 runs = user.get_runs(my_api)
 puts "The runs for this user are #{runs}"
 puts

@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-# Copyright 2013 Toshiaki Katayama
+# Copyright 2013 Toshiaki Katayama, Joachim Baran
 #
 #     Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -20,8 +20,8 @@ require 'basespace'
 
 include Bio::BaseSpace
 
-# This script demonstrates how to access Samples and AppResults from a projects and how to work with the available 
-# file data for such instances. 
+# This script demonstrates how to access Samples and AppResults from a projects and
+# how to work with the available file data for such instances. 
 
 opts = {
   # FILL IN WITH YOUR APP VALUES HERE!
@@ -33,13 +33,13 @@ opts = {
   'api_version'     => 'v1pre3',
 }
 
-# test if client variables have been set
+# Test if client variables have been set.
 unless opts.select{|k,v| v[/^<.*>$/]}.empty?
   opts = Bio::BaseSpace.load_credentials
   exit 1 unless opts
 end
 
-# First, create a client for making calls for this user session 
+# First, create a client for making calls for this user session.
 my_api       = BaseSpaceAPI.new(opts['client_id'], opts['client_secret'], opts['basespace_url'], opts['api_version'], opts['app_session_id'], opts['access_token'])
 user         = my_api.get_user_by_id('current')
 my_projects  = my_api.get_project_by_user('current')
@@ -47,7 +47,7 @@ my_projects  = my_api.get_project_by_user('current')
 app_results  = nil
 samples      = nil
 
-# Let's list all the AppResults and samples for these projects
+# Let's list all the AppResults and samples for these projects.
 my_projects.each do |single_project|
   puts "# Project: #{single_project}"
 
@@ -72,8 +72,8 @@ my_projects.each do |single_project|
 #  end
 end
 
-# we'll take a further look at the files belonging to the sample and 
-# analyses from the last project in the loop above 
+# We will take a further look at the files belonging to the sample and 
+# analysis from the last project in the loop above.
 app_results.each do |app_res|
   puts "# AppResult: #{app_res.id}"
   files = app_res.get_files(my_api)
@@ -103,8 +103,11 @@ end
 #   Indels.1.vcf - id: '535594', size: '5214'
 # 
 
-# Now let's do some work with files 
-# we'll grab a BAM by id and get the coverage for an interval + accompanying meta-data 
+#
+# Working with files.
+#
+
+# We grab a BAM by id and get the coverage for an interval + accompanying meta-data.
 my_bam = my_api.get_file_by_id('5595005')  # [TODO] What file ID to use?
 puts "# BAM: #{my_bam}"
 cov_meta = my_bam.get_coverage_meta(my_api, 'chr2')
@@ -113,12 +116,14 @@ cov = my_bam.get_interval_coverage(my_api, 'chr2', '1', '20000')  # [TODO] What 
 puts cov
 
 # and a vcf file
-my_vcf = my_api.get_file_by_id('3360125')  # [TODO] What file ID to use?
+#my_vcf = my_api.get_file_by_id('3360125')  # [TODO] What file ID to use?
+my_vcf = my_api.get_file_by_id('44153695')  # Public data >> Resequencing >> HiSeq 2500 2x150 Human Genome Demo
 puts "# VCF: #{my_vcf}"
 # Let's get the variant meta info 
 var_meta = my_vcf.get_variant_meta(my_api)
 puts var_meta
-var = my_vcf.filter_variant(my_api, 'phix', '1', '5386')  # [TODO] What seqname and position to use?
+#var = my_vcf.filter_variant(my_api, 'phix', '1', '5386')  # [TODO] What seqname and position to use?
+var = my_vcf.filter_variant(my_api, '2', '1', '11000')
 puts var
 
 
