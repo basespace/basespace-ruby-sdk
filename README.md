@@ -633,7 +633,7 @@ Joachim Baran, Raoul Bonnal, Francesco Strozzi, Toshiaki Katayama
 
 See [License.txt](https://raw.github.com/joejimbo/basespace-ruby-sdk/master/License.txt) for details on licensing and distribution.
 
-# Development Manual for SDK Developers
+# SDK Development Manual
 
 ## Building a New Version of the Gem
 
