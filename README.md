@@ -625,14 +625,6 @@ You can supply a dictionary of query parameters when you retrieving appresults, 
 
 Please feel free to report any feedback regarding the BaseSpace Ruby SDK directly to the [GitHub repository](https://github.com/joejimbo/basespace-ruby-sdk). We appreciate any and all feedback about the SDKs and we will do anything we can to improve the functionality and quality of the SDK to make it easy for developers to use. 
 
-## Authors
-
-Joachim Baran, Raoul Bonnal, Francesco Strozzi, Toshiaki Katayama
-
-# Copying / License
-
-See [License.txt](https://raw.github.com/joejimbo/basespace-ruby-sdk/master/License.txt) for details on licensing and distribution.
-
 # SDK Development Manual
 
 ## Building a New Version of the Gem
@@ -667,4 +659,13 @@ BaseSpace Ruby SDK was initially ported by translating the BaseSpace Python SDK 
    *  Python `list<>`, Ruby `Array`
    *  Python `dict`, Ruby `Hash`
    *  Python `file`, Ruby `File`
+
+# Authors
+
+Joachim Baran, Raoul Bonnal, Francesco Strozzi, Toshiaki Katayama
+
+# Copying / License
+
+See [License.txt](https://raw.github.com/joejimbo/basespace-ruby-sdk/master/License.txt) for details on licensing and distribution.
+
 
