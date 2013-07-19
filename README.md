@@ -662,7 +662,7 @@ BaseSpace Ruby SDK was initially ported by translating the BaseSpace Python SDK 
 
 # Authors
 
-Joachim Baran, Raoul Bonnal, Francesco Strozzi, Toshiaki Katayama
+Joachim Baran, Raoul Bonnal, Eri Kibukawa, Francesco Strozzi, Toshiaki Katayama
 
 # Copying / License
 
