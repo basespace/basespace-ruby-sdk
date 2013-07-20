@@ -16,7 +16,7 @@
 # Browsing data with global browse access
 #   https://developer.basespace.illumina.com/docs/content/documentation/sdk-samples/python-sdk-overview#Browsing_data_with_global_browse_access
 
-require 'basespace'
+require 'bio-basespace-sdk'
 
 include Bio::BaseSpace
 

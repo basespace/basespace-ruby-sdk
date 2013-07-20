@@ -16,7 +16,7 @@
 # Requesting an access-token for data browsing
 #   https://developer.basespace.illumina.com/docs/content/documentation/sdk-samples/python-sdk-overview#Requesting_an_access-token_for_data_browsing
 
-require 'basespace'
+require 'bio-basespace-sdk'
 
 include Bio::BaseSpace
 

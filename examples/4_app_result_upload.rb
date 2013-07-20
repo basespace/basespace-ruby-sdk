@@ -16,7 +16,7 @@
 # Creating an AppResult and uploading files
 #   https://developer.basespace.illumina.com/docs/content/documentation/sdk-samples/python-sdk-overview#Creating_an_AppResult_and_uploading_files
 
-require 'basespace'
+require 'bio-basespace-sdk'
 
 include Bio::BaseSpace
 

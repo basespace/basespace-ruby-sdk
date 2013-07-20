@@ -16,7 +16,7 @@
 # Application triggering
 #   https://developer.basespace.illumina.com/docs/content/documentation/sdk-samples/python-sdk-overview#Application_triggering
 
-require 'basespace'
+require 'bio-basespace-sdk'
 
 include Bio::BaseSpace
 

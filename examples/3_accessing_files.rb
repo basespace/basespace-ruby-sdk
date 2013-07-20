@@ -16,7 +16,7 @@
 # Accessing file-trees and querying BAM or VCF files
 #   https://developer.basespace.illumina.com/docs/content/documentation/sdk-samples/python-sdk-overview#Accessing_file-trees_and_querying_BAM_or_VCF_files
 
-require 'basespace'
+require 'bio-basespace-sdk'
 
 include Bio::BaseSpace
 
