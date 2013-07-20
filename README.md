@@ -12,11 +12,11 @@ The primary purpose of the SDK is to provide an easy-to-use Ruby environment ena
 
 The production environment version of ``Bio::BaseSpace`` is available as a Ruby gem:
 
-  gem install bio-basespace-sdk
+	gem install bio-basespace-sdk
 
 Depending on your Ruby installation, it might be necessary to install the Ruby gem with superuser permissions:
 
-  sudo gem install bio-basespace-sdk
+	sudo gem install bio-basespace-sdk
 
 ### Pre-Release Version
 
