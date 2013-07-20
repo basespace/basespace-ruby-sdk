@@ -14,7 +14,7 @@ require 'rake'
 require 'jeweler'
 Jeweler::Tasks.new do |gem|
   # gem is a Gem::Specification... see http://docs.rubygems.org/read/chapter/20 for more options
-  gem.name = "bio-basespace"
+  gem.name = "bio-basespace-sdk"
   gem.homepage = "https://github.com/joejimbo/basespace-ruby-sdk"
   gem.license = "Apache, Version 2.0"
   gem.summary = %Q{Bio::BaseSpace is a Ruby based SDK to be used in the development of Apps and scripts for working with Illumina's BaseSpace cloud-computing solution for next-gen sequencing data analysis.}
@@ -24,7 +24,7 @@ Jeweler::Tasks.new do |gem|
 
   If you haven't already done so, you may wish to familiarize yourself with the general BaseSpace developers documentation (https://developer.basespace.illumina.com/) and create a new BaseSpace App to be used when working through the examples provided in 'examples' folder.}
   gem.email = "joachim.baran@gmail.com"
-  gem.authors = ["Joachim Baran", "Raoul Bonnal", "Toshiaki Katayama", "Francesco Strozzi"]
+  gem.authors = ["Joachim Baran", "Raoul Bonnal", "Eri Kibukawa", "Francesco Strozzi", "Toshiaki Katayama"]
 #  gem.executable = 'basespace-ruby'
   # dependencies defined in Gemfile
 end
@@ -48,7 +48,7 @@ Rake::RDocTask.new do |rdoc|
   version = File.exist?('VERSION') ? File.read('VERSION') : ""
 
   rdoc.rdoc_dir = 'rdoc'
-  rdoc.title = "BaseSpace SDK #{version}"
+  rdoc.title = "BaseSpace Ruby SDK #{version}"
   # rdoc.rdoc_files.include('README*')
   rdoc.rdoc_files.include('lib/**/*.rb')
 end
