@@ -45,7 +45,7 @@ or add it to your Ruby scripts using Bio::BaseSpace:
 To test that everything is working as expected, launch a Interactive Ruby and try importing 'Bio::BaseSpace': 
 
 	$ irb
-	>> require 'basespace'
+	>> require 'bio-basespace-sdk'
 	>> include Bio::BaseSpace
 
 ## Application triggering
@@ -58,7 +58,7 @@ we are able to obtain information about the user who launched the App and the da
 First, we instantiate a BaseSpaceAPI object using the ``client_key`` and ``client_secret`` codes provided on the BaseSpace developer's website when registering our App, as well as the ``AppSessionId`` generated from the app-triggering: 
 
 
-	require 'basespace'
+	require 'bio-basespace-sdk'
 	
 	include Bio::BaseSpace
 	
@@ -196,7 +196,7 @@ Here we demonstrate the basic BaseSpace authentication process. The work-flow ou
 
 Again, we will start out by initializing a ``BaseSpaceAPI`` object:
 
-	require 'basespace'
+	require 'bio-basespace-sdk'
 	include Bio::BaseSpace
 
 	client_id       = 'my client key'
@@ -278,7 +278,7 @@ a ``user`` instance we can use it to retrieve all project belonging to that user
 
 First we will initialize a ``BaseSpaceAPI`` using our access-token for ``global browse``:
 
-	require 'basespace'
+	require 'bio-basespace-sdk'
 	include Bio::BaseSpace
 
 	# REST server information and user access_token 
@@ -384,7 +384,7 @@ In addition, we take a look at some of the special queuring methods associated w
 Again, start out by initializing a ``BaseSpaceAPI`` instance and retrieving all projects belonging to the current user:
 
 	# First, create a client for making calls for this user session 
-	require 'basespace'
+	require 'bio-basespace-sdk'
 	include Bio::BaseSpace
 
 	client_id       = 'my client key'
