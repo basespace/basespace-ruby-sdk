@@ -28,7 +28,7 @@ or by,
 
 	git clone git@github.com:joejimbo/basespace-ruby-sdk.git
 
-Status: [![Build Status](https://secure.travis-ci.org/joejimbo/bio-basespace-sdk.png?branch=master)](https://travis-ci.org/joejimbo/bio-basespace-sdk)
+Status: [![Build Status](https://travis-ci.org/joejimbo/basespace-ruby-sdk.png?branch=master)](https://travis-ci.org/joejimbo/basespace-ruby-sdk)
 
 ## Setup
 
