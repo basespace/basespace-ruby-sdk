@@ -14,7 +14,7 @@
 require 'rubygems'
 require 'rspec'
 
-require 'basespace'
+require 'bio-basespace-sdk'
 
 attributes = { "Id" => "X10231", "Source" => "Test", "SpeciesName" => "Homo sapiens" }
 

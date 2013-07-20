@@ -14,7 +14,7 @@
 require 'rubygems'
 require 'rspec'
 
-require 'basespace'
+require 'bio-basespace-sdk'
 
 describe Bio::BaseSpace::APIClient do
     describe "initialization" do

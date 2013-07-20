@@ -14,12 +14,7 @@
 require 'rubygems'
 require 'rspec'
 
-# Turn off verbose reporting here, since class definitions may be loaded multiple
-# times here. That reports that constants have been already been initialized, which
-# is true, but they are only "re-initialized" with the very same values.
-v, $VERBOSE = $VERBOSE, nil
-Dir['./lib/**/*.rb'].each { |file| load file }
-$VERBOSE = v
+require 'bio-basespace-sdk'
 
 value = 'testvalue'
 legal = 'legalcases'
