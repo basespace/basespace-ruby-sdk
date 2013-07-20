@@ -8,7 +8,19 @@ The primary purpose of the SDK is to provide an easy-to-use Ruby environment ena
 
 ## Availability
 
-Current version of ``Bio::BaseSpace`` can be checked out here:
+*Note:* We are still testing our code. Please take the production-ready gem with a pinch of salt.
+
+The production environment version of ``Bio::BaseSpace`` is available as a Ruby gem:
+
+  gem install bio-basespace-sdk
+
+Depending on your Ruby installation, it might be necessary to install the Ruby gem with superuser permissions:
+
+  sudo gem install bio-basespace-sdk
+
+### Pre-Release Version
+
+The pre-release version of ``Bio::BaseSpace`` can be checked out here:
 
 	git clone https://github.com/joejimbo/basespace-ruby-sdk.git
 
@@ -16,7 +28,7 @@ or by,
 
 	git clone git@github.com:joejimbo/basespace-ruby-sdk.git
 
-*Note:* We will make the SDK available as a Ruby gem when our implementation is production ready. It will then also be listed on [Biogems.info](http://www.biogems.info).
+Status: [![Build Status](https://secure.travis-ci.org/joejimbo/bio-basespace-sdk.png?branch=master)](https://travis-ci.org/joejimbo/bio-basespace-sdk)
 
 ## Setup
 
