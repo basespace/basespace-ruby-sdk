@@ -499,7 +499,7 @@ For ``VCF``-files we can filter variant calls based on chromosome and location a
 
 	var_meta = my_vcf.get_variant_meta(my_api)
 	puts var_meta
-	var = my_vcf.filter_variant(my_api, '1', '20000', '30000')
+	var = my_vcf.filter_variant(my_api, '1', '20000', '30000') # no value. need verification
 	puts var
 
 The output will be:
