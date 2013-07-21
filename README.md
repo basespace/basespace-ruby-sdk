@@ -48,7 +48,7 @@ To test that everything is working as expected, launch a Interactive Ruby and tr
 	>> require 'bio-basespace-sdk'
 	>> include Bio::BaseSpace
 
-## Application triggering
+## Application Triggering
 
 This section demonstrates how to retrieve the ``AppSession`` object produced when a user triggers a BaseSpace App. 
 Further, we cover how to automatically generate the scope strings to request access to the data object (be it a project or a sample) that the App was triggered to analyze.
@@ -184,7 +184,7 @@ The output will be:
 
 For more details on access-requests and authentication and an example of the web-based case see example 1_authentication.rb
 
-## Requesting an access-token for data browsing
+## Requesting an Access-Token for Data Browsing
 
 Here we demonstrate the basic BaseSpace authentication process. The work-flow outlined here is
 
@@ -270,7 +270,7 @@ The output will be:
 	[Arabidopsis thaliana, Bos Taurus, Escherichia coli, Homo sapiens, Mus musculus, Phix,\
 	 Rhodobacter sphaeroides, Rattus norvegicus, Saccharomyces cerevisiae, Staphylococcus aureus]
 
-## Browsing data with global browse access
+## Browsing Data with Global Browse Access
 
 This section demonstrates basic browsing of BaseSpace objects once an access-token for global browsing has been obtained. We will see how 
 objects can be retrieved using either the ``BaseSpaceAPI`` class or by use of method calls on related object instances (for example once 
@@ -376,7 +376,7 @@ The output will be:
 	Runs retrieved from user instance 
 	[BacillusCereus, Genome-in-a-Day, TSCA_test, 2x151PhiX, TruSeq Amplicon_Cancer Panel, CancerDemo]
 
-## Accessing file-trees and querying BAM or VCF files
+## Accessing File-Trees and Querying BAM/VCF Files
 
 In this section we demonstrate how to access samples and analysis from a projects and how to work with the available file data for such instances.
 In addition, we take a look at some of the special queuring methods associated with BAM- and VCF-files. 
@@ -507,7 +507,7 @@ The output will be:
     VariantHeader: SampleCount=1
 	[Variant - chr2: 10236 id=['.'], Variant - chr2: 10249 id=['.'], ....]
 
-## Creating an AppResult and uploading files
+## Creating an AppResult and Uploading Files
 
 In this section we will see how to create a new AppResults object, change the state of the related AppSession,
 and upload result files to it as well as retrieve files from it. 
@@ -600,7 +600,7 @@ We can even download our newly uploaded file in the following manner:
 
 This section contains useful code-snippets demonstrating use-cases that frequently come up in App development.
 
-### Filtering file-lists and AppResult-lists using query parameter dictionaries
+### Filtering File-Lists and AppResult-Lists using Query Parameter Dictionaries
 
 Given a sample "a" we can retrieve a subset of the full file-list using a query parameter dictionary:
 
