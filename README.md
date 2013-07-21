@@ -1,6 +1,6 @@
 # BaseSpace Ruby SDK
 
-``Bio::BaseSpace`` is a Ruby based SDK to be used in the development of Apps and scripts for working with Illumina's BaseSpace cloud-computing solution for next-gen sequencing data analysis.
+BaseSpace Ruby SDK is a Ruby based Software Development Kit to be used in the development of Apps and scripts for working with Illumina's BaseSpace cloud-computing solution for next-gen sequencing data analysis.
 
 The primary purpose of the SDK is to provide an easy-to-use Ruby environment enabling developers to authenticate a user, retrieve data, and upload data/results from their own analysis to BaseSpace.
 
@@ -10,7 +10,7 @@ The primary purpose of the SDK is to provide an easy-to-use Ruby environment ena
 
 *Note:* We are still testing our code. Please take the production-ready gem with a pinch of salt.
 
-The production environment version of ``Bio::BaseSpace`` is available as a Ruby gem:
+The production environment version of BaseSpace Ruby SDK is available as a Ruby gem:
 
 	gem install bio-basespace-sdk
 
@@ -20,7 +20,7 @@ Depending on your Ruby installation, it might be necessary to install the Ruby g
 
 ### Pre-Release Version
 
-The pre-release version of ``Bio::BaseSpace`` can be checked out here:
+The pre-release version of BaseSpace Ruby SDK can be checked out here:
 
 	git clone https://github.com/joejimbo/basespace-ruby-sdk.git
 
