@@ -528,8 +528,6 @@ Assuming we have write access for the project, we will list the current analyses
 
 The output will be:
 
-	Output[]:
-	
 	The current running AppResults are 
 	[Results for sample 123, Results for sample 124 ...]
 
@@ -546,8 +544,6 @@ To create an appResults for a project, simply give the name and description:
 
 The output will be:
 
-	Output[]:
-	
 	Some info about our new app results
 	AppResult: testing
 	153153
@@ -563,8 +559,6 @@ We can change the status of our AppSession and add a status-summary as follows
 	myAppSession.setStatus(myBaseSpaceAPI,'running',"Back on track")
 
 The output will be:
-
-	Output[]:
 
 	After a change of status of the app sessions we get
 	App session by 152152: Morten Kallberg - Id: <my appSession Id> - status: NeedsAttention
@@ -582,8 +576,6 @@ Now we will make another AppResult and try to upload a file to it
 	f = appResultFiles[-1]
 
 The output will be:
-
-	Output[]:
 
 	My AppResult number 2 
 	AppResult: My second AppResult
