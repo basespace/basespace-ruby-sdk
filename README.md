@@ -54,7 +54,7 @@ This section demonstrates how to retrieve the ``AppSession`` object produced whe
 Further, we cover how to automatically generate the scope strings to request access to the data object (be it a project or a sample) that the App was triggered to analyze.
 
 The initial http request to our App from BaseSpace is identified by an ``ApplicationActionId``, using this piece of information 
-we are able to obtain information about the user who launched the App and the data that is sought analyzed by the App. 
+we are able to obtain information about the user who launched the App and the data that is sought/analyzed by the App. 
 First, we instantiate a BaseSpaceAPI object using the ``client_key`` and ``client_secret`` codes provided on the BaseSpace developer's website when registering our App, as well as the ``AppSessionId`` generated from the app-triggering: 
 
 
@@ -71,29 +71,28 @@ First, we instantiate a BaseSpaceAPI object using the ``client_key`` and ``clien
 	basespace_url   = 'https://api.basespace.illumina.com/'
 	api_version     = 'v1pre3'
 	
-	# First we will initialize a BaseSpace API object using our app information and the appSessionId
+	# First we will initialize a BaseSpace API object using our app information and the app_session_id
 	bs_api = BaseSpaceAPI.new(client_id, client_secret, basespace_url, api_version, app_session_id)
 	
-	# Using the bmy_app_session.spaceApi we can request the appSession object corresponding to the AppSession id supplied
+	# Using bs_api, we can request the appSession object corresponding to the AppSession ID supplied
 	my_app_session = bs_api.get_app_session
 	puts my_app_session
 	
 	# An app session contains a referal to one or more appLaunchObjects which reference the data module
 	# the user launched the app on. This can be a list of projects, samples, or a mixture of objects
 	puts "Type of data the app was triggered on can be seen in 'references'"
-	puts my_app_session.references.inspect   # .inspect is used to put surrounding [] 
-	puts
+	puts my_app_session.references.inspect  # `inspect` shows the object contents
 
-The output will be:
+The output will be similar to:
 
-	App session by 600602: Toshiaki Katayama - Id: <my app session id> - status: Complete
+	App session by 600602: Eri Kibukawa - Id: <my app session id> - status: Complete
 	Type of data the app was triggered on can be seen in 'references'
-	[Project]
+	[#<Bio::BaseSpace::AppSessionLaunchObject:0x007fc21a1ae0f8 @swagger_types={"Content"=>"dict", "Href"=>"str", "HrefContent"=>"str", "Rel"=>"str", "Type"=>"str"}, @attributes={"Content"=>#<Bio::BaseSpace::Project:0x007fc21a1ae378 @swagger_types={"Name"=>"str", "HrefSamples"=>"str", "HrefAppResults"=>"str", "HrefBaseSpaceUI"=>"str", "DateCreated"=>"datetime", "Id"=>"str", "Href"=>"str", "UserOwnedBy"=>"UserCompact"}, @attributes={"Name"=>"IGN_WGS_CEPH_Services_2.0", "HrefSamples"=>nil, "HrefAppResults"=>nil, "HrefBaseSpaceUI"=>nil, "DateCreated"=>#<DateTime: 2013-04-19T18:21:50+00:00 ((2456402j,66110s,0n),+0s,2299161j)>, "Id"=>"267267", "Href"=>"v1pre3/projects/267267", "UserOwnedBy"=>#<Bio::BaseSpace::UserCompact:0x007fc21a1ac758 @swagger_types={"Name"=>"str", "Id"=>"str", "Href"=>"str"}, @attributes={"Name"=>"Illumina Inc", "Id"=>"3004", "Href"=>"v1pre3/users/3004"}>}>, "Href"=>"v1pre3/projects/267267", "HrefContent"=>"v1pre3/projects/267267", "Rel"=>"Input", "Type"=>"Project"}>]
 
 We can also get a handle to the user who started the AppSession and further information on the ``AppLaunchObject``:
 
 	# We can also get a handle to the user who started the AppSession
-	puts "We can get a handle for the user who triggered the app"
+	puts "We can get a handle for the user who triggered the app:"
 	puts my_app_session.user_created_by
 	puts
 	
@@ -103,22 +102,21 @@ We can also get a handle to the user who started the AppSession and further info
 	puts "We can get out information such as the href to the launch object:"
 	puts my_reference.href_content
 	puts
-	puts "and the specific type of that object:"
+	puts "The specific type of that object:"
 	puts my_reference.type
 	puts
 
 
 The output will be:
 
-	We can get a handle for the user who triggered the app
+	We can get a handle for the user who triggered the app:
 	13039: Eri Kibukawa
 	
 	We can get out information such as the href to the launch object:
 	v1pre3/projects/848850
 	
-	and the specific type of that object:
+	The specific type of that object:
 	Project
-
 
 To start working, we will want to expand our permission scope for the trigger object so we can read and write data. The details of this process is the subject of the next section. 
 We end this section by demonstrating how one can easily obtain the so-called "scope string" and make the access request:
@@ -136,26 +134,26 @@ The output will be:
 	The scope string for requesting write access to the reference object is:
 	write project 848850
 
-We can easily request write access to the reference object so our App can start contributing analysis 
-by default we ask for write permission to and authentication for a device:
+We can easily request write access to the reference object, so that our App can start contributing to an analysis
+by default. We ask for write permission and authentication for a device:
 
    	access_map = bs_api.get_access(my_reference_content, 'write')
-	puts "We get the following access map"
+	puts "We get the following access map:"
 	puts access_map
 
-The output will be:
+The output will be similar to:
 
-    	We get the following access map
+    	We get the following access map:
 	{"device_code"=>"<my device code>", "user_code"=>"<my user code>", "verification_uri"=>"https://basespace.illumina.com/oauth/device", "verification_with_code_uri"=>"https://basespace.illumina.com/oauth/device?code=<my user code>", "expires_in"=>1800, "interval"=>1}
 
-Have the user visit the verification uri to grant us access
+Have the user visit the verification URI to grant us access:
 
-	puts "\nPlease visit the uri within 15 seconds and grant access"
+	puts "\nPlease visit the uri within 15 seconds and grant access:"
 	puts access_map['verification_with_code_uri']
 
 The output will be:
 
-	Please visit the uri within 15 seconds and grant access
+	Please visit the uri within 15 seconds and grant access:
 	https://basespace.illumina.com/oauth/device?code=<my user code>
 
 Accept for this test code through web browser
