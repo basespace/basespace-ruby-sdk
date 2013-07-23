@@ -226,11 +226,11 @@ At this point the user must visit the verification uri to grant us access
 	host = RbConfig::CONFIG['host_os']
 	case host
 	when /mswin|mingw|cygwin/
-	system("start #{link}")
+	  system("start #{link}")
 	when /darwin/
-	system("open #{link}")
+	  system("open #{link}")
 	when /linux/
-	system("xdg-open #{link}")
+	  system("xdg-open #{link}")
 	end
 	sleep(15)
 	## PAUSE HERE
@@ -463,11 +463,11 @@ Now, have a look at some of the methods calls specific to ``Bam`` and ``VCF`` fi
 	host = RbConfig::CONFIG['host_os']
 	case host
 	when /mswin|mingw|cygwin/
-	system("start #{link}")
+	  system("start #{link}")
 	when /darwin/
-	system("open #{link}")
+	  system("open #{link}")
 	when /linux/
-	system("xdg-open #{link}")
+	  system("xdg-open #{link}")
 	end
 	sleep(15)
 
@@ -534,11 +534,11 @@ First, create a client for making calls for this user session:
 	host = RbConfig::CONFIG['host_os']
 	case host
 	when /mswin|mingw|cygwin/
-	system("start #{link}")
+	  system("start #{link}")
 	when /darwin/
-	system("open #{link}")
+	  system("open #{link}")
 	when /linux/
-	system("xdg-open #{link}")
+	  system("xdg-open #{link}")
 	end
 	sleep(15)
 
