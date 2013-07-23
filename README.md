@@ -184,7 +184,7 @@ For more details on access-requests and authentication and an example of the web
 
 ## Requesting an Access-Token for Data Browsing
 
-Here we demonstrate the basic BaseSpace authentication process. The work-flow outlined here is
+Here we demonstrate the basic BaseSpace authentication process. The workflow outlined here is
 
 1. Request of access to a specific data-scope 
 2. User approval of access request 
@@ -210,14 +210,14 @@ First, get the verification code and uri for scope 'browse global'
 
 	device_info = bs_api.get_verification_code('browse global')
 	puts
-	puts "URL for user to visit and grant access: "
+	puts "URI for user to visit and grant access:"
 	puts device_info['verification_with_code_uri']
 	
 At this point the user must visit the verification uri to grant us access
 
 	## PAUSE HERE
-	# Have the user visit the verification uri to grant us access
-	puts "\nPlease visit the uri within 15 seconds and grant access"
+	# Have the user visit the verification URI to grant us access
+	puts "\nPlease visit the URI within 15 seconds and grant access:"
 	puts device_info['verification_with_code_uri']
 
 	link = device_info['verification_with_code_uri']
@@ -235,10 +235,10 @@ At this point the user must visit the verification uri to grant us access
 
 The output will be:
 
-	URL for user to visit and grant access: 
+	URI for user to visit and grant access: 
 	https://basespace.illumina.com/oauth/device?code=<my code>
 
-	Please visit the uri within 15 seconds and grant access
+	Please visit the URI within 15 seconds and grant access:
 	https://basespace.illumina.com/oauth/device?code=<my code>
 
 Once the user has granted us access to objects we requested, we can get the basespace access_token and start browsing simply by calling ``updatePriviliges`` on the baseSpaceApi instance.
@@ -260,13 +260,11 @@ At this point we can start using the ``BaseSpaceAPI`` instance to browse the ava
 
 	# We will get all available genomes with our new api! 
 	all_genomes  = bs_api.get_available_genomes
-	puts "Genomes: #{all_genomes}"
+	puts "Genomes: #{all_genomes.map { |g| g.to_s }.join(', ')}"
 
 The output will be:
 
-	Genomes 
-	[Arabidopsis thaliana, Bos Taurus, Escherichia coli, Homo sapiens, Mus musculus, Phix,\
-	 Rhodobacter sphaeroides, Rattus norvegicus, Saccharomyces cerevisiae, Staphylococcus aureus]
+	Genomes: Arabidopsis thaliana, Bos Taurus, Escherichia coli, Homo sapiens, Mus musculus, Phix, Rhodobacter sphaeroides, Rattus norvegicus, Saccharomyces cerevisiae, Staphylococcus aureus
 
 ## Browsing Data with Global Browse Access
 
