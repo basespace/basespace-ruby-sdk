@@ -57,7 +57,6 @@ The initial http request to our App from BaseSpace is identified by an ``Applica
 we are able to obtain information about the user who launched the App and the data that is sought/analyzed by the App. 
 First, we instantiate a BaseSpaceAPI object using the ``client_key`` and ``client_secret`` codes provided on the BaseSpace developer's website when registering our App, as well as the ``AppSessionId`` generated from the app-triggering: 
 
-
 	require 'bio-basespace-sdk'
 	
 	include Bio::BaseSpace
@@ -106,7 +105,6 @@ We can also get a handle to the user who started the AppSession and further info
 	puts my_reference.type
 	puts
 
-
 The output will be:
 
 	We can get a handle for the user who triggered the app:
@@ -128,22 +126,23 @@ We end this section by demonstrating how one can easily obtain the so-called "sc
 	puts my_reference_content.get_access_str('write')
 
 The output will be:
-    	We can get out the specific project objects by using 'content':
-	MyProject - id=848850
 
+	We can get out the specific project objects by using 'content':
+	MyProject - id=848850
+	
 	The scope string for requesting write access to the reference object is:
 	write project 848850
 
 We can easily request write access to the reference object, so that our App can start contributing to an analysis
 by default. We ask for write permission and authentication for a device:
 
-   	access_map = bs_api.get_access(my_reference_content, 'write')
+	access_map = bs_api.get_access(my_reference_content, 'write')
 	puts "We get the following access map:"
 	puts access_map
 
 The output will be similar to:
 
-    	We get the following access map:
+	We get the following access map:
 	{"device_code"=>"<my device code>", "user_code"=>"<my user code>", "verification_uri"=>"https://basespace.illumina.com/oauth/device", "verification_with_code_uri"=>"https://basespace.illumina.com/oauth/device?code=<my user code>", "expires_in"=>1800, "interval"=>1}
 
 Have the user visit the verification URI to grant us access:
@@ -196,7 +195,7 @@ Again, we will start out by initializing a ``BaseSpaceAPI`` object:
 
 	require 'bio-basespace-sdk'
 	include Bio::BaseSpace
-
+	
 	client_id       = 'my client key'
 	client_secret   = 'my client secret'
 	app_session_id  = 'my app session id'
@@ -205,30 +204,30 @@ Again, we will start out by initializing a ``BaseSpaceAPI`` object:
 	
 	# First we will initialize a BaseSpace API object using our app information and the appSessionId
 	bs_api = BaseSpaceAPI.new(client_id, client_secret, basespace_url, api_version, app_session_id)
-	
+
 First, get the verification code and uri for scope 'browse global'
 
 	device_info = bs_api.get_verification_code('browse global')
 	puts
 	puts "URI for user to visit and grant access:"
 	puts device_info['verification_with_code_uri']
-	
+
 At this point the user must visit the verification uri to grant us access
 
 	## PAUSE HERE
 	# Have the user visit the verification URI to grant us access
 	puts "\nPlease visit the URI within 15 seconds and grant access:"
 	puts device_info['verification_with_code_uri']
-
+	
 	link = device_info['verification_with_code_uri']
 	host = RbConfig::CONFIG['host_os']
 	case host
 	when /mswin|mingw|cygwin/
-	system("start #{link}")
+	  system("start #{link}")
 	when /darwin/
-	system("open #{link}")
+	  system("open #{link}")
 	when /linux/
-	system("xdg-open #{link}")
+	  system("xdg-open #{link}")
 	end
 	sleep(15)
 	## PAUSE HERE
@@ -237,7 +236,7 @@ The output will be:
 
 	URI for user to visit and grant access: 
 	https://basespace.illumina.com/oauth/device?code=<my code>
-
+	
 	Please visit the URI within 15 seconds and grant access:
 	https://basespace.illumina.com/oauth/device?code=<my code>
 
@@ -276,7 +275,7 @@ First we will initialize a ``BaseSpaceAPI`` using our access-token for ``global 
 
 	require 'bio-basespace-sdk'
 	include Bio::BaseSpace
-
+	
 	# REST server information and user access_token 
 	
 	client_id       = 'my client key'
@@ -287,12 +286,12 @@ First we will initialize a ``BaseSpaceAPI`` using our access-token for ``global 
 	api_version     = 'v1pre3'
 	
 	# First, create a client for making calls for this user session
-	my_api = BaseSpaceAPI.new(client_id, client_secret, basespace_url, api_version, app_session_id, access_token)
-	
+	bs_api = BaseSpaceAPI.new(client_id, client_secret, basespace_url, api_version, app_session_id, access_token)
+
 First we will try to retrieve a genome object:
 
 	# Now grab the genome with id=4
-	my_genome = my_api.get_genome_by_id('4')
+	my_genome = bs_api.get_genome_by_id('4')
 	puts "The Genome is #{my_genome}"
 	puts "We can get more information from the genome object"
 	puts "Id: #{my_genome.id}"
@@ -310,7 +309,7 @@ The output will be:
 Using a comparable method we can get a list of all available genomes:
 
 	# Get a list of all genomes
-	all_genomes  = my_api.get_available_genomes
+	all_genomes  = bs_api.get_available_genomes
 	puts "Genomes: #{all_genomes}"
 
 The output will be:
@@ -322,19 +321,19 @@ The output will be:
 Now, let us retrieve the ``User`` objects for the current user, and list all projects for this user:
 
 	# Take a look at the current user
-	user = my_api.get_user_by_id('current')
+	user = bs_api.get_user_by_id('current')
 	puts "The current user is #{user}"
 	puts
 	
 	# Now list the projects for this user
-	my_projects = my_api.get_project_by_user('current')
+	my_projects = bs_api.get_project_by_user('current')
 	puts "The projects for this user are #{my_projects}"
 	puts
-	
+
 The output will be:
 
 	[BaseSpaceDemo - id=2, Cancer Sequencing Demo - id=4, HiSeq 2500 - id=7, ResequencingPhixRun - id=12, TrainingRun - id=114, Note - id=165, 120313-tra - id=606, S.abortusequi-17_L2508 - id=619, TSChIP-Seq - id=14042, BCereusDemoData_Illumina - id=34061]
-
+	
 	The current user is 
 	<user id>: Your Name
 	
@@ -344,12 +343,12 @@ The output will be:
 We can also achieve this by making a call using the ``user`` instance. Notice that these calls take an instance of ``BaseSpaceAPI`` with apporpriate 
 priviliges to complete the transaction as parameter, this true for all retrieval method calls made on data objects:
 
-	my_projects2 = user.get_projects(my_api)
+	my_projects2 = user.get_projects(bs_api)
 	puts "Projects retrieved from the user instance"
 	puts my_projects2
 	
 	# List the runs available for the current user
-	runs = user.get_runs(my_api)
+	runs = user.get_runs(bs_api)
 	puts "The runs for this user are"
 	puts runs
 
@@ -363,7 +362,7 @@ The output will be:
 	
 In the same manner we can get a list of accessible user runs:
 
-	runs = user.get_runs(my_api)
+	runs = user.get_runs(bs_api)
 	puts "Runs retrieved from user instance"
 	puts runs
 
@@ -382,125 +381,123 @@ Again, start out by initializing a ``BaseSpaceAPI`` instance and retrieving all 
 	# First, create a client for making calls for this user session 
 	require 'bio-basespace-sdk'
 	include Bio::BaseSpace
-
+	
 	client_id       = 'my client key'
 	client_secret   = 'my client secret'
 	access_token    = 'your access token'
 	app_session_id  = 'my app session id'
 	basespace_url   = 'https://api.basespace.illumina.com/'
 	api_version     = 'v1pre3'
-
-	my_api       = BaseSpaceAPI.new(client_id, client_secret, basespace_url, api_version, app_session_id, access_token)
-	user         = my_api.get_user_by_id('current')
-	my_projects  = my_api.get_project_by_user('current')
-
+	
+	bs_api       = BaseSpaceAPI.new(client_id, client_secret, basespace_url, api_version, app_session_id, access_token)
+	user         = bs_api.get_user_by_id('current')
+	my_projects  = bs_api.get_project_by_user('current')
+	
 	app_results  = nil
 	samples      = nil
 
 Now we can list all the analyses and samples for these projects
 
 	# Let's list all the AppResults and samples for these projects
-
+	
 	my_projects.each do |single_project|
-		puts "# Project: #{single_project}"
-		
-		app_results = single_project.get_app_results(my_api)
-		puts "    The App results for project #{single_project} are"
-		puts "      #{app_results}"
-		
-		samples = single_project.get_samples(my_api)
-		puts "    The samples for project #{single_project} are"
-		puts "      #{samples}"
+	  puts "# Project: #{single_project}"
+	  
+	  app_results = single_project.get_app_results(bs_api)
+	  puts "    The App results for project #{single_project} are"
+	  puts "      #{app_results}"
+	  
+	  samples = single_project.get_samples(bs_api)
+	  puts "    The samples for project #{single_project} are"
+	  puts "      #{samples}"
 	end
 
 The output will be:
 
-    # Project: BaseSpaceDemo - id=2
-         The App results for project BaseSpaceDemo - id=2 are
-           [Resequencing, Resequencing, Resequencing, Resequencing, Resequencing, Resequencing, Resequencing, Resequencing, Resequencing, Resequencing]
-         The samples for project BaseSpaceDemo - id=2 are
-           [BC_1, BC_2, BC_3, BC_4, BC_5, BC_6, BC_7, BC_8, BC_9, BC_10]
-    # Project: Cancer Sequencing Demo - id=4
-         The App results for project Cancer Sequencing Demo - id=4 are
-           [Amplicon, Amplicon]
-         The samples for project Cancer Sequencing Demo - id=4 are
-           [L2I]
-    # Project: HiSeq 2500 - id=7
-         The App results for project HiSeq 2500 - id=7 are
-           [Resequencing]
-         The samples for project HiSeq 2500 - id=7 are
-           [NA18507]
+	# Project: BaseSpaceDemo - id=2
+	     The App results for project BaseSpaceDemo - id=2 are
+	       [Resequencing, Resequencing, Resequencing, Resequencing, Resequencing, Resequencing, Resequencing, Resequencing, Resequencing, Resequencing]
+	     The samples for project BaseSpaceDemo - id=2 are
+	       [BC_1, BC_2, BC_3, BC_4, BC_5, BC_6, BC_7, BC_8, BC_9, BC_10]
+	# Project: Cancer Sequencing Demo - id=4
+	     The App results for project Cancer Sequencing Demo - id=4 are
+	       [Amplicon, Amplicon]
+	     The samples for project Cancer Sequencing Demo - id=4 are
+	       [L2I]
+	# Project: HiSeq 2500 - id=7
+	     The App results for project HiSeq 2500 - id=7 are
+	       [Resequencing]
+	     The samples for project HiSeq 2500 - id=7 are
+	       [NA18507]
 	......
-
 
 We'll take a further look at the files belonging to the sample from the last project in the loop above:
 
-    samples.each do |sample|
+	samples.each do |sample|
 	    puts "# Sample: #{sample}"
-	    files = sample.get_files(my_api)
+	    files = sample.get_files(bs_api)
 	    puts files
 	end
 
 The output will be:
 
-     # Sample: Bcereus_1
-     Bcereus-1_S1_L001_R1_001.fastq.gz - id: '14235852', size: '179971155'
-     Bcereus-1_S1_L001_R2_001.fastq.gz - id: '14235853', size: '193698522'
-     # Sample: Bcereus_2
-     Bcereus-2_S2_L001_R1_001.fastq.gz - id: '14235871', size: '126164153'
-     Bcereus-2_S2_L001_R2_001.fastq.gz - id: '14235872', size: '137077949'
+	# Sample: Bcereus_1
+	Bcereus-1_S1_L001_R1_001.fastq.gz - id: '14235852', size: '179971155'
+	Bcereus-1_S1_L001_R2_001.fastq.gz - id: '14235853', size: '193698522'
+	# Sample: Bcereus_2
+	Bcereus-2_S2_L001_R1_001.fastq.gz - id: '14235871', size: '126164153'
+	Bcereus-2_S2_L001_R2_001.fastq.gz - id: '14235872', size: '137077949'
 	......
-	
+
 Now, have a look at some of the methods calls specific to ``Bam`` and ``VCF`` files. First, we will get a ``Bam``-file and then retrieve the coverage information available for chromosome 2 between positions 1 and 20000: 
 
-
-	device_info = my_api.get_verification_code('read project 183184')
+	device_info = bs_api.get_verification_code('read project 183184')
 	link = device_info['verification_with_code_uri']
 	host = RbConfig::CONFIG['host_os']
 	case host
 	when /mswin|mingw|cygwin/
-	system("start #{link}")
+	  system("start #{link}")
 	when /darwin/
-	system("open #{link}")
+	  system("open #{link}")
 	when /linux/
-	system("xdg-open #{link}")
+	  system("xdg-open #{link}")
 	end
 	sleep(15)
-
+	
 	code = device_info['device_code']
-	my_api.update_privileges(code)
-
+	bs_api.update_privileges(code)
+	
 	# Now do some work with files 
 	# we'll grab a BAM by id and get the coverage for an interval + accompanying meta-data 
-
-	my_bam = my_api.get_file_by_id('44154664')
+	
+	my_bam = bs_api.get_file_by_id('44154664')
 	puts "# BAM: #{my_bam}"
-	cov = my_bam.get_interval_coverage(my_api, 'chr1', '50000', '60000')
+	cov = my_bam.get_interval_coverage(bs_api, 'chr1', '50000', '60000')
 	puts cov
-	cov_meta = my_bam.get_coverage_meta(my_api, 'chr1')
+	cov_meta = my_bam.get_coverage_meta(bs_api, 'chr1')
 	puts cov_meta
 
 The output will be:
 
-    # BAM: sorted_S1.bam - id: '44154664', size: '105789387933', status: 'complete'
-    Chrom chr1: 1-1792, BucketSize=2
-    CoverageMeta: max=1158602 gran=128
+	# BAM: sorted_S1.bam - id: '44154664', size: '105789387933', status: 'complete'
+	Chrom chr1: 1-1792, BucketSize=2
+	CoverageMeta: max=1158602 gran=128
 
 For ``VCF``-files we can filter variant calls based on chromosome and location as well:
 
 	# and a vcf file
-	my_vcf = my_api.get_file_by_id('44154644')
-
+	my_vcf = bs_api.get_file_by_id('44154644')
+	
 	# Get the variant meta info 
-
-	var_meta = my_vcf.get_variant_meta(my_api)
+	
+	var_meta = my_vcf.get_variant_meta(bs_api)
 	puts var_meta
-	var = my_vcf.filter_variant(my_api, '1', '20000', '30000') # no value. need verification
+	var = my_vcf.filter_variant(bs_api, '1', '20000', '30000') # no value. need verification
 	puts var
 
 The output will be:
 
-    VariantHeader: SampleCount=1
+	VariantHeader: SampleCount=1
 	[Variant - chr2: 10236 id=['.'], Variant - chr2: 10249 id=['.'], ....]
 
 ## Creating an AppResult and Uploading Files
@@ -509,88 +506,111 @@ In this section we will see how to create a new AppResults object, change the st
 and upload result files to it as well as retrieve files from it. 
 
 First, create a client for making calls for this user session:
- 
-	myBaseSpaceAPI   = BaseSpaceAPI(client_key, client_secret, BaseSpaceUrl, version, AppSessionId,AccessToken=accessToken)
 
+	require 'bio-basespace-sdk'
+	include Bio::BaseSpace
+	
+	client_id       = 'my client key'
+	client_secret   = 'my client secret'
+	app_session_id  = 'my app session id'
+	basespace_url   = 'https://api.basespace.illumina.com/'
+	api_version     = 'v1pre3'
+	
+	bs_api = BaseSpaceAPI.new(client_id, client_secret, basespace_url, api_version, app_session_id, access_token)
+	
 	# Now we'll do some work of our own. First get a project to work on
 	# we'll need write permission, for the project we are working on
-	# meaning we will need get a new token and instantiate a new BaseSpaceAPI  
-	p = myBaseSpaceAPI.getProjectById('89')
+	# meaning we will need get a new token and instantiate a new BaseSpaceAPI
+	
+	device_info = bs_api.get_verification_code('browse global')
+	link = device_info['verification_with_code_uri']
+	host = RbConfig::CONFIG['host_os']
+	case host
+	when /mswin|mingw|cygwin/
+	  system("start #{link}")
+	when /darwin/
+	  system("open #{link}")
+	when /linux/
+	  system("xdg-open #{link}")
+	end
+	sleep(15)
+	
+	code = device_info['device_code']
+	bs_api.update_privileges(code)
+	
+	prj = bs_api.get_project_by_id('183184')
 
 Assuming we have write access for the project, we will list the current analyses for the project:
 
-	appRes = p.getAppResults(myBaseSpaceAPI,statuses=['Running'])
-	print "\nThe current running AppResults are \n" + str(appRes)
+	statuses = ['Running']
+	app_res = prj.get_app_results(bs_api, {}, statuses)
+	puts "The current running AppResults are #{app_res}"
+	puts
 
 The output will be:
 
-	Output[]:
-	
-	The current running AppResults are 
-	[Results for sample 123, Results for sample 124 ...]
-
+	The current running AppResults are [BWA GATK - HiSeq 2500 NA12878 demo 2x150, HiSeq 2500 NA12878 demo 2x150 App Result]
 
 To create an appResults for a project, simply give the name and description:
 
-	appResults = p.createAppResult(myBaseSpaceAPI,"testing","this is my results",appSessionId='')
-	print "\nSome info about our new app results"
-	print appResults
-	print appResults.Id
-	print "\nThe app results also comes with a reference to our AppSession"
-	myAppSession = appResults.AppSession
-	print myAppSession
+	app_session_id = ''
+	app_results = prj.create_app_result(bs_api, "testing", "this is my results", app_session_id) # need to verify example 4 code.
+	puts "Some info about our new app results"
+	puts app_results
+	puts app_results.id
+	puts
+	puts "The app results also comes with a reference to our AppSession"
+	my_app_session = app_results.app_session
+	puts my_app_session
+	puts
 
 The output will be:
 
-	Output[]:
-	
 	Some info about our new app results
 	AppResult: testing
 	153153
-
+	
 	The app results also comes with a reference to our AppSession
-	App session by 152152: Morten Kallberg - Id: <my appSession Id> - status: Running
+	App session by 152152: <my name> - Id: <my appSession Id> - status: Running
 
 We can change the status of our AppSession and add a status-summary as follows
 
-	myAppSession.setStatus(myBaseSpaceAPI,'needsattention',"We worked hard, but encountered some trouble.")
-	print "\nAfter a change of status of the app sessions we get\n" + str(myAppSession)
-	# we'll set our appSession back to running so we can do some more work
-	myAppSession.setStatus(myBaseSpaceAPI,'running',"Back on track")
+	my_app_session.set_status(bs_api, 'needsattention', "We worked hard, but encountered some trouble.")
+	puts "After a change of status of the app sessions we get #{my_app_session}"
+	puts
+	# we'll set our appSession back to running so we can do some more work.
+	my_app_session.set_status(bs_api, 'running', "Back on track")
 
 The output will be:
-
-	Output[]:
 
 	After a change of status of the app sessions we get
-	App session by 152152: Morten Kallberg - Id: <my appSession Id> - status: NeedsAttention
-	
+	App session by 152152: <my name> - Id: <my appSession Id> - status: NeedsAttention
+
 Now we will make another AppResult and try to upload a file to it
 
-	appResults2 = p.createAppResult(myBaseSpaceAPI,"My second AppResult","This one I will upload to")
-	appResults2.uploadFile(myBaseSpaceAPI, '/home/mkallberg/Desktop/testFile2.txt', 'BaseSpaceTestFile.txt', '/mydir/', 'text/plain')
-	print "\nMy AppResult number 2 \n" + str(appResults2)
+	app_results2 = prj.create_app_result(bs_api, "My second AppResult", "This one I will upload to")
+	app_results2.upload_file(bs_api, '/tmp/testFile2.txt', 'BaseSpaceTestFile.txt', '/mydir/', 'text/plain')
+	puts "My AppResult number 2 #{app_results2}"
+	puts
 	
-	## let's see if our new file made it
-	appResultFiles = appResults2.getFiles(myBaseSpaceAPI)
-	print "\nThese are the files in the appResult"
-	print appResultFiles
-	f = appResultFiles[-1]
+	# Let's see if our new file made it.
+	app_result_files = app_results2.get_files(bs_api)
+	puts "These are the files in the appResult"
+	puts app_result_files
+	f = app_result_files.last
 
 The output will be:
-
-	Output[]:
 
 	My AppResult number 2 
 	AppResult: My second AppResult
-
+	
 	These are the files in the appResult
 	[BaseSpaceTestFile.txt]
 
 We can even download our newly uploaded file in the following manner:
 
-	f = myBaseSpaceAPI.getFileById(f.Id)
-	f.downloadFile(myBaseSpaceAPI,'/home/mkallberg/Desktop/')
+	f = bs_api.get_file_by_id(f.id)
+	f.download_file(bs_api, '/tmp/')
 
 ## Cookbook
 
@@ -598,36 +618,41 @@ This section contains useful code-snippets demonstrating use-cases that frequent
 
 ### Filtering File-Lists and AppResult-Lists using Query Parameter Dictionaries
 
-Given a sample "a" we can retrieve a subset of the full file-list using a query parameter dictionary:
+Given a sample "a_sample" we can retrieve a subset of the full file-list using a query parameter dictionary:
 
-	In [10]: a.getFiles(myAPI)
-	Out[10]: [sorted.bam, sorted.bam.bai, genome.vcf]
-
-	In [11]: a.getFiles(myAPI,myQp={'Extensions':'bam'})
-	Out[11]: [sorted.bam]
+	# bs_api = BaseSpaceAPI.new(client_id, client_secret, basespace_url, api_version, app_session_id, access_token)
+	# my_projects = bs_api.get_project_by_user('current')
+	# a_project = my_projects.first
+	# my_samples = a_project.get_samples(bs_api)
+	# a_sample = my_samples.first
+	
+	>> a_sample.get_files(bs_api)
+	=> [sorted.bam, sorted.bam.bai, genome.vcf]
+	
+	> a_sample.get_files(bs_api, {'Extensions' => 'bam'})
+	=> [sorted.bam]
 
 Filter with multiple extensions:
 
-	In [12]: a.getFiles(myAPI,myQp={'Extensions':'bam,vcf'})
-	Out[12]: [sorted.bam, genome.vcf]
+	>> a_sample.get_files(bs_api, {'Extensions' => 'bam,vcf'})
+	=> [sorted.bam, genome.vcf]
 
 You can provide all other legal sorting/filtering keyword in this dictionary to get further refinement of the list:
 
-	In [13]: a.getFiles(myAPI,myQp={'Extensions':'bam,vcf','SortBy':'Path'})
-	Out[13]: [genome.vcf, sorted.bam]
+	>> a_sample.get_files(bs_api, {'Extensions' => 'bam,vcf', 'SortBy' => 'Path'})
+	=> [genome.vcf, sorted.bam]
 
+You can supply a dictionary of query parameters when you retrieving appresults, in the same way you filter file lists. Below is an example of how to limit the number of results from 100 (default value for "Limit") to 10.
 
-You can supply a dictionary of query parameters when you retrieving appresults, in the same way you filter file lists. Below is an example of how to limit the number of results from 100 (default value for “Limit”) to 10.
-
-	In [3]: res = p.getAppResults(myBaseSpaceAPI)
-
-	In [4]: len(res)
-	Out[4]: 100
-
-	In [5]: res = p.getAppResults(myBaseSpaceAPI,myQp={'Limit':'10'})
-
-	In [6]: len(res)
-	Out[6]: 10
+	>> res = a_project.get_app_results(bs_api)
+	
+	>> res.length
+	=> 100
+	
+	>> res = a_project.get_app_results(bs_api, {'Limit' => '10'})
+	
+	>> res.length
+	=> 10
 
 ## Feature Requests and Bugs
 
