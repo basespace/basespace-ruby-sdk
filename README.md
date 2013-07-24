@@ -224,11 +224,11 @@ At this point the user must visit the verification uri to grant us access
 	host = RbConfig::CONFIG['host_os']
 	case host
 	when /mswin|mingw|cygwin/
-	system("start #{link}")
+	  system("start #{link}")
 	when /darwin/
-	system("open #{link}")
+	  system("open #{link}")
 	when /linux/
-	system("xdg-open #{link}")
+	  system("xdg-open #{link}")
 	end
 	sleep(15)
 	## PAUSE HERE
@@ -459,11 +459,11 @@ Now, have a look at some of the methods calls specific to ``Bam`` and ``VCF`` fi
 	host = RbConfig::CONFIG['host_os']
 	case host
 	when /mswin|mingw|cygwin/
-	system("start #{link}")
+	  system("start #{link}")
 	when /darwin/
-	system("open #{link}")
+	  system("open #{link}")
 	when /linux/
-	system("xdg-open #{link}")
+	  system("xdg-open #{link}")
 	end
 	sleep(15)
 
@@ -509,77 +509,100 @@ In this section we will see how to create a new AppResults object, change the st
 and upload result files to it as well as retrieve files from it. 
 
 First, create a client for making calls for this user session:
- 
-	myBaseSpaceAPI   = BaseSpaceAPI(client_key, client_secret, BaseSpaceUrl, version, AppSessionId,AccessToken=accessToken)
+
+	require 'bio-basespace-sdk'
+	include Bio::BaseSpace
+
+	client_id       = 'my client key'
+	client_secret   = 'my client secret'
+	app_session_id  = 'my app session id'
+	basespace_url   = 'https://api.basespace.illumina.com/'
+	api_version     = 'v1pre3'
+	
+	bs_api = BaseSpaceAPI.new(client_id, client_secret, basespace_url, api_version, app_session_id, access_token)
 
 	# Now we'll do some work of our own. First get a project to work on
 	# we'll need write permission, for the project we are working on
-	# meaning we will need get a new token and instantiate a new BaseSpaceAPI  
-	p = myBaseSpaceAPI.getProjectById('89')
+	# meaning we will need get a new token and instantiate a new BaseSpaceAPI
+
+	device_info = bs_api.get_verification_code('browse global')
+    link = device_info['verification_with_code_uri']
+	host = RbConfig::CONFIG['host_os']
+	case host
+	when /mswin|mingw|cygwin/
+	  system("start #{link}")
+	when /darwin/
+	  system("open #{link}")
+	when /linux/
+	  system("xdg-open #{link}")
+	end
+	sleep(15)
+
+	code = device_info['device_code']
+	bs_api.update_privileges(code)
+
+    prj = bs_api.get_project_by_id('183184')
 
 Assuming we have write access for the project, we will list the current analyses for the project:
 
-	appRes = p.getAppResults(myBaseSpaceAPI,statuses=['Running'])
-	print "\nThe current running AppResults are \n" + str(appRes)
+    statuses = ['Running']
+    app_res = prj.get_app_results(bs_api, {}, statuses)
+    puts "The current running AppResults are #{app_res}"
+    puts
 
 The output will be:
 
-	Output[]:
-	
-	The current running AppResults are 
-	[Results for sample 123, Results for sample 124 ...]
-
+    The current running AppResults are [BWA GATK - HiSeq 2500 NA12878 demo 2x150, HiSeq 2500 NA12878 demo 2x150 App Result]
 
 To create an appResults for a project, simply give the name and description:
 
-	appResults = p.createAppResult(myBaseSpaceAPI,"testing","this is my results",appSessionId='')
-	print "\nSome info about our new app results"
-	print appResults
-	print appResults.Id
-	print "\nThe app results also comes with a reference to our AppSession"
-	myAppSession = appResults.AppSession
-	print myAppSession
+    app_session_id = ''
+    app_results = prj.create_app_result(bs_api, "testing", "this is my results", app_session_id) # need to verify example 4 code.
+    puts "Some info about our new app results"
+    puts app_results
+    puts app_results.id
+    puts
+    puts "The app results also comes with a reference to our AppSession"
+    my_app_session = app_results.app_session
+    puts my_app_session
+    puts
 
 The output will be:
 
-	Output[]:
-	
 	Some info about our new app results
 	AppResult: testing
 	153153
 
 	The app results also comes with a reference to our AppSession
-	App session by 152152: Morten Kallberg - Id: <my appSession Id> - status: Running
+	App session by 152152: <my name> - Id: <my appSession Id> - status: Running
 
 We can change the status of our AppSession and add a status-summary as follows
 
-	myAppSession.setStatus(myBaseSpaceAPI,'needsattention',"We worked hard, but encountered some trouble.")
-	print "\nAfter a change of status of the app sessions we get\n" + str(myAppSession)
-	# we'll set our appSession back to running so we can do some more work
-	myAppSession.setStatus(myBaseSpaceAPI,'running',"Back on track")
+    my_app_session.set_status(bs_api, 'needsattention', "We worked hard, but encountered some trouble.")
+    puts "After a change of status of the app sessions we get #{my_app_session}"
+    puts
+    # we'll set our appSession back to running so we can do some more work.
+    my_app_session.set_status(bs_api, 'running', "Back on track")
 
 The output will be:
 
-	Output[]:
-
 	After a change of status of the app sessions we get
-	App session by 152152: Morten Kallberg - Id: <my appSession Id> - status: NeedsAttention
+	App session by 152152: <my name> - Id: <my appSession Id> - status: NeedsAttention
 	
 Now we will make another AppResult and try to upload a file to it
 
-	appResults2 = p.createAppResult(myBaseSpaceAPI,"My second AppResult","This one I will upload to")
-	appResults2.uploadFile(myBaseSpaceAPI, '/home/mkallberg/Desktop/testFile2.txt', 'BaseSpaceTestFile.txt', '/mydir/', 'text/plain')
-	print "\nMy AppResult number 2 \n" + str(appResults2)
-	
-	## let's see if our new file made it
-	appResultFiles = appResults2.getFiles(myBaseSpaceAPI)
-	print "\nThese are the files in the appResult"
-	print appResultFiles
-	f = appResultFiles[-1]
+    app_results2 = prj.create_app_result(bs_api, "My second AppResult", "This one I will upload to")
+    app_results2.upload_file(bs_api, '/tmp/testFile2.txt', 'BaseSpaceTestFile.txt', '/mydir/', 'text/plain')
+    puts "My AppResult number 2 #{app_results2}"
+    puts
+
+    # Let's see if our new file made it.
+    app_result_files = app_results2.get_files(bs_api)
+    puts "These are the files in the appResult"
+    puts app_result_files
+    f = app_result_files.last
 
 The output will be:
-
-	Output[]:
 
 	My AppResult number 2 
 	AppResult: My second AppResult
@@ -589,8 +612,10 @@ The output will be:
 
 We can even download our newly uploaded file in the following manner:
 
-	f = myBaseSpaceAPI.getFileById(f.Id)
-	f.downloadFile(myBaseSpaceAPI,'/home/mkallberg/Desktop/')
+    f = bs_api.get_file_by_id(f.id)
+    f.download_file(bs_api, '/tmp/')
+
+-----
 
 ## Cookbook
 
@@ -600,31 +625,31 @@ This section contains useful code-snippets demonstrating use-cases that frequent
 
 Given a sample "a" we can retrieve a subset of the full file-list using a query parameter dictionary:
 
-	In [10]: a.getFiles(myAPI)
+	In [10]: a.get_files(bs_api)
 	Out[10]: [sorted.bam, sorted.bam.bai, genome.vcf]
 
-	In [11]: a.getFiles(myAPI,myQp={'Extensions':'bam'})
+	In [11]: a.get_files(bs_api,myQp={'Extensions':'bam'})
 	Out[11]: [sorted.bam]
 
 Filter with multiple extensions:
 
-	In [12]: a.getFiles(myAPI,myQp={'Extensions':'bam,vcf'})
+	In [12]: a.get_files(bs_api,myQp={'Extensions':'bam,vcf'})
 	Out[12]: [sorted.bam, genome.vcf]
 
 You can provide all other legal sorting/filtering keyword in this dictionary to get further refinement of the list:
 
-	In [13]: a.getFiles(myAPI,myQp={'Extensions':'bam,vcf','SortBy':'Path'})
+	In [13]: a.get_files(bs_api,myQp={'Extensions':'bam,vcf','SortBy':'Path'})
 	Out[13]: [genome.vcf, sorted.bam]
 
 
 You can supply a dictionary of query parameters when you retrieving appresults, in the same way you filter file lists. Below is an example of how to limit the number of results from 100 (default value for “Limit”) to 10.
 
-	In [3]: res = p.getAppResults(myBaseSpaceAPI)
+	In [3]: res = p.get_app_results(bs_api)
 
 	In [4]: len(res)
 	Out[4]: 100
 
-	In [5]: res = p.getAppResults(myBaseSpaceAPI,myQp={'Limit':'10'})
+	In [5]: res = p.get_app_results(bs_api,myQp={'Limit':'10'})
 
 	In [6]: len(res)
 	Out[6]: 10
