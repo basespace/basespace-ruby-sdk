@@ -237,7 +237,8 @@ class APIClient
       instance = File.new 
     else
       # models in BaseSpace
-      klass = Object.const_get(obj_class)
+      # [NOTE] can be written as Object.const_get("Bio::BaseSpace::#{obj_class}") in Ruby 2.0
+      klass = Object.const_get('Bio').const_get('BaseSpace').const_get(obj_class)
       instance = klass.new
     end
 
