@@ -140,13 +140,13 @@ class BaseAPI
     # convert list response dict to object type
     # TODO check that Response is present -- errors sometime don't include
     # [TODO] check why the Python SDK only uses the first element in the response_objects
-    convertet = []
+    converted = []
     if response_object = response_objects.first
       response_object.convert_to_object_list.each do |c|
-        convertet << @api_client.deserialize(c, my_model)
+        converted << @api_client.deserialize(c, my_model)
       end
     end
-    return convertet
+    return converted
   end
 
   # URL encode a Hash of data values.
