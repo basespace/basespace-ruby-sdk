@@ -631,37 +631,34 @@ Given a sample "a\_sample" we can retrieve a subset of the full file-list using 
 	# Get a brief sample representation from the point of a project:
 	a_sample = my_samples.first
 	
-	# Get the full version via direct BaseSpace API call:
+	# Get the full version via direct BaseSpace API call (for demonstration, not required below):
 	full_sample = bs_api.get_sample_by_id(a_sample.get_attr('Id'))
 	
-	# TODO -- everything below untested, Joachim
-	a_sample.get_files(bs_api)
-	=> [sorted.bam, sorted.bam.bai, genome.vcf]
+	# Get a list of files associated with the sample:
+	# Possible output: ["s_G1_L001_I1_001.fastq.1.gz - id: '535642', size: '7493990'", "s_G1_L001_I1_002.fastq.1.gz - id: '535643', size: '7525743'"]
+	a_sample.get_files(bs_api).map { |file| file.to_s }
 	
-	> a_sample.get_files(bs_api, {'Extensions' => 'bam'})
-	=> [sorted.bam]
-
-Filter with multiple extensions:
-
-	>> a_sample.get_files(bs_api, {'Extensions' => 'bam,vcf'})
-	=> [sorted.bam, genome.vcf]
+	# Get a listing of ".gz" files:
+	a_sample.get_files(bs_api, { 'Extensions' => 'gz' })
+	
+	# Get a listing with multiple extension filter (".bam" and ".vcf" files):
+	a_sample.get_files(bs_api, { 'Extensions' => 'bam,vcf' })
 
 You can provide all other legal sorting/filtering keyword in this dictionary to get further refinement of the list:
 
-	>> a_sample.get_files(bs_api, {'Extensions' => 'bam,vcf', 'SortBy' => 'Path'})
-	=> [genome.vcf, sorted.bam]
+	a_sample.get_files(bs_api, { 'Extensions' => 'bam,vcf', 'SortBy' => 'Path', 'Limit' => 1 })
 
-You can supply a dictionary of query parameters when you retrieving appresults, in the same way you filter file lists. Below is an example of how to limit the number of results from 100 (default value for "Limit") to 10.
+You can supply a dictionary of query parameters when you retrieving `AppResult`s, in the same way you filter file lists. Below is an example of how to limit the number of results from 100 (default value for "Limit") to 10.
 
-	>> res = a_project.get_app_results(bs_api)
+	results = a_project.get_app_results(bs_api)
 	
-	>> res.length
-	=> 100
+	# Possible output: 100
+	results.length
 	
-	>> res = a_project.get_app_results(bs_api, {'Limit' => '10'})
-	
-	>> res.length
-	=> 10
+	# Restrict the returned list of results to 10 items.
+	# New length of `results`: 10
+	results = a_project.get_app_results(bs_api, { 'Limit' => '10' })
+	results.length
 
 ## Feature Requests and Bugs
 
