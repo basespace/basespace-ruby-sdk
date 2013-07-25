@@ -614,19 +614,28 @@ We can even download our newly uploaded file in the following manner:
 
 ## Cookbook
 
-This section contains useful code-snippets demonstrating use-cases that frequently come up in App development.
+This section contains useful code snippets, which are demonstrating frequent use-cases in App development.
 
 ### Filtering File-Lists and AppResult-Lists using Query Parameter Dictionaries
 
-Given a sample "a_sample" we can retrieve a subset of the full file-list using a query parameter dictionary:
+Given a sample "a\_sample" we can retrieve a subset of the full file-list using a query parameter dictionary:
 
-	# bs_api = BaseSpaceAPI.new(client_id, client_secret, basespace_url, api_version, app_session_id, access_token)
-	# my_projects = bs_api.get_project_by_user('current')
-	# a_project = my_projects.first
-	# my_samples = a_project.get_samples(bs_api)
-	# a_sample = my_samples.first
+	# Get a BaseSpace API object as above, retrieve a list of our projects,
+	# pick the first available project, get its samples, and then assign the
+	# first sample to `a_sample`.
+	bs_api = BaseSpaceAPI.new(client_id, client_secret, basespace_url, api_version, app_session_id, access_token)
+	my_projects = bs_api.get_project_by_user('current')
+	a_project = my_projects.first
+	my_samples = a_project.get_samples(bs_api)
 	
-	>> a_sample.get_files(bs_api)
+	# Get a brief sample representation from the point of a project:
+	a_sample = my_samples.first
+	
+	# Get the full version via direct BaseSpace API call:
+	full_sample = bs_api.get_sample_by_id(a_sample.get_attr('Id'))
+	
+	# TODO -- everything below untested, Joachim
+	a_sample.get_files(bs_api)
 	=> [sorted.bam, sorted.bam.bai, genome.vcf]
 	
 	> a_sample.get_files(bs_api, {'Extensions' => 'bam'})
