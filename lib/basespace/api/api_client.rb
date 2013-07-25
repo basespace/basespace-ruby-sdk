@@ -153,7 +153,7 @@ class APIClient
       # [TODO] confirm this works or not
       #request = urllib2.Request(url, headers)
       uri = URI.parse(url)
-      request = Net::HTTP::Get.new(uri.path, headers)
+      request = Net::HTTP::Get.new(uri, headers)
     when 'POST', 'PUT', 'DELETE'
       if cgi_params
         force_post_url = url 
