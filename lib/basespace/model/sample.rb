@@ -28,8 +28,8 @@ class Sample < Model
       'SampleNumber'    => 'int',
       'ExperimentName'  => 'str',
       'HrefFiles'       => 'str',
-      # AppSession
-      'IsPairedEnd'     => 'int',
+      'AppSession'      => 'dict',
+      'IsPairedEnd'     => 'bool',
       'Read1'           => 'int',
       'Read2'           => 'int',
       'NumReadsRaw'     => 'int',
@@ -42,12 +42,13 @@ class Sample < Model
       'Status'          => 'str',
       'StatusSummary'   => 'str',
       'DateCreated'     => 'datetime',
-      'References'      => 'dict',
+      'References'      => 'dict', # NOTE Is this correct? Because references is a list.
       'Run'             => 'RunCompact',
     }
     @attributes = {
       'Name'            => nil, # str
       'HrefFiles'       => nil, # str
+      'AppSession'      => nil, # dict
       'DateCreated'     => nil, # datetime
       'SampleNumber'    => nil, # int
       'Id'              => nil, # str
@@ -56,7 +57,7 @@ class Sample < Model
       'ExperimentName'  => nil, # str
       'Run'             => nil, # RunCompact
       'HrefGenome'      => nil, # str
-      'IsPairedEnd'     => nil, # int
+      'IsPairedEnd'     => nil, # bool
       'Read1'           => nil, # int
       'Read2'           => nil, # int
       'NumReadsRaw'     => nil, # int
@@ -95,7 +96,7 @@ class Sample < Model
   # Return the AppResults referenced by this sample.
   #
   # Note: the returned AppResult objects do not have their "References" field set,
-  # to get a fully populate AppResult object you must use getAppResultById in BaseSpaceAPI.
+  # to get a fully populate AppResult object you must use get_app_result_by_id in BaseSpaceAPI.
   #
   # +api+:: BaseSpaceAPI instance.
   def get_referenced_app_results(api)
