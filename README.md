@@ -96,24 +96,11 @@ The file `credentials.json` contains the authentication/connection details in [J
 This section demonstrates how to retrieve the ``AppSession`` object produced when a user triggers a BaseSpace App. 
 Further, we cover how to automatically generate the scope strings to request access to the data object (be it a project or a sample) that the App was triggered to analyze.
 
-The initial http request to our App from BaseSpace is identified by an ``ApplicationActionId``, using this piece of information 
-we are able to obtain information about the user who launched the App and the data that is sought/analyzed by the App. 
+The initial http request to our App from BaseSpace is identified by an ``ApplicationActionId``, using this piece of information we are able to obtain information about the user who launched the App and the data that is sought/analyzed by the App. 
 First, we instantiate a BaseSpaceAPI object using the ``client_key`` and ``client_secret`` codes provided on the BaseSpace developer's website when registering our App, as well as the ``AppSessionId`` generated from the app-triggering: 
 
-    require 'bio-basespace-sdk'
-    
-    include Bio::BaseSpace
-    
-    # Initialize an authentication object using the key and secret from your app:
-    client_id       = 'my client key'
-    client_secret   = 'my client secret'
-    app_session_id  = 'my app session id'
-    basespace_url   = 'https://api.basespace.illumina.com/'
-    api_version     = 'v1pre3'
-    
-    # First we will initialize a BaseSpace API object using our app information and the app_session_id
-    bs_api = BaseSpaceAPI.new(client_id, client_secret, basespace_url, api_version, app_session_id)
-    
+*Note:* Create a `BaseSpaceAPI` object as described under "[Getting Started](#getting-started)" first. The instance should be referenced by the variable `bs_api`, just as in the examples of the "[Getting Started](#getting-started)" section.
+
     # Using bs_api, we can request the appSession object corresponding to the AppSession ID supplied
     my_app_session = bs_api.get_app_session
     puts my_app_session
@@ -244,21 +231,9 @@ Here we demonstrate the basic BaseSpace authentication process. The workflow out
 2. User approval of access request 
 3. Browsing data
 
-*Note:* It will be useful if you are logged in to the BaseSpace web-site before launching this example to make the access grant procedure faster.
+It will be useful if you are logged in to the BaseSpace web-site before launching this example to make the access granting procedure faster.
 
-Again, we will start out by initializing a ``BaseSpaceAPI`` object:
-
-    require 'bio-basespace-sdk'
-    include Bio::BaseSpace
-    
-    client_id       = 'my client key'
-    client_secret   = 'my client secret'
-    app_session_id  = 'my app session id'
-    basespace_url   = 'https://api.basespace.illumina.com/'
-    api_version     = 'v1pre3'
-    
-    # First we will initialize a BaseSpace API object using our app information and the appSessionId
-    bs_api = BaseSpaceAPI.new(client_id, client_secret, basespace_url, api_version, app_session_id)
+*Note:* Create a `BaseSpaceAPI` object as described under "[Getting Started](#getting-started)" first. The instance should be referenced by the variable `bs_api`, just as in the examples of the "[Getting Started](#getting-started)" section.
 
 First, get the verification code and uri for scope 'browse global'
 
@@ -322,26 +297,9 @@ The output will be:
 
 ## Browsing Data with Global Browse Access
 
-This section demonstrates basic browsing of BaseSpace objects once an access-token for global browsing has been obtained. We will see how 
-objects can be retrieved using either the ``BaseSpaceAPI`` class or by use of method calls on related object instances (for example once 
-a ``user`` instance we can use it to retrieve all project belonging to that user).
+This section demonstrates basic browsing of BaseSpace objects once an access-token for global browsing has been obtained. We will see how objects can be retrieved using either the ``BaseSpaceAPI`` class or by use of method calls on related object instances (for example once a ``user`` instance we can use it to retrieve all project belonging to that user).
 
-First we will initialize a ``BaseSpaceAPI`` using our access-token for ``global browse``:
-
-    require 'bio-basespace-sdk'
-    include Bio::BaseSpace
-    
-    # REST server information and user access_token 
-    
-    client_id       = 'my client key'
-    client_secret   = 'my client secret'
-    access_token    = 'your access token'
-    app_session_id  = 'my app session id'
-    basespace_url   = 'https://api.basespace.illumina.com/'
-    api_version     = 'v1pre3'
-    
-    # First, create a client for making calls for this user session
-    bs_api = BaseSpaceAPI.new(client_id, client_secret, basespace_url, api_version, app_session_id, access_token)
+*Note:* Create a `BaseSpaceAPI` object as described under "[Getting Started](#getting-started)" first. The instance should be referenced by the variable `bs_api`, just as in the examples of the "[Getting Started](#getting-started)" section.
 
 First we will try to retrieve a genome object:
 
@@ -428,30 +386,19 @@ The output will be:
 
 ## Accessing File-Trees and Querying BAM/VCF Files
 
-In this section we demonstrate how to access samples and analysis from a projects and how to work with the available file data for such instances.
-In addition, we take a look at some of the special queuring methods associated with BAM- and VCF-files. 
+In this section we demonstrate how to access samples and analysis from a projects and how to work with the available file data for such instances. In addition, we take a look at some of the special queuring methods associated with BAM- and VCF-files. 
 
-Again, start out by initializing a ``BaseSpaceAPI`` instance and retrieving all projects belonging to the current user:
+*Note:* Create a `BaseSpaceAPI` object as described under "[Getting Started](#getting-started)" first. The instance should be referenced by the variable `bs_api`, just as in the examples of the "[Getting Started](#getting-started)" section.
 
-    # First, create a client for making calls for this user session 
-    require 'bio-basespace-sdk'
-    include Bio::BaseSpace
-    
-    client_id       = 'my client key'
-    client_secret   = 'my client secret'
-    access_token    = 'your access token'
-    app_session_id  = 'my app session id'
-    basespace_url   = 'https://api.basespace.illumina.com/'
-    api_version     = 'v1pre3'
-    
-    bs_api       = BaseSpaceAPI.new(client_id, client_secret, basespace_url, api_version, app_session_id, access_token)
+First, we get a project that we can work with:
+
     user         = bs_api.get_user_by_id('current')
     my_projects  = bs_api.get_project_by_user('current')
     
     app_results  = nil
     samples      = nil
 
-Now we can list all the analyses and samples for these projects
+Now we can list all the analyses and samples for these projects:
 
     # Let's list all the AppResults and samples for these projects
     
@@ -467,7 +414,7 @@ Now we can list all the analyses and samples for these projects
       puts "      #{samples}"
     end
 
-The output will be:
+The output will be similar to:
 
     # Project: BaseSpaceDemo - id=2
          The App results for project BaseSpaceDemo - id=2 are
@@ -486,7 +433,7 @@ The output will be:
            [NA18507]
     ......
 
-We'll take a further look at the files belonging to the sample from the last project in the loop above:
+We will take a further look at the files belonging to the sample from the last project in the loop above:
 
     samples.each do |sample|
         puts "# Sample: #{sample}"
@@ -560,22 +507,9 @@ The output will be:
 In this section we will see how to create a new AppResults object, change the state of the related AppSession,
 and upload result files to it as well as retrieve files from it. 
 
-First, create a client for making calls for this user session:
+*Note:* Create a `BaseSpaceAPI` object as described under "[Getting Started](#getting-started)" first. The instance should be referenced by the variable `bs_api`, just as in the examples of the "[Getting Started](#getting-started)" section.
 
-    require 'bio-basespace-sdk'
-    include Bio::BaseSpace
-    
-    client_id       = 'my client key'
-    client_secret   = 'my client secret'
-    app_session_id  = 'my app session id'
-    basespace_url   = 'https://api.basespace.illumina.com/'
-    api_version     = 'v1pre3'
-    
-    bs_api = BaseSpaceAPI.new(client_id, client_secret, basespace_url, api_version, app_session_id, access_token)
-    
-    # Now we'll do some work of our own. First get a project to work on
-    # we'll need write permission, for the project we are working on
-    # meaning we will need get a new token and instantiate a new BaseSpaceAPI
+First we get a project to work on. We will need write permissions for the project we are working on -- meaning that we will need to update our privileges accordingly:
     
     device_info = bs_api.get_verification_code('browse global')
     link = device_info['verification_with_code_uri']
@@ -675,10 +609,11 @@ This section contains useful code snippets, which are demonstrating frequent use
 
 Given a sample "a\_sample" we can retrieve a subset of the full file-list using a query parameter dictionary:
 
-    # Get a BaseSpace API object as above, retrieve a list of our projects,
-    # pick the first available project, get its samples, and then assign the
-    # first sample to `a_sample`.
-    bs_api = BaseSpaceAPI.new(client_id, client_secret, basespace_url, api_version, app_session_id, access_token)
+*Note:* Create a `BaseSpaceAPI` object as described under "[Getting Started](#getting-started)" first. The instance should be referenced by the variable `bs_api`, just as in the examples of the "[Getting Started](#getting-started)" section.
+
+    # With a BaseSpace API object created as shown above, retrieve a list of our projects,
+    # pick the first available project, get its samples, and then assign the first sample
+    # to the variable `a_sample`.
     my_projects = bs_api.get_project_by_user('current')
     a_project = my_projects.first
     my_samples = a_project.get_samples(bs_api)
@@ -717,7 +652,7 @@ You can supply a dictionary of query parameters when retrieving App results, in 
 
 ## Feature Requests and Bugs
 
-Please feel free to report any feedback regarding the BaseSpace Ruby SDK directly to the [GitHub repository](https://github.com/joejimbo/basespace-ruby-sdk). We appreciate any and all feedback about the SDKs and we will do anything we can to improve the functionality and quality of the SDK to make it easy for developers to use. 
+Please report any feedback regarding the BaseSpace Ruby SDK directly to the [GitHub repository](https://github.com/joejimbo/basespace-ruby-sdk). We appreciate any and all feedback about the SDKs and we will do anything we can to improve the functionality and quality of the SDK to make it the best SDK for developers to use. 
 
 # SDK Development Manual
 
