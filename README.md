@@ -4,7 +4,7 @@ BaseSpace Ruby SDK is a Ruby based Software Development Kit to be used in the de
 
 The primary purpose of the SDK is to provide an easy-to-use Ruby environment enabling developers to authenticate a user, retrieve data, and upload data/results from their own analysis to BaseSpace.
 
-*Note:* It will be necessary to have created a BaseSpace account with a new App and have the ``client_key`` and ``client_secret`` codes for the App available to run a number of the following examples.
+*Note:* For running several of the example below a (free) BaseSpace account is required and you need to have the ``client_key`` and ``client_secret`` codes for one of your Apps available.
 
 ## Availability
 
@@ -48,6 +48,49 @@ To test that everything is working as expected, launch a Interactive Ruby and tr
     >> require 'bio-basespace-sdk'
     >> include Bio::BaseSpace
 
+## Getting Started
+
+The core class for interacting with BaseSpace is `Bio::BaseSpace::BaseSpaceAPI`. An instance of the class is created by passing authentication and connection details either via arguments to a `new` call or via the file `credentials.json`.
+
+*Note:* Depending on the actions that you want to carry out, you will either need to provide an App session ID (`app_session_id`) or an access token (`access_token`), or both. You can set one of these parameters to `nil`, if it is not required for your interactions with BaseSpace.
+
+Creating a `BaseSpaceAPI` object using `new`:
+
+    require 'bio-basespace-sdk'
+    
+    include Bio::BaseSpace
+    
+    # Authentication and connection details:
+    client_id       = 'my client key'
+    client_secret   = 'my client secret'
+    app_session_id  = 'my app session id'
+    access_token    = 'my access token'
+    basespace_url   = 'https://api.basespace.illumina.com/'
+    api_version     = 'v1pre3'
+    
+    # Initialize a BaseSpace API object:
+    bs_api = BaseSpaceAPI.new(client_id, client_secret, basespace_url, api_version, app_session_id, access_token)
+
+Creating a `BaseSpaceAPI` object using `credentials.json`:
+
+    require 'bio-basespace-sdk'
+    
+    include Bio::BaseSpace
+    
+    # Initialize a BaseSpace API object with authentication/connection details in 'credentials.json':
+    bs_api = BaseSpaceAPI.start
+
+The file `credentials.json` contains the authentication/connection details in [JSON](http://json.org) format:
+
+    {
+        "client_id":      "my client id",
+        "client_secret":  "my client secret",
+        "app_session_id": "my app session id",
+        "access_token":   "my access token",
+        "basespace_url":  "https://api.basespace.illumina.com",
+        "api_version":    "v1pre3"
+    }
+
 ## Application Triggering
 
 This section demonstrates how to retrieve the ``AppSession`` object produced when a user triggers a BaseSpace App. 
@@ -61,9 +104,7 @@ First, we instantiate a BaseSpaceAPI object using the ``client_key`` and ``clien
     
     include Bio::BaseSpace
     
-    # initialize an authentication object using the key and secret from your app
-    # Fill in with your own values
-    
+    # Initialize an authentication object using the key and secret from your app:
     client_id       = 'my client key'
     client_secret   = 'my client secret'
     app_session_id  = 'my app session id'
@@ -179,7 +220,7 @@ The output will be:
 
     The BaseSpaceAPI instance was update with write privileges
 
-For more details on access-requests and authentication and an example of the web-based case see example 1_authentication.rb
+For more details on access-requests and authentication and an example of the web-based case see example 1\_authentication.rb
 
 ## Requesting an Access-Token for Data Browsing
 
