@@ -131,51 +131,64 @@ The output will be similar to:
 
 We can also get a handle to the user who started the AppSession and further information on the ``AppLaunchObject``:
 
-    # We can also get a handle to the user who started the AppSession
-    puts "We can get a handle for the user who triggered the app:"
+    # We can also get a handle to the user who started the AppSession:
+    puts "App session created by user:"
     puts my_app_session.user_created_by
     puts
     
-    # Let's have a closer look at the appSessionLaunchObject
+    # Let's have a closer look at the AppSessionLaunchObject class instance:
     my_reference = my_app_session.references.first
     
-    puts "We can get out information such as the href to the launch object:"
+    puts "href to the launch object:"
     puts my_reference.href_content
     puts
-    puts "The specific type of that object:"
+    puts "Type of that object:"
     puts my_reference.type
     puts
 
-The output will be:
+The output will be similar to:
 
-    We can get a handle for the user who triggered the app:
+    App session created by user:
     13039: Eri Kibukawa
     
-    We can get out information such as the href to the launch object:
+    href to the launch object:
     v1pre3/projects/848850
     
-    The specific type of that object:
+    Type of that object:
     Project
 
 To start working, we will want to expand our permission scope for the trigger object so we can read and write data. The details of this process is the subject of the next section. 
-We end this section by demonstrating how one can easily obtain the so-called "scope string" and make the access request:
+This section shows how one can easily obtain the so-called "scope string" and make the access request. More background reading on scope strings can be found in the BaseSpace developer documentation under "[BaseSpace Permissions](https://developer.basespace.illumina.com/docs/content/documentation/authentication/using-scope)".
 
-    puts "\nWe can get out the specific project objects by using 'content':" 
+    puts "Project object:" 
     my_reference_content =  my_reference.content
     puts my_reference_content
-    puts "\nThe scope string for requesting write access to the reference object is:"
+    puts
+    puts "Scope string for requesting write access to the reference object:"
     puts my_reference_content.get_access_str('write')
 
-The output will be:
+The output will be similar to:
 
-    We can get out the specific project objects by using 'content':
+    Project object:
     MyProject - id=848850
     
-    The scope string for requesting write access to the reference object is:
+    Scope string for requesting write access to the reference object:
     write project 848850
 
-We can easily request write access to the reference object, so that our App can start contributing to an analysis
-by default. We ask for write permission and authentication for a device:
+We can request write access to the reference object now, so that our App can start contributing to an analysis. There is a distinction between requesting access for Web-Apps and other Apps (Desktop, Mobile, Native) though.
+
+The following call requests write permissions for a Web App:
+
+    verification_with_code_uri = bs_api.get_access(my_reference_content, 'write')
+    puts "Visit the URI within 15 seconds and grant access:"
+    puts verification_with_code_uri
+
+The output will be similar to:
+
+    Visit the URI within 15 seconds and grant access:
+    https://cloud-hoth.illumina.com//oauth/authorize?<authorization paramers>
+
+The following call requests write permissions for other Apps (Desktop, Mobile, Native):
 
     access_map = bs_api.get_access(my_reference_content, 'write')
     puts "We get the following access map:"
@@ -186,31 +199,32 @@ The output will be similar to:
     We get the following access map:
     {"device_code"=>"<my device code>", "user_code"=>"<my user code>", "verification_uri"=>"https://basespace.illumina.com/oauth/device", "verification_with_code_uri"=>"https://basespace.illumina.com/oauth/device?code=<my user code>", "expires_in"=>1800, "interval"=>1}
 
-Have the user visit the verification URI to grant us access:
+Visit the verification URI and grant access within 15 seconds:
 
-    puts "\nPlease visit the uri within 15 seconds and grant access:"
-    puts access_map['verification_with_code_uri']
+    puts "Visit the URI within 15 seconds and grant access:"
+    verification_with_code_uri = access_map['verification_with_code_uri']
+    puts verification_with_code_uri
 
 The output will be:
 
-    Please visit the uri within 15 seconds and grant access:
+    Visit the URI within 15 seconds and grant access:
     https://basespace.illumina.com/oauth/device?code=<my user code>
 
-Accept for this test code through web browser
+In both cases, the URI can be opened in a web browser using this portable Ruby code:
 
     link = access_map['verification_with_code_uri']
     host = RbConfig::CONFIG['host_os']
     case host
     when /mswin|mingw|cygwin/
-      system("start #{link}")
+      system("start #{verification_with_code_uri}")
     when /darwin/
-      system("open #{link}")
+      system("open #{verification_with_code_uri}")
     when /linux/
-      system("xdg-open #{link}")
+      system("xdg-open #{verification_with_code_uri}")
     end
     sleep(15)
 
-Once the user has granted us access to objects we requested we can get the BaseSpace access-token and start browsing simply by calling ``updatePriviliges`` on the ``baseSpaceApi`` instance:
+Once the user has granted us access to objects we requested we can get the BaseSpace access-token and start browsing simply by calling `update_privileges` on the `BaseSpaceAPI` instance:
 
     code = access_map['device_code']
     bs_api.update_privileges(code)
@@ -689,7 +703,7 @@ You can provide all other legal sorting/filtering keyword in this dictionary to 
 
     a_sample.get_files(bs_api, { 'Extensions' => 'bam,vcf', 'SortBy' => 'Path', 'Limit' => 1 })
 
-You can supply a dictionary of query parameters when you retrieving `AppResult`s, in the same way you filter file lists. Below is an example of how to limit the number of results from 100 (default value for "Limit") to 10.
+You can supply a dictionary of query parameters when retrieving App results, in the same way you filter file lists. Below is an example of how to limit the number of results from 100 (default value for "Limit") to 10.
 
     results = a_project.get_app_results(bs_api)
     
