@@ -118,7 +118,7 @@ First, we instantiate a BaseSpaceAPI object using the ``client_key`` and ``clien
     my_app_session = bs_api.get_app_session
     puts my_app_session
     
-    # An app session contains a referal to one or more appLaunchObjects which reference the data module
+    # An app session contains a referral to one or more appLaunchObjects which reference the data module
     # the user launched the app on. This can be a list of projects, samples, or a mixture of objects
     puts "Type of data the app was triggered on can be seen in 'references'"
     puts my_app_session.references.inspect  # `inspect` shows the object contents
