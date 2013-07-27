@@ -162,7 +162,7 @@ class BaseSpaceAPI < BaseAPI
   #
   # +obj+:: The data object we wish to get access to.
   # +access_type+:: The type of access (read|write), default is write.
-  # +web+:: True if the App is web-based, default is false meaning a device based App.
+  # +web+:: If the App is web-based, then set this parameter to 'true'. The default value is false, which means that the request is for a device based App.
   # +redirect_url+:: For the web-based case, a redirection URL.
   # +state+:: (unclear from Python port)
   def get_access(obj, access_type = 'write', web = nil, redirect_url = nil, state = nil)
@@ -188,7 +188,7 @@ class BaseSpaceAPI < BaseAPI
     #curlCall = 'curl -d "response_type=device_code" -d "client_id=' + @key + '" -d "scope=' + scope + '" ' + @api_server + DEVICE_URL
     #puts curlCall
     unless @key
-      raise "This BaseSpaceAPI instance has no client_secret (key) set and no alternative id was supplied for method get_verification_code"
+      raise "This BaseSpaceAPI instance has no client_secret (key) set and no alternative id was supplied for method get_verification_code."
     end
     data = {'client_id' => @key, 'scope' => scope, 'response_type' => 'device_code'}
     return make_curl_request(data, @api_server + DEVICE_URL)
@@ -201,7 +201,7 @@ class BaseSpaceAPI < BaseAPI
   # +state+:: An optional state parameter that will passed through to the redirect response.
   def get_web_verification_code(scope, redirect_url, state = nil)
     if (not @key)
-      raise "This BaseSpaceAPI instance has no client_id (key) set and no alternative id was supplied for method get_verification_code"
+      raise "This BaseSpaceAPI instance has no client_id (key) set and no alternative id was supplied for method get_verification_code."
     end
     data = {'client_id' => @key, 'redirect_uri' => redirect_url, 'scope' => scope, 'response_type' => 'code', "state" => state}
     return @weburl + WEB_AUTHORIZE + '?' + hash2urlencode(data)
@@ -212,7 +212,7 @@ class BaseSpaceAPI < BaseAPI
   # +device_code+:: The device code returned by the verification code method.
   def obtain_access_token(device_code)
     if (not @key) or (not @secret)
-      raise "This BaseSpaceAPI instance has either no client_secret or no client_id set and no alternative id was supplied for method get_verification_code"
+      raise "This BaseSpaceAPI instance has either no client_secret or no client_id set and no alternative id was supplied for method get_verification_code."
     end
     data = {'client_id' => @key, 'client_secret' => @secret, 'code' => device_code, 'grant_type' => 'device', 'redirect_uri' => 'google.com'}
     dict = make_curl_request(data, @api_server + TOKEN_URL)
@@ -584,7 +584,7 @@ class BaseSpaceAPI < BaseAPI
       sid = query_params['appsessionid']
       session = get_app_session(sid)
       unless session.can_work_on
-        raise 'AppSession status must be "running," to create and AppResults. Current status is ' + session.status
+        raise 'AppSession status must be "running," to create and AppResults. Current status is: ' + session.status
       end
     end
         
