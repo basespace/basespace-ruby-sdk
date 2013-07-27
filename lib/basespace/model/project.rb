@@ -57,7 +57,7 @@ class Project < Model
     raise ModelNotInitializedError.new('The project model has not been initialized yet') unless get_attr('Id')
   end
   
-  # Returns the scope-string to used for requesting BaseSpace access to the object.
+  # Returns the scope-string to be used for requesting BaseSpace access to the object.
   # 
   # +scope+:: The scope-type that is requested (write|read).
   def get_access_str(scope = 'write')
