@@ -628,7 +628,7 @@ class BaseSpaceAPI < BaseAPI
       # Set force post as this need to use POST though no data is being streamed
       return single_request(my_model, resource_path, method, query_params, header_params, post_data, verbose, force_post)
     else
-      post_data = File.open(local_path).read
+      post_data = ::File.open(local_path).read
       return single_request(my_model, resource_path, method, query_params, header_params, post_data, verbose)
     end
   end
@@ -664,12 +664,12 @@ class BaseSpaceAPI < BaseAPI
     end
     
     # Do the download
-    File.open(File.join(local_dir, name), "wb") do |fp|
+    ::File.open(::File.join(local_dir, name), "wb") do |fp|
       http_opts = {}
+      uri = URI.parse(file_url)
       if uri.scheme == "https"
         http_opts[:use_ssl] = true
       end
-      uri = URI.parse(file_url)
       res = Net::HTTP.start(uri.host, uri.port, http_opts) { |http|
         # [TODO] Do we need user and pass here also?
         http.get(uri.path, header)

@@ -161,16 +161,22 @@ class APIClient
       end
       if post_data
         # [TODO] Do we need to skip String, Integer, Float and bool in Ruby?
-        data = post_data.to_json # if not [str, int, float, bool].include?(type(post_data))
+        data = post_data # if not [str, int, float, bool].include?(type(post_data))
       end
       if force_post
         response = force_post_call(force_post_url, sent_query_params, headers)
       else
-        data = '\n' if data and data.empty? # temp fix, in case is no data in the file, to prevent post request from failing
+        data = {} if not data or (data and data.empty?) # temp fix, in case is no data in the file, to prevent post request from failing
         # [TODO] confirm this works or not
         #request = urllib2.Request(url, headers, data)#, @timeout)
         uri = URI.parse(url)
-        request = Net::HTTP::Post.new(uri.path, headers)
+        request = Net::HTTP::Post.new(uri, headers)
+        if data.kind_of?(Hash) then
+          request.set_form_data(data)
+        else
+          request.content_type = 'multipart/form-data'
+          request.body = data
+        end
       end
       if ['PUT', 'DELETE'].include?(method) # urllib doesnt do put and delete, default to pycurl here
         response = put_call(url, query_params, headers, data)
