@@ -6,9 +6,28 @@ The primary purpose of the SDK is to provide an easy-to-use Ruby environment ena
 
 *Note:* For running several of the example below a (free) BaseSpace account is required and you need to have the "Client Id" code (parameter `client_key` below) and "Client Secret" code (parameter `client_secret` below) for one of your Apps available.
 
-## Availability and Installation
+**Table of Contents**
 
-*Note:* We are still testing our code. Please take the production-ready gem with a pinch of salt.
+*  [BaseSpace Ruby SDK](#basespace-ruby-sdk)
+   *  [Availability and Installation](#availability-and-installation)
+   *  [Getting Started](#getting-started)
+   *  [Application Triggering](#application-triggering)
+   *  [BaseSpace Authentication](#basespace-authentication)
+   *  [Browsing Data](#browsing-data)
+   *  [Accessing and Querying Files](#accessing-and-querying-files)
+   *  [Creating an AppResult and Uploading Files](#creating-an-appresult-and-uploading-files)
+   *  [Cookbook of Usage Recipes](#cookbook-of-usage-recipes)
+   *  [Feature Requests and Bug Reporting](#feature-requests-and-bug-reporting)
+*  [SDK Development Manual](#sdk-development-manual)
+   *  [Building a New Version of the Gem](#building-a-new-version-of-the-gem)
+   *  [Unit Testing](#unit-testing)
+   *  [Porting](#porting)
+*  [Authors and Contributors](#authors-and-contributors)
+   *  [Authors](#authors)
+   *  [Contributors](#contributors)
+*  [Copying and License](#copying-and-license)
+
+## Availability and Installation
 
 *Requirements:* Ruby 1.9.3 and above. The multi-part file upload will currently only run on a Unix setup.
 
@@ -35,6 +54,8 @@ The pre-release version of BaseSpace Ruby SDK can be checked out here:
 or by,
 
     git clone git@github.com:joejimbo/basespace-ruby-sdk.git
+
+For a description on how to build the pre-release version see "[SDK Development Manual](#sdk-development-manual)".
 
 Please fork the GitHub repository and send us a pull request if you would like to improve the SDK.
 
@@ -207,7 +228,7 @@ Once the user has granted us access to objects we requested we can get the BaseS
 
 For more details on access-requests and authentication and an example of the web-based case see example 1\_authentication.rb
 
-## Requesting an Access-Token for Data Browsing
+## BaseSpace Authentication
 
 Here we demonstrate the basic BaseSpace authentication process. The workflow outlined here is
 
@@ -218,6 +239,8 @@ Here we demonstrate the basic BaseSpace authentication process. The workflow out
 It will be useful if you are logged in to the BaseSpace web-site before launching this example to make the access granting procedure faster.
 
 *Note:* Create a `BaseSpaceAPI` object as described under "[Getting Started](#getting-started)" first. The instance should be referenced by the variable `bs_api`, just as in the examples of the "[Getting Started](#getting-started)" section.
+
+### Requesting Access Privileges
 
 First, get the verification code and uri for scope 'browse global'
 
@@ -258,16 +281,7 @@ The output will be:
 
     Access-token: <my access-token>
 
-At this point we can start using the `BaseSpaceAPI` instance to browse the available data for the current user, the details of this process is the subject of the next section. Here we will end with showing how the API object can be used to list all BaseSpace genome instances: 
-
-    all_genomes  = bs_api.get_available_genomes
-    puts "Genomes: #{all_genomes.map { |g| g.to_s }.join(', ')}"
-
-The output will be:
-
-    Genomes: Arabidopsis thaliana, Bos Taurus, Escherichia coli, Homo sapiens, Mus musculus, Phix, Rhodobacter sphaeroides, Rattus norvegicus, Saccharomyces cerevisiae, Staphylococcus aureus
-
-## Browsing Data with Global Browse Access
+## Browsing Data
 
 This section demonstrates basic browsing of BaseSpace objects once an access-token for global browsing has been obtained. We will see how objects can be retrieved using either the `BaseSpaceAPI` class or by use of method calls on related object instances (for example, `User` instances can be used to retrieve all projects belonging to that user).
 
@@ -288,7 +302,7 @@ The output will be:
     Href: v1pre3/genomes/4
     DisplayName: Homo Sapiens - UCSC (hg19)
 
-We can get a list of all available genomes (as shown in the previous section too):
+We can get a list of all available genomes:
 
     all_genomes  = bs_api.get_available_genomes
     puts "Genomes: #{all_genomes.map { |g| g.to_s }.join(', ')}"
@@ -329,11 +343,13 @@ The output will be similar to:
 
     Runs: BaseSpaceDemo - id=2, Cancer Sequencing Demo - id=4, HiSeq 2500 - id=7, ResequencingPhixRun - id=12, TSChIP-Seq - id=14042, BCereusDemoData_Illumina - id=34061
     
-## Accessing File-Trees and Querying BAM/VCF Files
+## Accessing and Querying Files
 
 In this section we demonstrate how to access samples and analysis from a projects and how to work with the available file data for such instances. In addition, we take a look at some of the special queuring methods associated with BAM- and VCF-files. 
 
 *Note:* Create a `BaseSpaceAPI` object as described under "[Getting Started](#getting-started)" first. The instance should be referenced by the variable `bs_api`, just as in the examples of the "[Getting Started](#getting-started)" section.
+
+### Accessing Files
 
 First, we get a project that we can work with:
 
@@ -383,6 +399,8 @@ The output will be similar to:
       Bcereus-2_S2_L001_R1_001.fastq.gz - id: '14235871', size: '126164153'
       Bcereus-2_S2_L001_R2_001.fastq.gz - id: '14235872', size: '137077949'
 
+### Querying BAM and VCF Files
+
 Now, we have a look at some of the methods calls specific to ``BAM`` and ``VCF`` files. First, we will get a ``BAM``-file and then retrieve the coverage information available for chromosome 2 between positions 1 and 20000: 
 
     # Request privileges:
@@ -405,7 +423,7 @@ Now, we have a look at some of the methods calls specific to ``BAM`` and ``VCF``
     
     # Get the coverage for an interval + accompanying meta-data:
     # NOTE THAT YOUR FILE ID (here 44154664) WILL MOST LIKELY BE DIFFERENT!
-    # A FILE ID CAN BE OBTAINED, E.G., USING: samples.first.get_files(bs_api).first.get_attr('Id')
+    # A FILE ID CAN BE OBTAINED, E.G., USING: samples.first.get_files(bs_api).first.id
     my_bam = bs_api.get_file_by_id('44154664')
     puts "BAM: #{my_bam}"
     cov = my_bam.get_interval_coverage(bs_api, 'chr1', '50000', '60000')
@@ -434,10 +452,12 @@ The output will be:
 
 ## Creating an AppResult and Uploading Files
 
-In this section we will see how to create a new AppResult object, change the state of the related AppSession,
+In this section we will see how to create a new `AppResult` object, change the state of the related AppSession,
 and upload result files to it as well as retrieve files from it. 
 
 *Note:* Create a `BaseSpaceAPI` object as described under "[Getting Started](#getting-started)" first. The instance should be referenced by the variable `bs_api`, just as in the examples of the "[Getting Started](#getting-started)" section.
+
+### Creating an AppResult
 
 First we get a project to work on. We will need write permissions for the project we are working on -- meaning that we will need to update our privileges accordingly:
     
@@ -459,7 +479,7 @@ First we get a project to work on. We will need write permissions for the projec
     
     # NOTE THAT YOUR PROJECT ID WILL MOST LIKELY BE DIFFERENT!
     # YOU CAN GET IT VIA THE SDK OR FROM THE BASESPACE WEB INTERFACE!
-    # FOR EXAMPLE: my_projects.first.get_attr('Id')
+    # FOR EXAMPLE: my_projects.first.id
     prj = bs_api.get_project_by_id('469469')
 
 Assuming we have write access for the project, we will list the current analyses for the project:
@@ -514,6 +534,8 @@ The output will be similar to:
 
     AppResult's AppSession: App session by 159159: Eri Kibukawa - Id: <app session id> - status: NeedsAttention
 
+### Uploading Files
+
 Attach a file to the `AppResult` object and upload it:
 
     app_result.upload_file(bs_api, '/tmp/testFile.txt', 'BaseSpaceTestFile.txt', '/mydir/', 'text/plain')
@@ -531,7 +553,7 @@ Of course, we can download our newly uploaded file too:
     f = bs_api.get_file_by_id(app_result_files.last.id)
     f.download_file(bs_api, '/tmp/')
 
-## Cookbook
+## Cookbook of Usage Recipes
 
 This section contains useful code snippets, which are demonstrating frequent use-cases in App development.
 
@@ -552,7 +574,7 @@ Given a sample "a\_sample" we can retrieve a subset of the full file-list using 
     a_sample = my_samples.first
     
     # Get the full version via direct BaseSpace API call (for demonstration, not required below):
-    full_sample = bs_api.get_sample_by_id(a_sample.get_attr('Id'))
+    full_sample = bs_api.get_sample_by_id(a_sample.id)
     
     # Get a list of files associated with the sample:
     # Possible output: ["s_G1_L001_I1_001.fastq.1.gz - id: '535642', size: '7493990'", "s_G1_L001_I1_002.fastq.1.gz - id: '535643', size: '7525743'"]
@@ -580,11 +602,13 @@ You can supply a dictionary of query parameters when retrieving App results, in 
     results = a_project.get_app_results(bs_api, { 'Limit' => '10' })
     results.length
 
-## Feature Requests and Bugs
+## Feature Requests and Bug Reporting
 
 Please report any feedback regarding the BaseSpace Ruby SDK directly to the [GitHub repository](https://github.com/joejimbo/basespace-ruby-sdk). We appreciate any and all feedback about the SDKs and we will do anything we can to improve the functionality and quality of the SDK to make it the best SDK for developers to use. 
 
 # SDK Development Manual
+
+This section focuses on development aspects of the BaseSpace Ruby SDK gem. It also provides information on how to build the pre-release version of the SDK, but unless you are actually planning to contribute to the SDK source code or documentation, we strongly suggest to follow the official release installation instruction under "[Availability and Installation](#availability-and-installation)".
 
 ## Building a New Version of the Gem
 
@@ -619,9 +643,22 @@ BaseSpace Ruby SDK was initially ported by translating the BaseSpace Python SDK 
    *  Python `dict`, Ruby `Hash`
    *  Python `file`, Ruby `File`
 
-# Authors
+# Authors and Contributors
+
+## Authors
 
 Joachim Baran, Raoul Bonnal, Eri Kibukawa, Francesco Strozzi, Toshiaki Katayama
+
+## Contributors
+
+In alphabetical order (last name):
+
+*  Joachim Baran
+*  Raoul Bonnal
+*  Naohisa Goto
+*  Toshiaki Katayama
+*  Eri Kibukawa
+*  Francesco Strozzi
 
 # Copying / License
 
