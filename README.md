@@ -660,7 +660,7 @@ In alphabetical order (last name):
 *  Eri Kibukawa
 *  Francesco Strozzi
 
-# Copying / License
+# Copying and License
 
 See [License.txt](https://raw.github.com/joejimbo/basespace-ruby-sdk/master/License.txt) for details on licensing and distribution.
 
