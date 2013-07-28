@@ -672,7 +672,7 @@ class BaseSpaceAPI < BaseAPI
       end
       res = Net::HTTP.start(uri.host, uri.port, http_opts) { |http|
         # [TODO] Do we need user and pass here also?
-        http.get(uri.path, header)
+        http.get(uri, header)
       }
       fp.print res.body
     end
