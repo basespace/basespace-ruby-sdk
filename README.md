@@ -104,6 +104,8 @@ The file `credentials.json` contains the authentication/connection details in [J
 
 ## Application Triggering
 
+**Example Source Code:** [examples/0\_app\_triggering.rb](https://github.com/joejimbo/basespace-ruby-sdk/blob/master/examples/0_app_triggering.rb)
+
 This section demonstrates how to retrieve the `AppSession` object produced when a user triggers a BaseSpace App. 
 Further, we cover how to automatically generate the scope strings to request access to the data object (be it a project or a sample) that the App was triggered to analyze.
 
@@ -126,9 +128,8 @@ The output will be similar to:
     Type of data the app was triggered on can be seen in 'references':
     [#<Bio::BaseSpace::AppSessionLaunchObject:0x007fc21a1ae0f8 @swagger_types={"Content"=>"dict", "Href"=>"str", "HrefContent"=>"str", "Rel"=>"str", "Type"=>"str"}, @attributes={"Content"=>#<Bio::BaseSpace::Project:0x007fc21a1ae378 @swagger_types={"Name"=>"str", "HrefSamples"=>"str", "HrefAppResults"=>"str", "HrefBaseSpaceUI"=>"str", "DateCreated"=>"datetime", "Id"=>"str", "Href"=>"str", "UserOwnedBy"=>"UserCompact"}, @attributes={"Name"=>"IGN_WGS_CEPH_Services_2.0", "HrefSamples"=>nil, "HrefAppResults"=>nil, "HrefBaseSpaceUI"=>nil, "DateCreated"=>#<DateTime: 2013-04-19T18:21:50+00:00 ((2456402j,66110s,0n),+0s,2299161j)>, "Id"=>"267267", "Href"=>"v1pre3/projects/267267", "UserOwnedBy"=>#<Bio::BaseSpace::UserCompact:0x007fc21a1ac758 @swagger_types={"Name"=>"str", "Id"=>"str", "Href"=>"str"}, @attributes={"Name"=>"Illumina Inc", "Id"=>"3004", "Href"=>"v1pre3/users/3004"}>}>, "Href"=>"v1pre3/projects/267267", "HrefContent"=>"v1pre3/projects/267267", "Rel"=>"Input", "Type"=>"Project"}>]
 
-We can also get a handle to the user who started the `AppSession` and further information on the `AppSessionLaunchObject`:
+We can get a handle to the user who started the `AppSession` and further information on the `AppSessionLaunchObject`:
 
-    # We can also get a handle to the user who started the AppSession:
     puts "App session created by user:"
     puts my_app_session.user_created_by
     puts
@@ -230,6 +231,8 @@ For more details on access-requests and authentication and an example of the web
 
 ## BaseSpace Authentication
 
+**Example Source Code:** [examples/1\_authentication.rb](https://github.com/joejimbo/basespace-ruby-sdk/blob/master/examples/1_authentication.rb) and [examples/2\_browsing.rb](https://github.com/joejimbo/basespace-ruby-sdk/blob/master/examples/2_browsing.rb)
+
 Here we demonstrate the basic BaseSpace authentication process. The workflow outlined here is
 
 1. Request of access to a specific data-scope 
@@ -242,7 +245,7 @@ It will be useful if you are logged in to the BaseSpace web-site before launchin
 
 ### Requesting Access Privileges
 
-First, get the verification code and uri for scope 'browse global'
+First, get the verification code and URI for scope 'browse global':
 
     device_info = bs_api.get_verification_code('browse global')
     puts
@@ -345,6 +348,8 @@ The output will be similar to:
     
 ## Accessing and Querying Files
 
+**Example Source Code:** [examples/3\_accessing\_files.rb](https://github.com/joejimbo/basespace-ruby-sdk/blob/master/examples/3_accessing_files.rb)
+
 In this section we demonstrate how to access samples and analysis from a projects and how to work with the available file data for such instances. In addition, we take a look at some of the special queuring methods associated with BAM- and VCF-files. 
 
 *Note:* Create a `BaseSpaceAPI` object as described under "[Getting Started](#getting-started)" first. The instance should be referenced by the variable `bs_api`, just as in the examples of the "[Getting Started](#getting-started)" section.
@@ -401,12 +406,14 @@ The output will be similar to:
 
 ### Querying BAM and VCF Files
 
-Now, we have a look at some of the methods calls specific to ``BAM`` and ``VCF`` files. First, we will get a ``BAM``-file and then retrieve the coverage information available for chromosome 2 between positions 1 and 20000: 
+Now, we have a look at some of the methods calls specific to BAM and VCF files. First, we will get a BAM-file and then retrieve the coverage information available for chromosome 2 between positions 1 and 20000: 
 
     # Request privileges:
-    # NOTE THAT YOUR PROJECT ID (183184 here) WILL MOST LIKELY BE DIFFERENT!
-    device_info = bs_api.get_verification_code('read project 183184')
+    # NOTE THAT YOUR PROJECT ID (469469 here) WILL MOST LIKELY BE DIFFERENT!
+    device_info = bs_api.get_verification_code('read project 469469')
     link = device_info['verification_with_code_uri']
+    puts "Visit the URI within 15 seconds and grant access:"
+    puts link
     host = RbConfig::CONFIG['host_os']
     case host
     when /mswin|mingw|cygwin/
@@ -422,9 +429,9 @@ Now, we have a look at some of the methods calls specific to ``BAM`` and ``VCF``
     bs_api.update_privileges(code)
     
     # Get the coverage for an interval + accompanying meta-data:
-    # NOTE THAT YOUR FILE ID (here 44154664) WILL MOST LIKELY BE DIFFERENT!
+    # NOTE THAT YOUR FILE ID (here 7823816) WILL MOST LIKELY BE DIFFERENT!
     # A FILE ID CAN BE OBTAINED, E.G., USING: samples.first.get_files(bs_api).first.id
-    my_bam = bs_api.get_file_by_id('44154664')
+    my_bam = bs_api.get_file_by_id('7823816')
     puts "BAM: #{my_bam}"
     cov = my_bam.get_interval_coverage(bs_api, 'chr1', '50000', '60000')
     puts "  #{cov.to_s}"
@@ -437,9 +444,9 @@ The output will be similar to:
       Chrom chr1: 1-1792, BucketSize=2
       CoverageMeta: max=1158602 gran=128
 
-For ``VCF``-files we can filter variant calls based on chromosome and location as well:
+For VCF-files we can filter variant calls based on chromosome and location as well:
 
-    my_vcf = bs_api.get_file_by_id('44154644')
+    my_vcf = bs_api.get_file_by_id('7823817')
     var_meta = my_vcf.get_variant_meta(bs_api)
     puts var_meta
     var = my_vcf.filter_variant(bs_api, '1', '20000', '30000') # no value. need verification
@@ -452,6 +459,8 @@ The output will be:
 
 ## Creating an AppResult and Uploading Files
 
+**Example Source Code:** [4\_app\_result\_upload.rb](https://github.com/joejimbo/basespace-ruby-sdk/blob/master/examples/4_app_result_upload.rb)
+
 In this section we will see how to create a new `AppResult` object, change the state of the related AppSession,
 and upload result files to it as well as retrieve files from it. 
 
@@ -463,6 +472,8 @@ First we get a project to work on. We will need write permissions for the projec
     
     device_info = bs_api.get_verification_code('browse global')
     link = device_info['verification_with_code_uri']
+    puts "Visit the URI within 15 seconds and grant access:"
+    puts link
     host = RbConfig::CONFIG['host_os']
     case host
     when /mswin|mingw|cygwin/
@@ -494,8 +505,10 @@ The output will be similar to:
 
 To create an `AppResult` for a project, request 'create' privileges, then simply give the name and description:
 
-    device_info = bs_api.get_verification_code('create project 469469')
+    device_info = bs_api.get_verification_code("create project #{prj.id}")
     link = device_info['verification_with_code_uri']
+    puts "Visit the URI within 15 seconds and grant access:"
+    puts link
     host = RbConfig::CONFIG['host_os']
     case host
     when /mswin|mingw|cygwin/
