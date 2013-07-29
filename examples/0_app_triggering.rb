@@ -14,18 +14,11 @@
 # limitations under the License.
 
 # Application triggering
-#   https://developer.basespace.illumina.com/docs/content/documentation/sdk-samples/python-sdk-overview#Application_triggering
+# https://github.com/joejimbo/basespace-ruby-sdk#application-triggering
 
 require 'bio-basespace-sdk'
 
 include Bio::BaseSpace
-
-# This script demonstrates how to retrieve the AppSession object produced 
-# when a user initiates an app. Further it's demonstrated how to automatically
-# generate the scope strings to request access to the data object (a project or a sample)
-# that the app was triggered to analyze.
-# 
-# NOTE: You will need to fill in client values for your app below
 
 # Initialize an authentication object using the key and secret from your app.
 opts = {
@@ -44,92 +37,88 @@ unless opts.select{|k,v| v[/^<.*>$/]}.empty?
   exit 1 unless opts
 end
 
-# First we will initialize a BaseSpace API object using our app information and the appSessionId.
+# Initialize a BaseSpace API object:
 bs_api = BaseSpaceAPI.new(opts['client_id'], opts['client_secret'], opts['basespace_url'], opts['api_version'], opts['app_session_id'])
 
-# Using the bmy_app_session.spaceApi we can request the appSession object corresponding to the AppSession id supplied.
+# Using bs_api, we can request the AppSession object corresponding to the AppSession ID supplied
 my_app_session = bs_api.get_app_session
 puts my_app_session
 
-# An app session contains a referal to one or more appLaunchObjects which reference the data module
-# the user launched the app on. This can be a list of projects, samples, or a mixture of objects.
-puts "Type of data the app was triggered on can be seen in 'references'"
-puts my_app_session.references.inspect   # same as my_app_session.get_attr('References') inspect is used to put surrounding [] 
+# An app session contains a referral to one or more AppSessionLaunchObject instances, which reference the
+# data module the user launched the App on. This can be a list of projects, samples, or a mixture of objects
+puts "Type of data the app was triggered on can be seen in 'references':"
+puts my_app_session.references.inspect  # `inspect` shows the object contents
+
+#
+# We can get a handle to the user who started the `AppSession` and further information on the `AppSessionLaunchObject`:
+#
+
+puts "App session created by user:"
+puts my_app_session.user_created_by
 puts
 
-# We can also get a handle to the user who started the AppSession.
-puts "We can get a handle for the user who triggered the app"
-puts my_app_session.user_created_by      # same as my_app_session.get_attr('UserCreatedBy')
-puts
-
-# Let's have a closer look at the appSessionLaunchObject.
+# Let's have a closer look at the AppSessionLaunchObject class instance:
 my_reference = my_app_session.references.first
 
-puts "We can get out information such as the href to the launch object:"
-puts my_reference.href_content           # same as my_reference.get_attr('HrefContent')
+puts "href to the launch object:"
+puts my_reference.href_content
 puts
-puts "and the specific type of that object:"
-puts my_reference.type                   # same as my_reference.get_attr('Type')
+puts "Type of that object:"
+puts my_reference.type
 puts
 
-# Now we will want to ask for more permission for the specific reference object.
-my_reference_content = my_reference.content
+#
+# This section shows how one can easily obtain the so-called "scope string" and make the access request.
+#
+# More background reading on scope strings can be found in the BaseSpace developer documentation under
+#
+#   "BaseSpace Permissions"
+#   https://developer.basespace.illumina.com/docs/content/documentation/authentication/using-scope
+#
 
-puts "We can get out the specific project objects by using 'content':" 
+puts "Project object:"
+my_reference_content =  my_reference.content
 puts my_reference_content
 puts
-
-puts "The scope string for requesting write access to the reference object is:"
+puts "Scope string for requesting write access to the reference object:"
 puts my_reference_content.get_access_str('write')
-puts
 
-# We can easily request write access to the reference object, so that our App can start contributing analysis.
-# By default, we ask for write permission and authentication for a device.
+#
+# The following call requests write permissions for a Web App:
+#
+
+verification_with_code_uri = bs_api.get_access(my_reference_content, 'write')
+puts "Visit the URI within 15 seconds and grant access:"
+puts verification_with_code_uri
+
+#
+# The following call requests write permissions for other Apps (Desktop, Mobile, Native):
+#
+
 access_map = bs_api.get_access(my_reference_content, 'write')
-# We may limit our request to read access only if that's all that is needed
-read_access_map  = bs_api.get_access(my_reference_content, 'read')
-
-puts "We get the following access map for the write request"
+puts "Access map:"
 puts access_map
-puts
 
-# NOTE You'll need to use a writable project for the following code.
-# It will fail if the session is read only (e.g., demo projects).
+#
+# Confirm 'write' privilege request:
+#
 
-## PAUSE HERE
-# Have the user visit the verification uri to grant us access.
-puts "Please visit the following URL within 15 seconds and grant access"
-puts access_map['verification_with_code_uri']
+puts "Visit the URI within 15 seconds and grant access:"
+verification_with_code_uri = access_map['verification_with_code_uri']
+puts verification_with_code_uri
 
 link = access_map['verification_with_code_uri']
 host = RbConfig::CONFIG['host_os']
 case host
 when /mswin|mingw|cygwin/
-  system("start #{link}")
+  system("start #{verification_with_code_uri}")
 when /darwin/
-  system("open #{link}")
+  system("open #{verification_with_code_uri}")
 when /linux/
-  system("xdg-open #{link}")
+  system("xdg-open #{verification_with_code_uri}")
 end
-# BaseSpace exception: authorization_pending - User has not yet approved the access request (RuntimeError).
 sleep(15)
-## PAUSE HERE
 
-# Once the user has granted us the access to the object we requested we can get
-# the basespace access token and start browsing simply by calling updatePriviliges
-# on the BaseSpaceAPI instance.
 code = access_map['device_code']
 bs_api.update_privileges(code)
-puts "The BaseSpaceAPI instance was update with write privileges"
-puts bs_api
-puts
-
-# for more details on access-requests and authentication and an example of the web-based case
-# see example 1_authentication.rb
-
-
-
-
-
-
 

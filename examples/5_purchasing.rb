@@ -13,18 +13,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# Purchasing
+# --- Sorry, we have not documented this yet. ---
+
 require 'bio-basespace-sdk'
 
 include Bio::BaseSpace
-
-# This example demonstrates the billing methods of BaseSpace.
-# 
-# Below a purchase is created, requiring the user to click 'Purchase' in a web
-# browser. The purchase is then refunded, and the purchase is again retrieved
-# via the API using the purchase id and tags, which are used by developers
-# to help clarify exactly what was purchased.
-# 
-# NOTE You will need to fill client values for your app below!
 
 opts = {
   # FILL IN WITH YOUR APP VALUES HERE!
@@ -48,7 +42,7 @@ unless opts['client_id'] or opts['product_id']
   raise "Please fill in client values (in the script) before running the script"
 end
 
-# First, create a client for making calls for this user session.
+# Initialize a BaseSpace API object:
 bill_api = BillingAPI.new(opts['basespace_store_url'], opts['api_version'], opts['app_session_id'], opts['access_token'])
 
 # Create a non-consumable purchase.

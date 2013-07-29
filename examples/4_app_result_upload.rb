@@ -13,8 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Creating an AppResult and uploading files
-#   https://developer.basespace.illumina.com/docs/content/documentation/sdk-samples/python-sdk-overview#Creating_an_AppResult_and_uploading_files
+# Creating an AppResult and Uploading Files
+# https://github.com/joejimbo/basespace-ruby-sdk#creating-an-appresult-and-uploading-files
 
 require 'bio-basespace-sdk'
 
@@ -39,64 +39,107 @@ unless opts.select{|k,v| v[/^<.*>$/]}.empty?
   exit 1 unless opts
 end
 
-# First, create a client for making calls for this user session.
+# Initialize a BaseSpace API object:
 bs_api = BaseSpaceAPI.new(opts['client_id'], opts['client_secret'], opts['basespace_url'], opts['api_version'], opts['app_session_id'], opts['access_token'])
 
-# Now we'll do some work of our own. First get a project to work on.
-# We need write permission for the project we are working on,
-# meaning we will need get a new token and instantiate a new BaseSpaceAPI.
-prj = bs_api.get_project_by_id('89')  # [TODO] Original ID '89' was not accessible. Writable project is needed.
+### Creating an AppResult ###
 
-# Assuming we have write access to the project
-# we list the current App Results for the project.
+#
+# Request privileges
+#
+
+device_info = bs_api.get_verification_code('browse global')
+link = device_info['verification_with_code_uri']
+puts "Visit the URI within 15 seconds and grant access:"
+puts link
+host = RbConfig::CONFIG['host_os']
+case host
+when /mswin|mingw|cygwin/
+  system("start #{link}")
+when /darwin/
+  system("open #{link}")
+when /linux/
+  system("xdg-open #{link}")
+end
+sleep(15)
+
+code = device_info['device_code']
+bs_api.update_privileges(code)
+
+#
+# Get a project
+#
+
+# NOTE THAT YOUR PROJECT ID WILL MOST LIKELY BE DIFFERENT!
+# YOU CAN GET IT VIA THE SDK OR FROM THE BASESPACE WEB INTERFACE!
+# FOR EXAMPLE: my_projects.first.id
+puts 'NOTE THAT YOU NEED TO UPDATE THE PROJECT ID IN THE EXAMPLE CODE TO MATCH A PROJECT OF YOURS!'
+prj = bs_api.get_project_by_id('469469')
+
+#
+# List the current analyses for the project
+#
+
 statuses = ['Running']
-app_res = prj.get_app_results(bs_api, {}, statuses)  # [TODO] should introduce hash options / keyword arguments (in Ruby 2.0)
-puts "The current running AppResults are #{app_res}"
-puts
+app_res = prj.get_app_results(bs_api, {}, statuses)
+puts "AppResult instances: #{app_res.map { |r| r.to_s }.join(', ')}"
 
 #
-# Retrieving results and setting status
+# Request project creation privileges
 #
 
-# To create an appResults for a project, simply give the name and description.
-app_results = prj.create_app_result(bs_api, "testing", "this is my results")
-puts "Some info about our new app results"
-puts app_results
-puts app_results.id
-puts
-puts "The app results also comes with a reference to our AppSession"
-my_app_session = app_results.app_session
-puts my_app_session
-puts
+device_info = bs_api.get_verification_code("create project #{prj.id}")
+link = device_info['verification_with_code_uri']
+puts "Visit the URI within 15 seconds and grant access:"
+puts link
+host = RbConfig::CONFIG['host_os']
+case host
+when /mswin|mingw|cygwin/
+  system("start #{link}")
+when /darwin/
+  system("open #{link}")
+when /linux/
+  system("xdg-open #{link}")
+end
+sleep(15)
 
-# We can change the status of our AppSession and add a status-summary as follows.
-my_app_session.set_status(bs_api, 'needsattention', "We worked hard, but encountered some trouble.")
-puts "After a change of status of the app sessions we get #{my_app_session}"
-puts
-# We set our appSession back to running so we can do some more work.
-my_app_session.set_status(bs_api, 'running', "Back on track")
+code = device_info['device_code']
+bs_api.update_privileges(code)
 
+# NOTE THAT THE APP SESSION ID OF A RUNNING APP MUST BE PROVIDED!
+app_result = prj.create_app_result(bs_api, "testing", "this is my results", bs_api.app_session_id)
+puts "AppResult ID: #{app_result.id}"
+puts "AppResult's AppSession: #{app_result.app_session}"
 
-# Let's list all AppResults again and see if our new object shows up.
-app_res = prj.get_app_results(bs_api, {}, ['Running'])
-puts "The updated app results are #{app_res}"
-app_result2 = bs_api.get_app_result_by_id(app_results.id)
-puts app_result2
-puts
+#
+# Change the status of our `AppSession` and add a status-summary as follows:
+#
 
-# Now we will make another AppResult and try to upload a file to it
-app_results2 = prj.create_app_result(bs_api, "My second AppResult", "This one I will upload to")
-app_results2.upload_file(bs_api, '/home/mkallberg/Desktop/testFile2.txt', 'BaseSpaceTestFile.txt', '/mydir/', 'text/plain')
-puts "My AppResult number 2 #{app_results2}"
-puts
+app_result.app_session.set_status(bs_api, 'needsattention', "We worked hard, but encountered some trouble.")
 
-# Let's see if our new file made it.
-app_result_files = app_results2.get_files(bs_api)
-puts "These are the files in the appResult"
-puts app_result_files
-f = app_result_files.last
+# Updated status:
+puts "AppResult's AppSession: #{app_result.app_session}"
 
-# We can even download our newly uploaded file.
-f = bs_api.get_file_by_id(f.id)
-f.download_file(bs_api, '/home/mkallberg/Desktop/')
+# Set back to running:
+app_result.app_session.set_status(bs_api, 'running', "Back on track")
+
+### Uploading Files ###
+
+#
+# Attach a file to the `AppResult` object and upload it:
+#
+
+puts 'NOTE: THIS ASSUMES A FILE /tmp/testFile.txt IN YOUR FILESYSTEM!'
+app_result.upload_file(bs_api, '/tmp/testFile.txt', 'BaseSpaceTestFile.txt', '/mydir/', 'text/plain')
+
+# Let's see if our new file made it into the cloud:
+app_result_files = app_result.get_files(bs_api)
+puts "Files: #{app_result_files.map { |f| f.to_s }.join(', ')}"
+
+#
+# Download our newly uploaded file (will be saved as BaseSpaceTestFile.txt):
+
+f = bs_api.get_file_by_id(app_result_files.last.id)
+f.download_file(bs_api, '/tmp/')
+puts 'NOTE: downloaded \'BaseSpaceTestFile.txt\' into the /tmp directory.'
 
