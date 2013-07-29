@@ -17,12 +17,10 @@ Jeweler::Tasks.new do |gem|
   gem.name = "bio-basespace-sdk"
   gem.homepage = "https://github.com/joejimbo/basespace-ruby-sdk"
   gem.license = "Apache, Version 2.0"
-  gem.summary = %Q{Bio::BaseSpace is a Ruby based SDK to be used in the development of Apps and scripts for working with Illumina's BaseSpace cloud-computing solution for next-gen sequencing data analysis.}
-  gem.description = %Q{Bio::BaseSpace is a Ruby based SDK ported from the Python based BaseSpacePy SDK to be used in the development of Apps and scripts for working with Illumina's BaseSpace cloud-computing solution for next-gen sequencing data analysis.
+  gem.summary = %Q{BaseSpace Ruby SDK is a Ruby based Software Development Kit to be used in the development of Apps and scripts for working with Illumina's BaseSpace cloud-computing solution for next-gen sequencing data analysis.}
+  gem.description = %Q{BaseSpace Ruby SDK is a Ruby based Software Development Kit to be used in the development of Apps and scripts for working with Illumina's BaseSpace cloud-computing solution for next-gen sequencing data analysis.
 
-  The primary purpose of the SDK is to provide an easy-to-use Ruby environment enabling developers to authenticate a user, retrieve data, and upload data/results from their own analysis to BaseSpace.
-
-  If you haven't already done so, you may wish to familiarize yourself with the general BaseSpace developers documentation (https://developer.basespace.illumina.com/) and create a new BaseSpace App to be used when working through the examples provided in 'examples' folder.}
+  The primary purpose of the SDK is to provide an easy-to-use Ruby environment enabling developers to authenticate a user, retrieve data, and upload data/results from their own analysis to BaseSpace.}
   gem.email = "joachim.baran@gmail.com"
   gem.authors = ["Joachim Baran", "Raoul Bonnal", "Eri Kibukawa", "Francesco Strozzi", "Toshiaki Katayama"]
 #  gem.executable = 'basespace-ruby'
