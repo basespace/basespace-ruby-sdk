@@ -14,7 +14,7 @@
 # limitations under the License.
 
 # Application triggering
-# https://github.com/joejimbo/basespace-ruby-sdk#application-triggering
+# https://github.com/basespace/basespace-ruby-sdk#application-triggering
 
 require 'bio-basespace-sdk'
 

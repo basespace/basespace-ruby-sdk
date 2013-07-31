@@ -15,7 +15,7 @@ require 'jeweler'
 Jeweler::Tasks.new do |gem|
   # gem is a Gem::Specification... see http://docs.rubygems.org/read/chapter/20 for more options
   gem.name = "bio-basespace-sdk"
-  gem.homepage = "https://github.com/joejimbo/basespace-ruby-sdk"
+  gem.homepage = "https://github.com/basespace/basespace-ruby-sdk"
   gem.license = "Apache, Version 2.0"
   gem.summary = %Q{BaseSpace Ruby SDK is a Ruby based Software Development Kit to be used in the development of Apps and scripts for working with Illumina's BaseSpace cloud-computing solution for next-gen sequencing data analysis.}
   gem.description = %Q{BaseSpace Ruby SDK is a Ruby based Software Development Kit to be used in the development of Apps and scripts for working with Illumina's BaseSpace cloud-computing solution for next-gen sequencing data analysis.

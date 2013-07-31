@@ -14,7 +14,7 @@
 # limitations under the License.
 
 # Creating an AppResult and Uploading Files
-# https://github.com/joejimbo/basespace-ruby-sdk#creating-an-appresult-and-uploading-files
+# https://github.com/basespace/basespace-ruby-sdk#creating-an-appresult-and-uploading-files
 
 require 'bio-basespace-sdk'
 

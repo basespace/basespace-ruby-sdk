@@ -14,7 +14,7 @@
 # limitations under the License.
 
 # Accessing and Querying Files
-# https://github.com/joejimbo/basespace-ruby-sdk#accessing-and-querying-files
+# https://github.com/basespace/basespace-ruby-sdk#accessing-and-querying-files
 
 require 'bio-basespace-sdk'
 

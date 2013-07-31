@@ -14,7 +14,7 @@
 # limitations under the License.
 
 # BaseSpace Authentication
-# https://github.com/joejimbo/basespace-ruby-sdk#basespace-authentication
+# https://github.com/basespace/basespace-ruby-sdk#basespace-authentication
 
 require 'bio-basespace-sdk'
 

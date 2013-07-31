@@ -14,7 +14,7 @@
 # limitations under the License.
 
 # Browsing Data
-# https://github.com/joejimbo/basespace-ruby-sdk#browsing-data
+# https://github.com/basespace/basespace-ruby-sdk#browsing-data
 
 require 'bio-basespace-sdk'
 

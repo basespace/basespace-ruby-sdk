@@ -45,15 +45,15 @@ To test that everything is working as expected, launch a Interactive Ruby and tr
     >> require 'bio-basespace-sdk'
     >> include Bio::BaseSpace
 
-### Pre-Release Version [![Build Status](https://travis-ci.org/joejimbo/basespace-ruby-sdk.png?branch=master)](https://travis-ci.org/joejimbo/basespace-ruby-sdk)
+### Pre-Release Version [![Build Status](https://travis-ci.org/basespace/basespace-ruby-sdk.png?branch=master)](https://travis-ci.org/basespace/basespace-ruby-sdk)
 
 The pre-release version of BaseSpace Ruby SDK can be checked out here:
 
-    git clone https://github.com/joejimbo/basespace-ruby-sdk.git
+    git clone https://github.com/basespace/basespace-ruby-sdk.git
 
 or by,
 
-    git clone git@github.com:joejimbo/basespace-ruby-sdk.git
+    git clone git@github.com:basespace/basespace-ruby-sdk.git
 
 For a description on how to build the pre-release version see "[SDK Development Manual](#sdk-development-manual)".
 
@@ -104,7 +104,7 @@ The file `credentials.json` contains the authentication/connection details in [J
 
 ## Application Triggering
 
-**Example Source Code:** [examples/0\_app\_triggering.rb](https://github.com/joejimbo/basespace-ruby-sdk/blob/master/examples/0_app_triggering.rb)
+**Example Source Code:** [examples/0\_app\_triggering.rb](https://github.com/basespace/basespace-ruby-sdk/blob/master/examples/0_app_triggering.rb)
 
 This section demonstrates how to retrieve the `AppSession` object produced when a user triggers a BaseSpace App. 
 Further, we cover how to automatically generate the scope strings to request access to the data object (be it a project or a sample) that the App was triggered to analyze.
@@ -231,7 +231,7 @@ For more details on access-requests and authentication and an example of the web
 
 ## BaseSpace Authentication
 
-**Example Source Code:** [examples/1\_authentication.rb](https://github.com/joejimbo/basespace-ruby-sdk/blob/master/examples/1_authentication.rb) and [examples/2\_browsing.rb](https://github.com/joejimbo/basespace-ruby-sdk/blob/master/examples/2_browsing.rb)
+**Example Source Code:** [examples/1\_authentication.rb](https://github.com/basespace/basespace-ruby-sdk/blob/master/examples/1_authentication.rb) and [examples/2\_browsing.rb](https://github.com/basespace/basespace-ruby-sdk/blob/master/examples/2_browsing.rb)
 
 Here we demonstrate the basic BaseSpace authentication process. The workflow outlined here is
 
@@ -348,7 +348,7 @@ The output will be similar to:
     
 ## Accessing and Querying Files
 
-**Example Source Code:** [examples/3\_accessing\_files.rb](https://github.com/joejimbo/basespace-ruby-sdk/blob/master/examples/3_accessing_files.rb)
+**Example Source Code:** [examples/3\_accessing\_files.rb](https://github.com/basespace/basespace-ruby-sdk/blob/master/examples/3_accessing_files.rb)
 
 In this section we demonstrate how to access samples and analysis from a projects and how to work with the available file data for such instances. In addition, we take a look at some of the special queuring methods associated with BAM- and VCF-files. 
 
@@ -459,7 +459,7 @@ The output will be:
 
 ## Creating an AppResult and Uploading Files
 
-**Example Source Code:** [4\_app\_result\_upload.rb](https://github.com/joejimbo/basespace-ruby-sdk/blob/master/examples/4_app_result_upload.rb)
+**Example Source Code:** [4\_app\_result\_upload.rb](https://github.com/basespace/basespace-ruby-sdk/blob/master/examples/4_app_result_upload.rb)
 
 In this section we will see how to create a new `AppResult` object, change the state of the related AppSession,
 and upload result files to it as well as retrieve files from it. 
@@ -617,7 +617,7 @@ You can supply a dictionary of query parameters when retrieving App results, in 
 
 ## Feature Requests and Bug Reporting
 
-Please report any feedback regarding the BaseSpace Ruby SDK directly to the [GitHub repository](https://github.com/joejimbo/basespace-ruby-sdk). We appreciate any and all feedback about the SDKs and we will do anything we can to improve the functionality and quality of the SDK to make it the best SDK for developers to use. 
+Please report any feedback regarding the BaseSpace Ruby SDK directly to the [GitHub repository](https://github.com/basespace/basespace-ruby-sdk). We appreciate any and all feedback about the SDKs and we will do anything we can to improve the functionality and quality of the SDK to make it the best SDK for developers to use. 
 
 # SDK Development Manual
 
@@ -675,6 +675,6 @@ In alphabetical order (last name):
 
 # Copying and License
 
-See [License.txt](https://raw.github.com/joejimbo/basespace-ruby-sdk/master/License.txt) for details on licensing and distribution.
+See [License.txt](https://raw.github.com/basespace/basespace-ruby-sdk/master/License.txt) for details on licensing and distribution.
 
 
