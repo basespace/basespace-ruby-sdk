@@ -84,15 +84,7 @@ puts "Scope string for requesting write access to the reference object:"
 puts my_reference_content.get_access_str('write')
 
 #
-# The following call requests write permissions for a Web App:
-#
-
-verification_with_code_uri = bs_api.get_access(my_reference_content, 'write')
-puts "Visit the URI within 15 seconds and grant access:"
-puts verification_with_code_uri
-
-#
-# The following call requests write permissions for other Apps (Desktop, Mobile, Native):
+# The following call requests write permissions:
 #
 
 access_map = bs_api.get_access(my_reference_content, 'write')
@@ -107,7 +99,6 @@ puts "Visit the URI within 15 seconds and grant access:"
 verification_with_code_uri = access_map['verification_with_code_uri']
 puts verification_with_code_uri
 
-link = access_map['verification_with_code_uri']
 host = RbConfig::CONFIG['host_os']
 case host
 when /mswin|mingw|cygwin/

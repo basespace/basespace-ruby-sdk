@@ -120,13 +120,13 @@ The initial HTTP request to our App from BaseSpace is identified by an `AppSessi
     # An app session contains a referral to one or more AppSessionLaunchObject instances, which reference the
     # data module the user launched the App on. This can be a list of projects, samples, or a mixture of objects
     puts "Type of data the app was triggered on can be seen in 'references':"
-    puts my_app_session.references.inspect  # `inspect` shows the object contents
+    p my_app_session.references
 
 The output will be similar to:
 
     App session by 600602: Eri Kibukawa - Id: <my app session id> - status: Complete
     Type of data the app was triggered on can be seen in 'references':
-    [#<Bio::BaseSpace::AppSessionLaunchObject:0x007fc21a1ae0f8 @swagger_types={"Content"=>"dict", "Href"=>"str", "HrefContent"=>"str", "Rel"=>"str", "Type"=>"str"}, @attributes={"Content"=>#<Bio::BaseSpace::Project:0x007fc21a1ae378 @swagger_types={"Name"=>"str", "HrefSamples"=>"str", "HrefAppResults"=>"str", "HrefBaseSpaceUI"=>"str", "DateCreated"=>"datetime", "Id"=>"str", "Href"=>"str", "UserOwnedBy"=>"UserCompact"}, @attributes={"Name"=>"IGN_WGS_CEPH_Services_2.0", "HrefSamples"=>nil, "HrefAppResults"=>nil, "HrefBaseSpaceUI"=>nil, "DateCreated"=>#<DateTime: 2013-04-19T18:21:50+00:00 ((2456402j,66110s,0n),+0s,2299161j)>, "Id"=>"267267", "Href"=>"v1pre3/projects/267267", "UserOwnedBy"=>#<Bio::BaseSpace::UserCompact:0x007fc21a1ac758 @swagger_types={"Name"=>"str", "Id"=>"str", "Href"=>"str"}, @attributes={"Name"=>"Illumina Inc", "Id"=>"3004", "Href"=>"v1pre3/users/3004"}>}>, "Href"=>"v1pre3/projects/267267", "HrefContent"=>"v1pre3/projects/267267", "Rel"=>"Input", "Type"=>"Project"}>]
+    [Project]
 
 We can get a handle to the user who started the `AppSession` and further information on the `AppSessionLaunchObject`:
 
@@ -173,20 +173,9 @@ The output will be similar to:
     Scope string for requesting write access to the reference object:
     write project 848850
 
-We can request write access to the reference object now, so that our App can start contributing to an analysis. There is a distinction between requesting access for Web-Apps and other Apps (Desktop, Mobile, Native) though.
+We can request write access to the reference object now, so that our App can start contributing to an analysis.
 
-The following call requests write permissions for a Web App:
-
-    verification_with_code_uri = bs_api.get_access(my_reference_content, 'write')
-    puts "Visit the URI within 15 seconds and grant access:"
-    puts verification_with_code_uri
-
-The output will be similar to:
-
-    Visit the URI within 15 seconds and grant access:
-    https://cloud-hoth.illumina.com//oauth/authorize?<authorization paramers>
-
-The following call requests write permissions for other Apps (Desktop, Mobile, Native):
+The following call requests write permissions:
 
     access_map = bs_api.get_access(my_reference_content, 'write')
     puts "Access map:"
@@ -197,7 +186,7 @@ The output will be similar to:
     Access map:
     {"device_code"=>"<my device code>", "user_code"=>"<my user code>", "verification_uri"=>"https://basespace.illumina.com/oauth/device", "verification_with_code_uri"=>"https://basespace.illumina.com/oauth/device?code=<my user code>", "expires_in"=>1800, "interval"=>1}
 
-Visit the verification URI and grant access within 15 seconds:
+Have the user visit the verification URI to grant us access:
 
     puts "Visit the URI within 15 seconds and grant access:"
     verification_with_code_uri = access_map['verification_with_code_uri']
@@ -208,9 +197,8 @@ The output will be:
     Visit the URI within 15 seconds and grant access:
     https://basespace.illumina.com/oauth/device?code=<my user code>
 
-In both cases, the URI can be opened in a web browser using this portable Ruby code:
+The URI can be opened in a web browser using this portable Ruby code:
 
-    link = access_map['verification_with_code_uri']
     host = RbConfig::CONFIG['host_os']
     case host
     when /mswin|mingw|cygwin/
