@@ -69,7 +69,7 @@ class Model
   end
 
   # Returns a string representation of the model.
-  def to_str
+  def to_s
     return self.inspect
   end
 end
