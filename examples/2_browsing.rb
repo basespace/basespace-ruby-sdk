@@ -54,7 +54,7 @@ puts "DisplayName: #{my_genome.display_name}"
 #
 
 all_genomes  = bs_api.get_available_genomes
-puts "Genomes: #{all_genomes.map { |g| g.to_s }.join(', ')}"
+puts "Genomes: #{all_genomes.join(', ')}"
 
 #
 # Retrieve the `User` object for the current user and list all projects for this user:
@@ -64,19 +64,19 @@ user = bs_api.get_user_by_id('current')
 puts "User -- #{user}"
 
 my_projects = bs_api.get_project_by_user('current')
-puts "Projects: #{my_projects.map { |p| p.to_s }.join(', ')}"
+puts "Projects: #{my_projects.join(', ')}"
 
 #
 # We can also achieve this by making a call to the `User` instance:
 #
 
 my_projects = user.get_projects(bs_api)
-puts "Projects: #{my_projects.map { |p| p.to_s }.join(', ')}"
+puts "Projects: #{my_projects.join(', ')}"
 
 #
 # List all runs for a user:
 #
 
 runs = user.get_runs(bs_api)
-puts "Runs: #{runs.map { |r| r.to_s }.join(', ')}"
+puts "Runs: #{runs.join(', ')}"
 
