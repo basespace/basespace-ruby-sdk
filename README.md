@@ -72,10 +72,10 @@ Creating a `BaseSpaceAPI` object using `new`:
     include Bio::BaseSpace
     
     # Authentication and connection details:
-    client_id       = 'my client key'
-    client_secret   = 'my client secret'
-    app_session_id  = 'my app session id'
-    access_token    = 'my access token'
+    client_id       = '<my client key>'
+    client_secret   = '<my client secret>'
+    app_session_id  = '<my app session id>'
+    access_token    = '<my access token>'
     basespace_url   = 'https://api.basespace.illumina.com/'
     api_version     = 'v1pre3'
     
@@ -94,10 +94,10 @@ Creating a `BaseSpaceAPI` object using `credentials.json`:
 The file `credentials.json` contains the authentication/connection details in [JSON](http://json.org) format:
 
     {
-        "client_id":      "my client id",
-        "client_secret":  "my client secret",
-        "app_session_id": "my app session id",
-        "access_token":   "my access token",
+        "client_id":      "<my client id>",
+        "client_secret":  "<my client secret>",
+        "app_session_id": "<my app session id>",
+        "access_token":   "<my access token>",
         "basespace_url":  "https://api.basespace.illumina.com",
         "api_version":    "v1pre3"
     }
@@ -120,13 +120,13 @@ The initial HTTP request to our App from BaseSpace is identified by an `AppSessi
     # An app session contains a referral to one or more AppSessionLaunchObject instances, which reference the
     # data module the user launched the App on. This can be a list of projects, samples, or a mixture of objects
     puts "Type of data the app was triggered on can be seen in 'references':"
-    p my_app_session.references
+    puts my_app_session.references
 
 The output will be similar to:
 
     App session by 600602: Eri Kibukawa - Id: <my app session id> - status: Complete
     Type of data the app was triggered on can be seen in 'references':
-    [Project]
+    Project
 
 We can get a handle to the user who started the `AppSession` and further information on the `AppSessionLaunchObject`:
 
@@ -215,7 +215,7 @@ Once the user has granted us access to objects we requested we can get the BaseS
     code = access_map['device_code']
     bs_api.update_privileges(code)
 
-For more details on access-requests and authentication and an example of the web-based case see example 1\_authentication.rb
+For more details on access-requests and authentication and an example of the web-based case see example [1\_authentication.rb](https://github.com/basespace/basespace-ruby-sdk/blob/master/examples/1_authentication.rb)
 
 ## BaseSpace Authentication
 
@@ -235,14 +235,13 @@ It will be useful if you are logged in to the BaseSpace web-site before launchin
 
 First, get the verification code and URI for scope 'browse global':
 
-    device_info = bs_api.get_verification_code('browse global')
-    puts
+    access_map = bs_api.get_verification_code('browse global')
     puts "URI for user to visit and grant access:"
-    puts device_info['verification_with_code_uri']
+    puts access_map['verification_with_code_uri']
 
 At this point the user must visit the verification URI to grant the requested privilege. From Ruby, it is possible to launch a browser pointing to the verification URI using:
 
-    link = device_info['verification_with_code_uri']
+    link = access_map['verification_with_code_uri']
     host = RbConfig::CONFIG['host_os']
     case host
     when /mswin|mingw|cygwin/
@@ -261,7 +260,7 @@ The output will be:
     
 Once access has been granted, we can get the BaseSpace `access_token` and start browsing simply by calling `update_privileges` on the baseSpaceApi instance.
 
-    code = device_info['device_code']
+    code = access_map['device_code']
     bs_api.update_privileges(code)
 
 As a reference the provided access-token can be obtained from the `BaseSpaceAPI` object:
@@ -296,7 +295,7 @@ The output will be:
 We can get a list of all available genomes:
 
     all_genomes  = bs_api.get_available_genomes
-    puts "Genomes: #{all_genomes.map { |g| g.to_s }.join(', ')}"
+    puts "Genomes: #{all_genomes.join(', ')}"
 
 The output will be:
 
@@ -308,7 +307,7 @@ Now, retrieve the `User` object for the current user and list all projects for t
     puts "User -- #{user}"
     
     my_projects = bs_api.get_project_by_user('current')
-    puts "Projects: #{my_projects.map { |p| p.to_s }.join(', ')}"
+    puts "Projects: #{my_projects.join(', ')}"
 
 The output will be similar to:
 
@@ -318,7 +317,7 @@ The output will be similar to:
 We can also achieve this by making a call to the `User` instance:
 
     my_projects = user.get_projects(bs_api)
-    puts "Projects: #{my_projects.map { |p| p.to_s }.join(', ')}"
+    puts "Projects: #{my_projects.join(', ')}"
 
 The output will be as above:
 
@@ -328,7 +327,7 @@ The output will be as above:
 We can also list all runs for a user:
 
     runs = user.get_runs(bs_api)
-    puts "Runs: #{runs.map { |r| r.to_s }.join(', ')}"
+    puts "Runs: #{runs.join(', ')}"
 
 The output will be similar to:
 
@@ -357,10 +356,10 @@ Now we can list all the analyses and samples for these projects:
       puts "Project: #{single_project}"
       
       app_results = single_project.get_app_results(bs_api)
-      puts "  AppResult instances: #{app_results.map { |r| r.to_s }.join(', ')}"
+      puts "  AppResult instances: #{app_results.join(', ')}"
       
       samples = single_project.get_samples(bs_api)
-      puts "  Sample instances: #{samples.map { |s| s.to_s }.join(', ')}"
+      puts "  Sample instances: #{samples.join(', ')}"
     end
 
 The output will be similar to:
@@ -398,8 +397,8 @@ Now, we have a look at some of the methods calls specific to BAM and VCF files. 
 
     # Request privileges:
     # NOTE THAT YOUR PROJECT ID (469469 here) WILL MOST LIKELY BE DIFFERENT!
-    device_info = bs_api.get_verification_code('read project 469469')
-    link = device_info['verification_with_code_uri']
+    access_map = bs_api.get_verification_code('read project 469469')
+    link = access_map['verification_with_code_uri']
     puts "Visit the URI within 15 seconds and grant access:"
     puts link
     host = RbConfig::CONFIG['host_os']
@@ -413,7 +412,7 @@ Now, we have a look at some of the methods calls specific to BAM and VCF files. 
     end
     sleep(15)
     
-    code = device_info['device_code']
+    code = access_map['device_code']
     bs_api.update_privileges(code)
     
     # Get the coverage for an interval + accompanying meta-data:
@@ -438,7 +437,7 @@ For VCF-files we can filter variant calls based on chromosome and location as we
     var_meta = my_vcf.get_variant_meta(bs_api)
     puts var_meta
     var = my_vcf.filter_variant(bs_api, '1', '20000', '30000') # no value. need verification
-    puts "  #{var.map { |v| v.to_s }.join(', ')}"
+    puts "  #{var.join(', ')}"
 
 The output will be:
 
@@ -458,8 +457,8 @@ and upload result files to it as well as retrieve files from it.
 
 First we get a project to work on. We will need write permissions for the project we are working on -- meaning that we will need to update our privileges accordingly:
     
-    device_info = bs_api.get_verification_code('browse global')
-    link = device_info['verification_with_code_uri']
+    access_map = bs_api.get_verification_code('browse global')
+    link = access_map['verification_with_code_uri']
     puts "Visit the URI within 15 seconds and grant access:"
     puts link
     host = RbConfig::CONFIG['host_os']
@@ -473,7 +472,7 @@ First we get a project to work on. We will need write permissions for the projec
     end
     sleep(15)
     
-    code = device_info['device_code']
+    code = access_map['device_code']
     bs_api.update_privileges(code)
     
     # NOTE THAT YOUR PROJECT ID WILL MOST LIKELY BE DIFFERENT!
@@ -485,7 +484,7 @@ Assuming we have write access for the project, we will list the current analyses
 
     statuses = ['Running']
     app_res = prj.get_app_results(bs_api, {}, statuses)
-    puts "AppResult instances: #{app_res.map { |r| r.to_s }.join(', ')}"
+    puts "AppResult instances: #{app_res.join(', ')}"
 
 The output will be similar to:
 
@@ -493,8 +492,8 @@ The output will be similar to:
 
 To create an `AppResult` for a project, request 'create' privileges, then simply give the name and description:
 
-    device_info = bs_api.get_verification_code("create project #{prj.id}")
-    link = device_info['verification_with_code_uri']
+    access_map = bs_api.get_verification_code("create project #{prj.id}")
+    link = access_map['verification_with_code_uri']
     puts "Visit the URI within 15 seconds and grant access:"
     puts link
     host = RbConfig::CONFIG['host_os']
@@ -508,7 +507,7 @@ To create an `AppResult` for a project, request 'create' privileges, then simply
     end
     sleep(15)
     
-    code = device_info['device_code']
+    code = access_map['device_code']
     bs_api.update_privileges(code)
 
     # NOTE THAT THE APP SESSION ID OF A RUNNING APP MUST BE PROVIDED!
@@ -543,7 +542,7 @@ Attach a file to the `AppResult` object and upload it:
     
     # Let's see if our new file made it into the cloud:
     app_result_files = app_result.get_files(bs_api)
-    puts "Files: #{app_result_files.map { |f| f.to_s }.join(', ')}"
+    puts "Files: #{app_result_files.join(', ')}"
 
 The output will be:
 

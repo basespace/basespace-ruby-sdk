@@ -47,7 +47,7 @@ puts my_app_session
 # An app session contains a referral to one or more AppSessionLaunchObject instances, which reference the
 # data module the user launched the App on. This can be a list of projects, samples, or a mixture of objects
 puts "Type of data the app was triggered on can be seen in 'references':"
-puts my_app_session.references.inspect  # `inspect` shows the object contents
+puts my_app_session.references
 
 #
 # We can get a handle to the user who started the `AppSession` and further information on the `AppSessionLaunchObject`:
