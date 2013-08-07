@@ -150,10 +150,20 @@ class APIClient
       if cgi_params
         url += "?#{cgi_params}"
       end
-      # [TODO] confirm this works or not
-      #request = urllib2.Request(url, headers)
       uri = URI.parse(url)
-      request = Net::HTTP::Get.new(uri, headers)
+      # https://www.ruby-forum.com/topic/4411398
+      # In Ruby 1.9: Use Net::HTTP::Get.new(uri.path) or Net::HTTP::Get.new(uri.path + '?' uri.query)
+      # In Ruby 2.0: Use Net::HTTP::Get.new(uri)
+      case RUBY_VERSION
+      when /^1.9/
+        if uri.query and not uri.query.empty?
+          request = Net::HTTP::Get.new(uri.path + '?' + uri.query, headers)
+        else
+          request = Net::HTTP::Get.new(uri.path, headers)
+        end
+      else
+        request = Net::HTTP::Get.new(uri, headers)
+      end
     when 'POST', 'PUT', 'DELETE'
       if cgi_params
         force_post_url = url 
@@ -167,10 +177,17 @@ class APIClient
         response = force_post_call(force_post_url, sent_query_params, headers)
       else
         data = {} if not data or (data and data.empty?) # temp fix, in case is no data in the file, to prevent post request from failing
-        # [TODO] confirm this works or not
-        #request = urllib2.Request(url, headers, data)#, @timeout)
         uri = URI.parse(url)
-        request = Net::HTTP::Post.new(uri, headers)
+        case RUBY_VERSION
+        when /^1.9/
+          if uri.query and not uri.query.empty?
+            request = Net::HTTP::Post.new(uri.path + '?' + uri.query, headers)
+          else
+            request = Net::HTTP::Post.new(uri.path, headers)
+          end
+        else
+          request = Net::HTTP::Post.new(uri, headers)
+        end
         if data.kind_of?(Hash) then
           request.set_form_data(data)
         else
@@ -213,7 +230,7 @@ class APIClient
     return data
   end
 
-  # Serialize a list to a CSV string, if necessary.
+  # Serialize a list to a CSV string, if ncessary.
   #
   # +obj+:: Data object to be serialized.
   def to_path_value(obj)
