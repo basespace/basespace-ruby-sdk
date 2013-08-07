@@ -152,7 +152,7 @@ class APIClient
       end
       uri = URI.parse(url)
       # https://www.ruby-forum.com/topic/4411398
-      # In Ruby 1.9: Use Net::HTTP::Get.new(uri.path) or Net::HTTP::Get.new(uri.path + '?' uri.query)
+      # In Ruby 1.9: Use Net::HTTP::Get.new(uri.path) or Net::HTTP::Get.new(uri.path + '?' + uri.query)
       # In Ruby 2.0: Use Net::HTTP::Get.new(uri)
       case RUBY_VERSION
       when /^1.9/
@@ -170,7 +170,7 @@ class APIClient
         url += "?#{cgi_params}"
       end
       if post_data
-        # [TODO] Do we need to skip String, Integer, Float and bool in Ruby?
+        # [TODO] Do we need to skip String, Integer, Float and bool also in Ruby?
         data = post_data # if not [str, int, float, bool].include?(type(post_data))
       end
       if force_post
@@ -230,7 +230,7 @@ class APIClient
     return data
   end
 
-  # Serialize a list to a CSV string, if ncessary.
+  # Serialize a list to a CSV string, if necessary.
   #
   # +obj+:: Data object to be serialized.
   def to_path_value(obj)
