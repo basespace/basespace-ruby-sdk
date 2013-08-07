@@ -149,7 +149,16 @@ class BaseSpaceAPI < BaseAPI
       http_opts[:use_ssl] = true
     end
     response = Net::HTTP.start(uri.host, uri.port, http_opts) { |http|
-      request = Net::HTTP::Get.new(uri.path)
+      case RUBY_VERSION
+      when /^1.9/
+        if uri.query and not uri.query.empty?
+          request = Net::HTTP::Get.new(uri.path + '?' + uri.query)
+        else
+          request = Net::HTTP::Get.new(uri.path)
+        end
+      else
+        request = Net::HTTP::Get.new(uri)
+      end
       request.basic_auth uri.user, uri.password
       http.request(request)
     }
@@ -672,7 +681,16 @@ class BaseSpaceAPI < BaseAPI
       end
       res = Net::HTTP.start(uri.host, uri.port, http_opts) { |http|
         # [TODO] Do we need user and pass here also?
-        http.get(uri, header)
+        case RUBY_VERSION
+        when /^1.9/
+          if uri.query and not uri.query.empty?
+            http.get(uri.path + '?' + uri.query, header)
+          else
+            http.get(uri.path, header)
+          end
+        else
+          http.get(uri, header)
+        end
       }
       fp.print res.body
     end
