@@ -82,7 +82,7 @@ prj = bs_api.get_project_by_id('469469')
 
 statuses = ['Running']
 app_res = prj.get_app_results(bs_api, {}, statuses)
-puts "AppResult instances: #{app_res.join(', ')}"
+puts "AppResult instances: #{app_res.map { |r| r.to_s }.join(', ')}"
 
 #
 # Request project creation privileges
@@ -134,7 +134,7 @@ app_result.upload_file(bs_api, '/tmp/testFile.txt', 'BaseSpaceTestFile.txt', '/m
 
 # Let's see if our new file made it into the cloud:
 app_result_files = app_result.get_files(bs_api)
-puts "Files: #{app_result_files.join(', ')}"
+puts "Files: #{app_result_files.map { |f| f.to_s }.join(', ')}"
 
 #
 # Download our newly uploaded file (will be saved as BaseSpaceTestFile.txt):

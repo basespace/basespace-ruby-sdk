@@ -295,7 +295,7 @@ The output will be:
 We can get a list of all available genomes:
 
     all_genomes  = bs_api.get_available_genomes
-    puts "Genomes: #{all_genomes.join(', ')}"
+    puts "Genomes: #{all_genomes.map { |g| g.to_s }.join(', ')}"
 
 The output will be:
 
@@ -307,7 +307,7 @@ Now, retrieve the `User` object for the current user and list all projects for t
     puts "User -- #{user}"
     
     my_projects = bs_api.get_project_by_user('current')
-    puts "Projects: #{my_projects.join(', ')}"
+    puts "Projects: #{my_projects.map { |p| p.to_s }.join(', ')}"
 
 The output will be similar to:
 
@@ -317,7 +317,7 @@ The output will be similar to:
 We can also achieve this by making a call to the `User` instance:
 
     my_projects = user.get_projects(bs_api)
-    puts "Projects: #{my_projects.join(', ')}"
+    puts "Projects: #{my_projects.map { |p| p.to_s }.join(', ')}"
 
 The output will be as above:
 
@@ -327,7 +327,7 @@ The output will be as above:
 We can also list all runs for a user:
 
     runs = user.get_runs(bs_api)
-    puts "Runs: #{runs.join(', ')}"
+    puts "Runs: #{runs.map { |r| r.to_s }.join(', ')}"
 
 The output will be similar to:
 
@@ -356,10 +356,10 @@ Now we can list all the analyses and samples for these projects:
       puts "Project: #{single_project}"
       
       app_results = single_project.get_app_results(bs_api)
-      puts "  AppResult instances: #{app_results.join(', ')}"
+      puts "  AppResult instances: #{app_results.map { |r| r.to_s }.join(', ')}"
       
       samples = single_project.get_samples(bs_api)
-      puts "  Sample instances: #{samples.join(', ')}"
+      puts "  Sample instances: #{samples.map { |s| s.to_s }.join(', ')}"
     end
 
 The output will be similar to:
@@ -437,7 +437,7 @@ For VCF-files we can filter variant calls based on chromosome and location as we
     var_meta = my_vcf.get_variant_meta(bs_api)
     puts var_meta
     var = my_vcf.filter_variant(bs_api, '1', '20000', '30000') # no value. need verification
-    puts "  #{var.join(', ')}"
+    puts "  #{var.map { |v| v.to_s }.join(', ')}"
 
 The output will be:
 
@@ -484,7 +484,7 @@ Assuming we have write access for the project, we will list the current analyses
 
     statuses = ['Running']
     app_res = prj.get_app_results(bs_api, {}, statuses)
-    puts "AppResult instances: #{app_res.join(', ')}"
+    puts "AppResult instances: #{app_res.map { |r| r.to_s }.join(', ')}"
 
 The output will be similar to:
 
@@ -542,7 +542,7 @@ Attach a file to the `AppResult` object and upload it:
     
     # Let's see if our new file made it into the cloud:
     app_result_files = app_result.get_files(bs_api)
-    puts "Files: #{app_result_files.join(', ')}"
+    puts "Files: #{app_result_files.map { |f| f.to_s }.join(', ')}"
 
 The output will be:
 

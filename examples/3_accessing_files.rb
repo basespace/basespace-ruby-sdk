@@ -58,10 +58,10 @@ my_projects.each do |single_project|
   puts "Project: #{single_project}"
 
   app_results = single_project.get_app_results(bs_api)
-  puts "  AppResult instances: #{app_results.join(', ')}"
+  puts "  AppResult instances: #{app_results.map { |r| r.to_s }.join(', ')}"
 
   samples = single_project.get_samples(bs_api)
-  puts "  Sample instances: #{samples.join(', ')}"
+  puts "  Sample instances: #{samples.map { |s| s.to_s }.join(', ')}"
 end
 
 #
@@ -120,5 +120,5 @@ my_vcf = bs_api.get_file_by_id('7823817')
 var_meta = my_vcf.get_variant_meta(bs_api)
 puts var_meta
 var = my_vcf.filter_variant(bs_api, '1', '20000', '30000') # no value. need verification
-puts "  #{var.join(', ')}"
+puts "  #{var.map { |v| v.to_s }.join(', ')}"
 
