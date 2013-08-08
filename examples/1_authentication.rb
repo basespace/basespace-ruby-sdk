@@ -43,16 +43,15 @@ bs_api = BaseSpaceAPI.new(opts['client_id'], opts['client_secret'], opts['basesp
 # Get the verification code and uri for scope 'browse global':
 #
 
-device_info = bs_api.get_verification_code('browse global')
-puts
+access_map = bs_api.get_verification_code('browse global')
 puts "URI for user to visit and grant access:"
-puts device_info['verification_with_code_uri']
+puts access_map['verification_with_code_uri']
 
 #
 # Grant access privileges:
 #
 
-link = device_info['verification_with_code_uri']
+link = access_map['verification_with_code_uri']
 host = RbConfig::CONFIG['host_os']
 case host
 when /mswin|mingw|cygwin/
@@ -64,7 +63,7 @@ when /linux/
 end
 sleep(15)
 
-code = device_info['device_code']
+code = access_map['device_code']
 bs_api.update_privileges(code)
 
 puts "Access-token: #{bs_api.get_access_token}"

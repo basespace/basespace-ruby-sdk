@@ -58,10 +58,10 @@ my_projects.each do |single_project|
   puts "Project: #{single_project}"
 
   app_results = single_project.get_app_results(bs_api)
-  puts "  AppResult instances: #{app_results.map { |r| r.to_s }.join(', ')}"
+  puts "  AppResult instances: #{app_results.join(', ')}"
 
   samples = single_project.get_samples(bs_api)
-  puts "  Sample instances: #{samples.map { |s| s.to_s }.join(', ')}"
+  puts "  Sample instances: #{samples.join(', ')}"
 end
 
 #
@@ -82,8 +82,8 @@ end
 
 # NOTE THAT YOUR PROJECT ID (469469 here) WILL MOST LIKELY BE DIFFERENT!
 puts 'NOTE: CHANGE THE PROJECT ID IN THE EXAMPLE TO MATCH A PROJECT OF YOURS!'
-device_info = bs_api.get_verification_code('read project 469469')
-link = device_info['verification_with_code_uri']
+access_map = bs_api.get_verification_code('read project 469469')
+link = access_map['verification_with_code_uri']
 puts "Visit the URI within 15 seconds and grant access:"
 puts link
 host = RbConfig::CONFIG['host_os']
@@ -97,7 +97,7 @@ when /linux/
 end
 sleep(15)
 
-code = device_info['device_code']
+code = access_map['device_code']
 bs_api.update_privileges(code)
 
 #
@@ -120,5 +120,5 @@ my_vcf = bs_api.get_file_by_id('7823817')
 var_meta = my_vcf.get_variant_meta(bs_api)
 puts var_meta
 var = my_vcf.filter_variant(bs_api, '1', '20000', '30000') # no value. need verification
-puts "  #{var.map { |v| v.to_s }.join(', ')}"
+puts "  #{var.join(', ')}"
 

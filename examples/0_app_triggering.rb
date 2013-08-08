@@ -47,7 +47,7 @@ puts my_app_session
 # An app session contains a referral to one or more AppSessionLaunchObject instances, which reference the
 # data module the user launched the App on. This can be a list of projects, samples, or a mixture of objects
 puts "Type of data the app was triggered on can be seen in 'references':"
-puts my_app_session.references.inspect  # `inspect` shows the object contents
+puts my_app_session.references
 
 #
 # We can get a handle to the user who started the `AppSession` and further information on the `AppSessionLaunchObject`:
@@ -84,15 +84,7 @@ puts "Scope string for requesting write access to the reference object:"
 puts my_reference_content.get_access_str('write')
 
 #
-# The following call requests write permissions for a Web App:
-#
-
-verification_with_code_uri = bs_api.get_access(my_reference_content, 'write')
-puts "Visit the URI within 15 seconds and grant access:"
-puts verification_with_code_uri
-
-#
-# The following call requests write permissions for other Apps (Desktop, Mobile, Native):
+# The following call requests write permissions:
 #
 
 access_map = bs_api.get_access(my_reference_content, 'write')
@@ -107,7 +99,6 @@ puts "Visit the URI within 15 seconds and grant access:"
 verification_with_code_uri = access_map['verification_with_code_uri']
 puts verification_with_code_uri
 
-link = access_map['verification_with_code_uri']
 host = RbConfig::CONFIG['host_os']
 case host
 when /mswin|mingw|cygwin/

@@ -48,8 +48,8 @@ bs_api = BaseSpaceAPI.new(opts['client_id'], opts['client_secret'], opts['basesp
 # Request privileges
 #
 
-device_info = bs_api.get_verification_code('browse global')
-link = device_info['verification_with_code_uri']
+access_map = bs_api.get_verification_code('browse global')
+link = access_map['verification_with_code_uri']
 puts "Visit the URI within 15 seconds and grant access:"
 puts link
 host = RbConfig::CONFIG['host_os']
@@ -63,7 +63,7 @@ when /linux/
 end
 sleep(15)
 
-code = device_info['device_code']
+code = access_map['device_code']
 bs_api.update_privileges(code)
 
 #
@@ -82,14 +82,14 @@ prj = bs_api.get_project_by_id('469469')
 
 statuses = ['Running']
 app_res = prj.get_app_results(bs_api, {}, statuses)
-puts "AppResult instances: #{app_res.map { |r| r.to_s }.join(', ')}"
+puts "AppResult instances: #{app_res.join(', ')}"
 
 #
 # Request project creation privileges
 #
 
-device_info = bs_api.get_verification_code("create project #{prj.id}")
-link = device_info['verification_with_code_uri']
+access_map = bs_api.get_verification_code("create project #{prj.id}")
+link = access_map['verification_with_code_uri']
 puts "Visit the URI within 15 seconds and grant access:"
 puts link
 host = RbConfig::CONFIG['host_os']
@@ -103,7 +103,7 @@ when /linux/
 end
 sleep(15)
 
-code = device_info['device_code']
+code = access_map['device_code']
 bs_api.update_privileges(code)
 
 # NOTE THAT THE APP SESSION ID OF A RUNNING APP MUST BE PROVIDED!
@@ -134,7 +134,7 @@ app_result.upload_file(bs_api, '/tmp/testFile.txt', 'BaseSpaceTestFile.txt', '/m
 
 # Let's see if our new file made it into the cloud:
 app_result_files = app_result.get_files(bs_api)
-puts "Files: #{app_result_files.map { |f| f.to_s }.join(', ')}"
+puts "Files: #{app_result_files.join(', ')}"
 
 #
 # Download our newly uploaded file (will be saved as BaseSpaceTestFile.txt):
