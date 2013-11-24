@@ -613,8 +613,8 @@ This section focuses on development aspects of the BaseSpace Ruby SDK gem. It al
 ## Building a New Version of the Gem
 
     bundle exec rake gemspec
-    bundle exec gem build bio-basespace.gemspec
-    sudo gem install bio-basespace
+    bundle exec gem build bio-basespace-sdk.gemspec
+    sudo gem install bio-basespace-sdk
 
 ## Unit Testing
 
