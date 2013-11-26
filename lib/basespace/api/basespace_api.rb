@@ -593,7 +593,7 @@ class BaseSpaceAPI < BaseAPI
       sid = query_params['appsessionid']
       session = get_app_session(sid)
       unless session.can_work_on
-        raise 'AppSession status must be "running," to create and AppResults. Current status is: ' + session.status
+        raise 'AppSession status must be "running" to create an AppResult. Current status is: ' + session.status
       end
     end
         
